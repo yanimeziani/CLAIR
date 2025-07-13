@@ -48,11 +48,30 @@ jobs:
         NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
         EOF
     
-    - name: Stop existing containers
-      run: docker compose down || true
+    - name: Free up port 3000
+      run: |
+        echo "Checking for processes using port 3000..."
+        lsof -ti:3000 | xargs -r kill -9 || true
+        echo "Port 3000 cleanup completed"
     
-    - name: Remove old images
-      run: docker system prune -f || true
+    - name: Stop existing containers
+      run: |
+        echo "Stopping and removing existing containers..."
+        docker compose down --remove-orphans || true
+        docker container prune -f || true
+        echo "Container cleanup completed"
+    
+    - name: Clean up Docker resources
+      run: |
+        echo "Cleaning up Docker networks and images..."
+        docker network prune -f || true
+        docker system prune -f || true
+        echo "Docker cleanup completed"
+    
+    - name: Wait for cleanup to complete
+      run: |
+        echo "Waiting for cleanup operations to complete..."
+        sleep 5
     
     - name: Start services with Docker Compose
       run: docker compose up -d --build
