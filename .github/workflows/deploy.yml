@@ -25,6 +25,10 @@ jobs:
       run: npm run lint
     
     - name: Build application
+      env:
+        MONGODB_URI: mongodb://localhost:27017/test
+        NEXTAUTH_SECRET: test-secret-for-build
+        NEXTAUTH_URL: http://localhost:3000
       run: npm run build
 
   deploy:
@@ -44,6 +48,10 @@ jobs:
       run: npm ci
     
     - name: Build application
+      env:
+        MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
       run: npm run build
     
     - name: Build Docker image
@@ -61,6 +69,9 @@ jobs:
           --name irielle-platform \
           --restart unless-stopped \
           -p 3000:3000 \
+          -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+          -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
+          -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
           irielle-platform:latest
     
     - name: Clean up old images

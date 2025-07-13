@@ -8,7 +8,12 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   output: 'standalone',
-  serverExternalPackages: ['mongoose']
+  serverExternalPackages: ['mongoose'],
+  // Skip static optimization for API routes during build
+  trailingSlash: false,
+  generateBuildId: async () => {
+    return 'build'
+  }
 };
 
 export default nextConfig;
