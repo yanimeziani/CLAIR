@@ -38,41 +38,32 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Build application
-      env:
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-        NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-      run: npm run build
-    
-    - name: Build Docker image
-      run: docker build -t irielle-platform:latest .
-    
-    - name: Stop existing container
-      run: docker stop irielle-platform || true
-    
-    - name: Remove existing container
-      run: docker rm irielle-platform || true
-    
-    - name: Run new container
+    - name: Create environment file
       run: |
-        docker run -d \
-          --name irielle-platform \
-          --restart unless-stopped \
-          -p 3000:3000 \
-          -e MONGODB_URI="${{ secrets.MONGODB_URI }}" \
-          -e NEXTAUTH_SECRET="${{ secrets.NEXTAUTH_SECRET }}" \
-          -e NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}" \
-          irielle-platform:latest
+        cat > .env.production << EOF
+        NODE_ENV=production
+        MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
+        AI_BACKEND_URL=http://ai-backend:8000
+        NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
+        NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+        EOF
     
-    - name: Clean up old images
-      run: docker image prune -f
+    - name: Stop existing containers
+      run: docker-compose down || true
+    
+    - name: Remove old images
+      run: docker system prune -f || true
+    
+    - name: Start services with Docker Compose
+      run: docker-compose up -d --build
+    
+    - name: Wait for services to be ready
+      run: |
+        echo "Waiting for services to start..."
+        sleep 30
+        docker-compose logs --tail=20
+    
+    - name: Verify deployment
+      run: |
+        curl -f http://localhost:3000 || exit 1
+        echo "Deployment successful!"

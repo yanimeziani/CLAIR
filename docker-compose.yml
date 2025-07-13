@@ -61,12 +61,8 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
-      - AI_BACKEND_URL=http://ai-backend:8000
-      - NEXTAUTH_SECRET=your-nextauth-secret-key-here
-      - NEXTAUTH_URL=http://localhost:3000
+    env_file:
+      - .env.production
     depends_on:
       - mongodb
       - ai-backend
