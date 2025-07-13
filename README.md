@@ -4,11 +4,12 @@ This is a [Next.js](https://nextjs.org) healthcare management platform bootstrap
 
 ## 🚀 Production Deployment
 
-The application is automatically deployed to production via GitHub Actions CI/CD pipeline.
+The complete Irielle Healthcare Platform is automatically deployed via GitHub Actions CI/CD pipeline.
 
 - **Production URL:** http://89.116.170.202:3000
-- **Deployment:** Automatic on push to main branch
-- **Container:** Docker with Node.js 20
+- **Deployment:** Docker Compose with full stack
+- **Services:** Next.js Frontend, MongoDB with seeded data, AI Backend, ChromaDB
+- **Authentication:** PIN-based system (Admin: 1234, Staff: 5678)
 
 ## Getting Started
 
