@@ -119,7 +119,6 @@
   
   html {
     scroll-behavior: smooth;
-    scroll-snap-type: both mandatory;
     -webkit-overflow-scrolling: touch;
   }
   
@@ -140,54 +139,21 @@
   }
 }
 
-/* Apple-style scroll snap sections */
+/* Smooth animations */
 @layer components {
-  .scroll-snap-section {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    min-height: 100vh;
-    position: relative;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  .fade-in {
+    animation: fadeIn 0.6s ease-out;
   }
   
-  .scroll-snap-hero {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
-  }
-  
-  .scroll-snap-feature {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    min-height: 80vh;
-    padding: 5rem 0;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  
-  /* Enhanced scroll experience */
-  @media (prefers-reduced-motion: no-preference) {
-    .scroll-snap-section,
-    .scroll-snap-hero,
-    .scroll-snap-feature {
-      scroll-margin-top: 80px;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
     }
-  }
-  
-  /* Apple-style fade in on scroll */
-  .scroll-fade-in {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.8s cubic-bezier(0.165, 0.84, 0.44, 1),
-                transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
-  }
-  
-  .scroll-fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 

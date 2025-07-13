@@ -239,54 +239,54 @@ export default function Home() {
                 </CardContent>
               </Card>
 
-              <Card className="group bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-500 shadow-xl shadow-green-500/5 hover:shadow-2xl hover:shadow-green-500/10 hover:-translate-y-1">
-                <CardContent className="p-8">
-                  <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 p-4 rounded-2xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <MessageSquare className="h-8 w-8 text-green-600" />
+              <Card className="group bg-card/50 backdrop-blur-sm border hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <CardContent className="p-6 sm:p-8">
+                  <div className="bg-secondary/20 p-3 sm:p-4 rounded-xl w-fit mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <MessageSquare className="h-6 w-6 sm:h-8 sm:w-8 text-secondary" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Communications d'Équipe</h3>
-                  <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">Communications d'Équipe</h3>
+                  <p className="text-muted-foreground mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
                     Communications sécurisées avec éditeur enrichi par IA, système d'alertes urgentes 
                     et suivi des accusés de réception en temps réel.
                   </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Éditeur avec assistance IA</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Messages urgents prioritaires</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Système d'authentification PIN</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="group bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-500 shadow-xl shadow-purple-500/5 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1">
-                <CardContent className="p-8">
-                  <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 p-4 rounded-2xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <FileText className="h-8 w-8 text-purple-600" />
+              <Card className="group bg-card/50 backdrop-blur-sm border hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <CardContent className="p-6 sm:p-8">
+                  <div className="bg-accent/20 p-3 sm:p-4 rounded-xl w-fit mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-accent-foreground" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Rapports Intelligents</h3>
-                  <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">Rapports Intelligents</h3>
+                  <p className="text-muted-foreground mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
                     Création de rapports personnalisables avec templates adaptés aux besoins spécifiques 
                     des résidences DI-TSA et exports CSV pour analyse externe.
                   </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Templates dynamiques personnalisés</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Export CSV pour analyse</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Échelle de Bristol intégrée</span>
                     </div>
                   </div>
@@ -297,33 +297,31 @@ export default function Home() {
         </section>
 
         {/* Additional Features Section */}
-        <section className="scroll-snap-feature relative">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-12 scroll-fade-in">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
-                  Fonctionnalités avancées
-                </span>
+        <section className="relative py-12 sm:py-20">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                Fonctionnalités avancées
               </h2>
-              <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
                 Technologies modernes au service des résidences spécialisées
               </p>
             </div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 scroll-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[
                 { icon: Target, title: "Échelle de Bristol", desc: "Suivi spécialisé des selles avec classification médicale standardisée" },
                 { icon: Shield, title: "Authentification PIN", desc: "Sécurité renforcée avec codes PIN personnalisés par utilisateur" },
                 { icon: Download, title: "Exports CSV", desc: "Exportation complète des données pour analyses externes et rapports" },
                 { icon: Sparkles, title: "Intelligence Artificielle", desc: "Correction automatique et génération de résumés dans tous les champs texte" }
               ].map((feature, index) => (
-                <Card key={index} className="bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/10 transition-all duration-300 group">
-                  <CardContent className="p-6">
-                    <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 p-3 rounded-xl w-fit mb-4 group-hover:scale-110 transition-transform duration-300">
-                      <feature.icon className="h-6 w-6 text-indigo-600" />
+                <Card key={index} className="bg-card/40 backdrop-blur-sm border hover:bg-card/60 transition-all duration-300 group">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="bg-primary/20 p-2 sm:p-3 rounded-xl w-fit mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h4>
-                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{feature.desc}</p>
+                    <h4 className="font-bold text-foreground mb-2 text-sm sm:text-base">{feature.title}</h4>
+                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">{feature.desc}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -332,42 +330,66 @@ export default function Home() {
         </section>
 
         {/* Admin & Management Features Section */}
-        <section className="scroll-snap-section relative">
-          <div className="container mx-auto px-6 py-20">
-            <h2 className="text-3xl font-bold text-foreground text-center mb-12 scroll-fade-in">Gestion Administrative</h2>
-            <div className="grid md:grid-cols-2 gap-8 scroll-fade-in">
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:bg-card/80 transition-all duration-300">
-                <CardContent className="p-8">
-                  <div className="bg-indigo-500/20 p-4 rounded-lg w-fit mb-6">
-                    <Database className="h-8 w-8 text-indigo-400" />
+        <section className="relative py-12 sm:py-20 bg-card/30">
+          <div className="container mx-auto px-4 sm:px-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-8 sm:mb-12">Gestion Administrative</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              <Card className="bg-card/50 backdrop-blur-sm border hover:bg-card/80 transition-all duration-300">
+                <CardContent className="p-6 sm:p-8">
+                  <div className="bg-primary/20 p-3 sm:p-4 rounded-lg w-fit mb-4 sm:mb-6">
+                    <Database className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3">Gestion des Utilisateurs</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-3">Gestion des Utilisateurs</h3>
+                  <p className="text-muted-foreground text-sm sm:text-base mb-4">
                     Administration complète des équipes avec gestion des rôles, réinitialisation des PIN et contrôle d'accès.
                   </p>
-                  <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                    <li>• Création et modification des profils utilisateurs</li>
-                    <li>• Gestion des rôles (Admin, Standard, Viewer)</li>
-                    <li>• Réinitialisation sécurisée des codes PIN</li>
-                    <li>• Suivi des activités et connexions</li>
+                  <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
+                    <li className="flex items-start space-x-2">
+                      <span className="text-primary mt-1">•</span>
+                      <span>Création et modification des profils utilisateurs</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-primary mt-1">•</span>
+                      <span>Gestion des rôles (Admin, Standard, Viewer)</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-primary mt-1">•</span>
+                      <span>Réinitialisation sécurisée des codes PIN</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-primary mt-1">•</span>
+                      <span>Suivi des activités et connexions</span>
+                    </li>
                   </ul>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:bg-card/80 transition-all duration-300">
-                <CardContent className="p-8">
-                  <div className="bg-amber-500/20 p-4 rounded-lg w-fit mb-6">
-                    <BarChart3 className="h-8 w-8 text-amber-400" />
+              <Card className="bg-card/50 backdrop-blur-sm border hover:bg-card/80 transition-all duration-300">
+                <CardContent className="p-6 sm:p-8">
+                  <div className="bg-secondary/20 p-3 sm:p-4 rounded-lg w-fit mb-4 sm:mb-6">
+                    <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-secondary" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3">Tableaux de Bord</h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-3">Tableaux de Bord</h3>
+                  <p className="text-muted-foreground text-sm sm:text-base mb-4">
                     Visualisations en temps réel des données avec exports CSV et statistiques détaillées.
                   </p>
-                  <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                    <li>• Graphiques interactifs avec Recharts</li>
-                    <li>• Exports CSV avec métadonnées complètes</li>
-                    <li>• Statistiques par période et par équipe</li>
-                    <li>• Visualisations temps réel des données</li>
+                  <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
+                    <li className="flex items-start space-x-2">
+                      <span className="text-secondary mt-1">•</span>
+                      <span>Graphiques interactifs avec Recharts</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-secondary mt-1">•</span>
+                      <span>Exports CSV avec métadonnées complètes</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-secondary mt-1">•</span>
+                      <span>Statistiques par période et par équipe</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-secondary mt-1">•</span>
+                      <span>Visualisations temps réel des données</span>
+                    </li>
                   </ul>
                 </CardContent>
               </Card>
