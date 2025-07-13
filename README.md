@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Irielle Healthcare Platform
+
+This is a [Next.js](https://nextjs.org) healthcare management platform bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## 🚀 Production Deployment
+
+The application is automatically deployed to production via GitHub Actions CI/CD pipeline.
+
+- **Production URL:** http://89.116.170.202:3000
+- **Deployment:** Automatic on push to main branch
+- **Container:** Docker with Node.js 20
 
 ## Getting Started
 
