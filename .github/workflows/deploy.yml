@@ -66,10 +66,10 @@ jobs:
     
     - name: Start services without SSL first
       run: |
-        # Use init config for certificate generation
-        cp nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf.bak
-        mv nginx/conf.d/irielle.conf nginx/conf.d/irielle-ssl.conf
-        mv nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf
+        # Backup current configs and set up for certificate generation
+        cp nginx/conf.d/irielle.conf nginx/conf.d/irielle.conf.backup || true
+        cp nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle-ssl.conf.backup || true
+        cp nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf
         docker compose up -d --build mongodb chromadb ollama frontend nginx
         
     - name: Initialize Ollama model
@@ -84,20 +84,47 @@ jobs:
       run: |
         echo "Waiting for services to start..."
         sleep 30
+        
+        # Check if nginx is responding on port 80
+        for i in {1..10}; do
+          if curl -f http://localhost/.well-known/acme-challenge/healthcheck 2>/dev/null || curl -f http://localhost 2>/dev/null; then
+            echo "Nginx is responding, proceeding with certificate generation..."
+            break
+          fi
+          echo "Waiting for nginx to respond... (attempt $i/10)"
+          sleep 10
+        done
+        
+        # Generate certificate
         echo "Requesting SSL certificate..."
-        docker compose run --rm certbot || echo "Certificate already exists or failed"
-        sleep 10
+        if docker compose run --rm certbot; then
+          echo "✅ SSL certificate generated successfully"
+        else
+          echo "❌ SSL certificate generation failed, continuing with HTTP only"
+        fi
     
     - name: Switch to SSL configuration
       run: |
         # Check if certificate exists and switch to SSL config
         if docker exec irielle-nginx test -f /etc/letsencrypt/live/dev.meziani.org/fullchain.pem; then
-          echo "Certificate found, switching to SSL configuration..."
-          mv nginx/conf.d/irielle.conf nginx/conf.d/irielle-init.conf
-          mv nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle.conf
-          docker compose restart nginx
+          echo "✅ Certificate found, switching to SSL configuration..."
+          
+          # Replace current config with SSL version
+          cp nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle.conf
+          
+          # Test nginx config before restarting
+          if docker exec irielle-nginx nginx -t; then
+            echo "✅ Nginx config test passed, restarting..."
+            docker compose restart nginx
+            echo "✅ Switched to HTTPS successfully"
+          else
+            echo "❌ Nginx config test failed, reverting to HTTP"
+            cp nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf
+            docker compose restart nginx
+          fi
         else
-          echo "Certificate not found, continuing with HTTP only..."
+          echo "⚠️ Certificate not found, continuing with HTTP only..."
+          echo "Check DNS settings and firewall if certificate generation failed"
         fi
     
     - name: Start all services including AI backend
@@ -110,6 +137,29 @@ jobs:
       run: |
         echo "Waiting for final startup..."
         sleep 20
+        
+        # Show logs for debugging
+        echo "=== Container Status ==="
+        docker compose ps
+        echo "=== Recent Logs ==="
         docker compose logs --tail=20
-        curl -f http://localhost || curl -f https://dev.meziani.org || exit 1
-        echo "Deployment successful!"
+        
+        # Test deployment
+        echo "=== Testing Deployment ==="
+        if curl -f http://localhost 2>/dev/null; then
+          echo "✅ HTTP endpoint is working"
+        else
+          echo "❌ HTTP endpoint failed"
+        fi
+        
+        if curl -f -k https://dev.meziani.org 2>/dev/null; then
+          echo "✅ HTTPS endpoint is working"
+        elif curl -f http://dev.meziani.org 2>/dev/null; then
+          echo "✅ HTTP redirect is working"
+        else
+          echo "⚠️ External domain test failed (might be DNS/firewall)"
+        fi
+        
+        # Ensure at least local access works
+        curl -f http://localhost || exit 1
+        echo "🎉 Deployment successful!"
