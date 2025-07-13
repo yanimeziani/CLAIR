@@ -36,7 +36,15 @@ jobs:
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
     steps:
+    - name: Clean workspace
+      run: |
+        sudo rm -rf ${{ github.workspace }}/.git
+        sudo rm -rf ${{ github.workspace }}/*
+        sudo rm -rf ${{ github.workspace }}/.[!.]*
+    
     - uses: actions/checkout@v4
+      with:
+        clean: true
     
     - name: Create environment file
       run: |
