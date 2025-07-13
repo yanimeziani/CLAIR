@@ -38,13 +38,15 @@ jobs:
     steps:
     - name: Clean workspace
       run: |
-        sudo rm -rf ${{ github.workspace }}/.git
-        sudo rm -rf ${{ github.workspace }}/*
-        sudo rm -rf ${{ github.workspace }}/.[!.]*
+        rm -rf .git || true
+        rm -rf * || true
+        rm -rf .[!.]* || true
+        git config --global --add safe.directory ${{ github.workspace }}
     
     - uses: actions/checkout@v4
       with:
         clean: true
+        fetch-depth: 1
     
     - name: Create environment file
       run: |
