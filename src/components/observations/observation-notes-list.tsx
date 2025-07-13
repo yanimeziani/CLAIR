@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
+import { HtmlContent } from '@/components/ui/html-content';
 import { toast } from 'sonner';
 
 interface ObservationNote {
@@ -261,9 +262,10 @@ export function ObservationNotesList({ patientId, refreshTrigger }: ObservationN
                           className="bg-background/50"
                         />
                       ) : (
-                        <p className="text-sm text-foreground">
-                          {contentPreview}
-                        </p>
+                        <HtmlContent 
+                          content={contentPreview}
+                          className="text-sm line-clamp-3"
+                        />
                       )}
                       
                       {needsExpansion && (

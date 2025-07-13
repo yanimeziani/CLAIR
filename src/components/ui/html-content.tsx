@@ -1,0 +1,51 @@
+'use client';
+
+import { cn } from '@/lib/utils';
+
+interface HtmlContentProps {
+  content: string;
+  className?: string;
+}
+
+export function HtmlContent({ content, className }: HtmlContentProps) {
+  // Convert markdown-like content to HTML if needed
+  const convertMarkdownToHtml = (text: string): string => {
+    let html = text
+      // Bold
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Italic  
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Headers
+      .replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mb-2">$1</h3>')
+      .replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mb-3">$1</h2>')
+      .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-4">$1</h1>')
+      // Line breaks
+      .replace(/\n\n/g, '</p><p class="mb-2">')
+      .replace(/\n/g, '<br>');
+    
+    // Wrap in paragraphs if not already wrapped and not empty
+    if (html.trim() && !html.startsWith('<h') && !html.startsWith('<p>') && !html.startsWith('<div')) {
+      html = `<p class="mb-2">${html}</p>`;
+    }
+    
+    return html;
+  };
+
+  const htmlContent = convertMarkdownToHtml(content);
+
+  return (
+    <div 
+      className={cn(
+        'prose prose-sm max-w-none dark:prose-invert',
+        'prose-headings:text-foreground prose-p:text-foreground prose-p:leading-relaxed',
+        'prose-strong:text-foreground prose-em:text-foreground',
+        'prose-code:text-foreground prose-pre:bg-muted',
+        'prose-blockquote:text-muted-foreground prose-blockquote:border-border',
+        '[&>p]:mb-2 [&>p:last-child]:mb-0',
+        '[&>h1]:mb-4 [&>h2]:mb-3 [&>h3]:mb-2',
+        className
+      )}
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
+  );
+}

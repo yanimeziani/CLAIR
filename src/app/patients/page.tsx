@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
+import { HtmlContent } from '@/components/ui/html-content';
 import { ObservationNoteForm } from '@/components/observations/observation-note-form';
 import { ObservationNotesList } from '@/components/observations/observation-notes-list';
 import { toast } from 'sonner';
@@ -401,26 +402,26 @@ export default function PatientsPage() {
                   </DropdownMenu>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
+              <CardContent className="pt-0">
+                <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex items-center text-muted-foreground">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {calculateAge(patient.dateOfBirth)} ans
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2 shrink-0" />
+                    <span className="truncate">{calculateAge(patient.dateOfBirth)} ans</span>
                   </div>
                   {patient.allergies.length > 0 && (
                     <div className="flex items-start text-amber-600">
-                      <AlertTriangle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-xs">{patient.allergies.slice(0, 2).join(', ')}{patient.allergies.length > 2 && '...'}</span>
+                      <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 mr-2 mt-0.5 shrink-0" />
+                      <span className="text-xs break-words">{patient.allergies.slice(0, 2).join(', ')}{patient.allergies.length > 2 && '...'}</span>
                     </div>
                   )}
                   {patient.emergencyContacts.length > 0 && (
                     <div className="flex items-center text-muted-foreground">
-                      <Phone className="h-4 w-4 mr-2" />
-                      <span className="text-xs">{patient.emergencyContacts[0].name}</span>
+                      <Phone className="h-3 w-3 sm:h-4 sm:w-4 mr-2 shrink-0" />
+                      <span className="text-xs truncate">{patient.emergencyContacts[0].name}</span>
                     </div>
                   )}
                   <div className="pt-2">
-                    <span className={`text-xs px-2 py-1 rounded ${
+                    <span className={`text-xs px-2 py-1 rounded inline-block ${
                       patient.isActive ? 'bg-green-500/20 text-green-600' : 'bg-gray-500/20 text-gray-600'
                     }`}>
                       {patient.isActive ? 'Actif' : 'Archivé'}
@@ -581,7 +582,7 @@ export default function PatientsPage() {
 
       {/* Patient Details Dialog */}
       <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           {selectedPatient && (
             <>
               <DialogHeader>

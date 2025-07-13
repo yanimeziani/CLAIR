@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { SHIFTS } from '@/lib/constants/shifts';
+import { HtmlContent } from '@/components/ui/html-content';
 
 interface Patient {
   _id: string;
@@ -463,7 +464,10 @@ export default function ReportsPage() {
                         </div>
                       </div>
                       
-                      <p className="text-foreground mb-3 line-clamp-2">{report.summary}</p>
+                      <HtmlContent 
+                        content={report.summary}
+                        className="text-foreground mb-3 line-clamp-2"
+                      />
                       
                       <div className="text-sm text-muted-foreground">
                         <span>Par {report.authorName || 'Auteur inconnu'}</span>
@@ -675,7 +679,9 @@ export default function ReportsPage() {
 
                 <div>
                   <Label className="text-muted-foreground">Résumé de l'équipe</Label>
-                  <p className="mt-1 bg-muted/50 p-3 rounded-lg">{selectedReport.summary}</p>
+                  <div className="mt-1 bg-muted/50 p-3 rounded-lg">
+                    <HtmlContent content={selectedReport.summary} />
+                  </div>
                 </div>
 
                 {Object.keys(selectedReport.customFields).length > 0 && (

@@ -76,11 +76,9 @@ async def correct_text(request: TextCorrection):
     try:
         logger.info(f"Processing text correction request with Ollama host: {OLLAMA_HOST}")
         
-        prompt = f"""Corrigez ce texte (orthographe, grammaire, style médical professionnel):
+        prompt = f"""Vous êtes un correcteur professionnel médical. Corrigez seulement l'orthographe, la grammaire et le style professionnel du texte suivant. Retournez uniquement le texte corrigé sans explication ni introduction:
 
-{request.text}
-
-Texte corrigé:"""
+{request.text}"""
 
         logger.info(f"Sending generate request to Ollama...")
         response = ollama_client.generate(
