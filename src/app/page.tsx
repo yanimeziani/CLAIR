@@ -122,82 +122,77 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Hero Section - Full Screen */}
-        <section className="scroll-snap-hero relative">
-          <div className="container mx-auto px-6 text-center">
-            {/* Compact Logo & Badge */}
-            <div className="mb-8">
-              <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200/50 dark:border-blue-700/50 rounded-full px-6 py-3 backdrop-blur-sm">
-                <Image 
-                  src="/logo.png" 
-                  alt="Irielle Logo" 
-                  width={24} 
-                  height={24}
-                  className="h-6 w-6"
-                />
-                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Plateforme spécialisée DI-TSA</span>
-                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+        {/* Hero Section */}
+        <section className="relative py-12 sm:py-20 lg:py-24">
+          <div className="container mx-auto px-4 sm:px-6 text-center">
+            {/* Badge */}
+            <div className="mb-6 sm:mb-8">
+              <div className="inline-flex items-center space-x-2 sm:space-x-3 bg-primary/10 border border-primary/20 rounded-full px-4 sm:px-6 py-2 sm:py-3 backdrop-blur-sm">
+                <div className="bg-primary/20 p-1 rounded-full">
+                  <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                </div>
+                <span className="text-xs sm:text-sm font-medium text-primary">Plateforme spécialisée DI-TSA</span>
+                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500 fill-current" />
               </div>
             </div>
             
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
-              <span className="bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
-                Gestion spécialisée pour
-              </span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 sm:mb-8 leading-tight text-foreground">
+              Gestion spécialisée pour
               <br />
-              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-primary">
                 résidences DI-TSA
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-5xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-12 max-w-4xl mx-auto leading-relaxed">
               Irielle transforme la gestion des résidences pour personnes ayant une déficience intellectuelle 
               et troubles du spectre de l'autisme au Québec avec des outils adaptés et sécurisés.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-12 sm:mb-16">
               <Button 
                 size="lg" 
                 onClick={handleLogin}
                 disabled={isLoading}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-4 text-lg font-semibold shadow-2xl shadow-blue-500/25 border-0 group"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg group"
               >
                 {isLoading ? (
                   <div className="flex items-center space-x-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     <span>Chargement...</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
                     <span>Découvrir la plateforme</span>
-                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 )}
               </Button>
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 px-10 py-4 text-lg font-semibold backdrop-blur-sm"
+                className="border-2 text-foreground hover:bg-accent px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold"
               >
                 <div className="flex items-center space-x-2">
-                  <Calendar className="h-5 w-5" />
-                  <span>Demander une démonstration</span>
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="hidden sm:inline">Demander une démonstration</span>
+                  <span className="sm:hidden">Démonstration</span>
                 </div>
               </Button>
             </div>
 
             {/* Trust indicators */}
-            <div className="flex flex-wrap justify-center items-center space-x-8 text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
                 <span>Conforme HIPAA</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Shield className="h-4 w-4 text-blue-500" />
+                <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                 <span>Sécurité renforcée</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Award className="h-4 w-4 text-yellow-500" />
+                <Award className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
                 <span>Spécialisé DI-TSA</span>
               </div>
             </div>
@@ -205,41 +200,39 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="scroll-snap-feature relative">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-16 scroll-fade-in">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                <span className="bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
-                  Fonctionnalités principales
-                </span>
+        <section className="relative py-12 sm:py-20 bg-card/30">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-foreground">
+                Fonctionnalités principales
               </h2>
-              <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
                 Des outils spécialement conçus pour les défis uniques des résidences DI-TSA
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 scroll-fade-in">
-              <Card className="group bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-500 shadow-xl shadow-blue-500/5 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1">
-                <CardContent className="p-8">
-                  <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 p-4 rounded-2xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Users className="h-8 w-8 text-blue-600" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+              <Card className="group bg-card/50 backdrop-blur-sm border hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <CardContent className="p-6 sm:p-8">
+                  <div className="bg-primary/20 p-3 sm:p-4 rounded-xl w-fit mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Gestion des Résidents</h3>
-                  <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">Gestion des Résidents</h3>
+                  <p className="text-muted-foreground mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
                     Profils complets avec informations personnelles, médicales, allergies et contacts d'urgence. 
                     Observations signées électroniquement pour un suivi professionnel.
                   </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                  <div className="space-y-2 sm:space-y-3">
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Profils médicaux avec éditeur riche</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>Observations signées numériquement</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 flex-shrink-0" />
                       <span>IA - Correction et résumés automatiques</span>
                     </div>
                   </div>
