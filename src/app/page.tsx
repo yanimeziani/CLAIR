@@ -60,58 +60,50 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-gradient-healthcare">
+      {/* Subtle Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-indigo-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-violet-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-      </div>
-
-      {/* Hero Pattern Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
-        <div className="w-full h-full" 
-             style={{
-               backgroundImage: `url('/hero-healthcare-abstract.jpg')`,
-               backgroundSize: 'cover',
-               backgroundPosition: 'center',
-               backgroundRepeat: 'no-repeat'
-             }}>
-        </div>
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-r from-primary/10 to-primary/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-48 h-48 bg-gradient-to-r from-accent/5 to-accent/2 rounded-full blur-2xl"></div>
       </div>
       
       <div className="relative z-10">
         {/* Header */}
-        <header className="border-b border-white/20 backdrop-blur-xl bg-white/10 dark:bg-black/10">
-          <div className="container mx-auto px-6 py-4">
-            <nav className="flex items-center justify-between">
+        <header className="border-b border-border/20 backdrop-blur-sm bg-card/30">
+          <div className="container mx-auto px-4 sm:px-6 py-4">
+            <nav className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center space-x-3">
-                <Image 
-                  src="/logo.png" 
-                  alt="Irielle Logo" 
-                  width={32} 
-                  height={32}
-                  className="h-8 w-8"
-                />
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <div className="bg-primary/10 p-2 rounded-lg">
+                  <Image 
+                    src="/logo.png" 
+                    alt="Irielle Logo" 
+                    width={32} 
+                    height={32}
+                    className="h-8 w-8"
+                  />
+                </div>
+                <span className="text-xl sm:text-2xl font-bold text-foreground">
                   Irielle
                 </span>
               </div>
               
-              <div className="hidden md:flex items-center space-x-8">
-                <Button variant="ghost" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white font-medium">
-                  Fonctionnalités
-                </Button>
-                <Button variant="ghost" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white font-medium">
-                  Avantages
-                </Button>
-                <Button variant="ghost" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white font-medium">
-                  Contact
-                </Button>
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
+                <div className="hidden lg:flex items-center space-x-6">
+                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground font-medium">
+                    Fonctionnalités
+                  </Button>
+                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground font-medium">
+                    Avantages
+                  </Button>
+                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground font-medium">
+                    Contact
+                  </Button>
+                </div>
                 <Button 
                   onClick={handleLogin}
                   disabled={isLoading}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25 border-0"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
                 >
                   {isLoading ? (
                     <div className="flex items-center space-x-2">

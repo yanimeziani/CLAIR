@@ -177,8 +177,8 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-healthcare">
       {/* Top Navigation */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <div className="bg-orange-500/10 p-2 rounded-lg">
                 <Image 
@@ -190,15 +190,15 @@ export default function DashboardPage() {
                 />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">Plateforme Irielle</h1>
-                <p className="text-sm text-muted-foreground">
+                <h1 className="text-lg sm:text-xl font-bold text-foreground">Plateforme Irielle</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {user?.isReplacement ? `Remplacement: ${user.name.replace('Remplacement: ', '')}` : user?.name}
                   {user?.role && !user?.isReplacement && ` • ${user.role}`}
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 w-full sm:w-auto">
               {/* Irielle AI Button */}
               <Button 
                 variant="outline" 
@@ -290,9 +290,10 @@ export default function DashboardPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full sm:w-auto">
                 <LogOut className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Déconnexion</span>
+                <span className="sm:hidden">Sortir</span>
               </Button>
             </div>
           </div>
@@ -311,7 +312,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -370,23 +371,23 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <Button variant="outline" className="h-16 flex flex-col" onClick={() => router.push('/reports/new')}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/reports/new')}>
                 <Plus className="h-5 w-5 mb-1" />
-                <span className="text-sm">Nouveau Rapport</span>
+                <span className="text-xs sm:text-sm">Nouveau Rapport</span>
               </Button>
               <QuickObservationForm />
-              <Button variant="outline" className="h-16 flex flex-col" onClick={() => router.push('/bristol')}>
+              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/bristol')}>
                 <BarChart3 className="h-5 w-5 mb-1" />
-                <span className="text-sm">Suivi Bristol</span>
+                <span className="text-xs sm:text-sm">Suivi Bristol</span>
               </Button>
-              <Button variant="outline" className="h-16 flex flex-col" onClick={() => router.push('/communications/new')}>
+              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/communications/new')}>
                 <MessageSquare className="h-5 w-5 mb-1" />
-                <span className="text-sm">Envoyer Message</span>
+                <span className="text-xs sm:text-sm">Envoyer Message</span>
               </Button>
-              <Button variant="outline" className="h-16 flex flex-col" onClick={() => router.push('/patients')}>
+              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/patients')}>
                 <Users className="h-5 w-5 mb-1" />
-                <span className="text-sm">Gérer Résidents</span>
+                <span className="text-xs sm:text-sm">Gérer Résidents</span>
               </Button>
             </div>
           </CardContent>

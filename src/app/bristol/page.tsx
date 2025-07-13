@@ -280,22 +280,23 @@ export default function BristolPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button variant="ghost" onClick={() => router.push('/dashboard')}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Suivi Bristol</h1>
-                <p className="text-muted-foreground">Surveillance des selles selon l'échelle Bristol</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">Suivi Bristol</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">Surveillance des selles selon l'échelle Bristol</p>
               </div>
             </div>
             {selectedPatient && currentUser?.role === 'admin' && (
-              <Button variant="outline" onClick={() => handleExport('csv')}>
+              <Button variant="outline" onClick={() => handleExport('csv')} className="w-full sm:w-auto">
                 <Download className="h-4 w-4 mr-2" />
-                Exporter CSV
+                <span className="hidden sm:inline">Exporter CSV</span>
+                <span className="sm:hidden">Export</span>
               </Button>
             )}
           </div>
@@ -377,90 +378,101 @@ export default function BristolPage() {
             {/* Calendar Grid */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <span>Calendrier du suivi</span>
                   <div className="flex items-center space-x-4 text-sm">
                     <div className="flex items-center space-x-2">
                       <Activity className="h-4 w-4 text-amber-500" />
-                      <span>Échelle Bristol</span>
+                      <span className="hidden sm:inline">Échelle Bristol</span>
+                      <span className="sm:hidden">Bristol</span>
                     </div>
                   </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Days of week header */}
-                <div className="grid grid-cols-7 gap-1 mb-2">
-                  {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
-                    <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
-                      {day}
-                    </div>
-                  ))}
+                {/* Mobile scroll hint */}
+                <div className="block md:hidden text-xs text-muted-foreground mb-2 text-center">
+                  ← Faites défiler horizontalement →
                 </div>
-
-                {/* Calendar days */}
-                <div className="grid grid-cols-7 gap-1">
-                  {getDaysInMonth(currentDate).map((date, index) => {
-                    const dateStr = date.toISOString().split('T')[0];
-                    const dayEntries = getEntriesForDay(date);
-                    const isToday = date.toDateString() === new Date().toDateString();
-                    
-                    return (
-                      <div 
-                        key={index} 
-                        className={`border border-border rounded-lg p-2 min-h-[120px] ${
-                          isToday ? 'bg-primary/10 border-primary' : 'bg-card'
-                        }`}
-                      >
-                        <div className="text-sm font-medium mb-2 text-center">
-                          {date.getDate()}
+                
+                {/* Calendar container with horizontal scroll on mobile */}
+                <div className="overflow-x-auto md:overflow-visible">
+                  <div className="min-w-[800px] md:min-w-0">
+                    {/* Days of week header */}
+                    <div className="grid grid-cols-7 gap-1 mb-2">
+                      {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
+                        <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
+                          {day}
                         </div>
+                      ))}
+                    </div>
+
+                    {/* Calendar days */}
+                    <div className="grid grid-cols-7 gap-1">
+                      {getDaysInMonth(currentDate).map((date, index) => {
+                        const dateStr = date.toISOString().split('T')[0];
+                        const dayEntries = getEntriesForDay(date);
+                        const isToday = date.toDateString() === new Date().toDateString();
                         
-                        {/* Shifts */}
-                        <div className="space-y-1">
-                          {SHIFTS.map(shift => {
-                            const bowelEntry = getEntryForDayAndShift(date, shift.value);
+                        return (
+                          <div 
+                            key={index} 
+                            className={`border border-border rounded-lg p-2 min-h-[120px] md:min-h-[140px] ${
+                              isToday ? 'bg-primary/10 border-primary' : 'bg-card'
+                            }`}
+                          >
+                            <div className="text-sm font-medium mb-2 text-center">
+                              {date.getDate()}
+                            </div>
                             
-                            return (
-                              <div 
-                                key={shift.value}
-                                className="border border-border/50 rounded p-1 cursor-pointer hover:bg-muted/50 transition-colors"
-                                onClick={() => openEntryDialog(dateStr, shift.value)}
-                              >
-                                <div className={`text-xs font-medium text-center px-1 py-0.5 rounded text-white ${shift.bgColor}`}>
-                                  {shift.label.split(' ')[0]}
-                                </div>
+                            {/* Shifts */}
+                            <div className="space-y-1">
+                              {SHIFTS.map(shift => {
+                                const bowelEntry = getEntryForDayAndShift(date, shift.value);
                                 
-                                <div className="flex items-center justify-center mt-1">
-                                  <div className="flex items-center space-x-1">
-                                    <Activity className="h-3 w-3 text-amber-500" />
-                                    {bowelEntry ? (
+                                return (
+                                  <div 
+                                    key={shift.value}
+                                    className="border border-border/50 rounded p-1 cursor-pointer hover:bg-muted/50 transition-colors min-h-[44px] flex flex-col justify-center"
+                                    onClick={() => openEntryDialog(dateStr, shift.value)}
+                                  >
+                                    <div className={`text-xs font-medium text-center px-1 py-0.5 rounded text-white ${shift.bgColor} mb-1`}>
+                                      {shift.label.split(' ')[0]}
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-center">
                                       <div className="flex items-center space-x-1">
-                                        <div className={`w-3 h-3 rounded-full ${getBristolInfo(bowelEntry.value)?.color || 'bg-gray-400'}`} />
-                                        {bowelEntry.size && (
-                                          <span className={`text-xs px-1 py-0.5 rounded text-white ${getSizeInfo(bowelEntry.size)?.color || 'bg-gray-500'}`}>
-                                            {bowelEntry.size}
-                                          </span>
+                                        <Activity className="h-3 w-3 text-amber-500" />
+                                        {bowelEntry ? (
+                                          <div className="flex items-center space-x-1">
+                                            <div className={`w-3 h-3 rounded-full ${getBristolInfo(bowelEntry.value)?.color || 'bg-gray-400'}`} />
+                                            {bowelEntry.size && (
+                                              <span className={`text-xs px-1 py-0.5 rounded text-white ${getSizeInfo(bowelEntry.size)?.color || 'bg-gray-500'}`}>
+                                                {bowelEntry.size}
+                                              </span>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          <div className="w-3 h-3 rounded-full bg-gray-300" />
                                         )}
                                       </div>
-                                    ) : (
-                                      <div className="w-3 h-3 rounded-full bg-gray-300" />
-                                    )}
+                                    </div>
                                   </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Legend */}
             <div className="max-w-4xl mx-auto mt-6">
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg">Échelle de Bristol</CardTitle>

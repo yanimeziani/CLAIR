@@ -76,7 +76,7 @@ async def correct_text(request: TextCorrection):
     try:
         logger.info(f"Processing text correction request with Ollama host: {OLLAMA_HOST}")
         
-        prompt = f"""Corrige le texte suivant (orthographe, grammaire, ponctuation, style médical professionnel):
+        prompt = f"""Corrigez ce texte (orthographe, grammaire, style médical professionnel):
 
 {request.text}
 
@@ -158,7 +158,7 @@ async def generate_summary(request: TextSummary):
         if request.context == "healthcare":
             context_prompt = "dans le contexte des soins de santé et résidences DI-TSA"
         
-        prompt = f"""Résume ce texte médical en 2-3 phrases professionnelles {context_prompt}:
+        prompt = f"""Résumez ce texte médical en 2-3 phrases professionnelles {context_prompt}:
 
 {request.text}
 

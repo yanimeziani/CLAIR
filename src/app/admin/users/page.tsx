@@ -193,21 +193,22 @@ export default function UsersManagementPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <Button variant="ghost" onClick={() => router.push('/dashboard')}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Gestion des Utilisateurs</h1>
-                <p className="text-muted-foreground">Administrer les comptes du personnel</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">Gestion des Utilisateurs</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">Administrer les comptes du personnel</p>
               </div>
             </div>
-            <Button onClick={openCreateDialog}>
+            <Button onClick={openCreateDialog} className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
-              Nouvel Utilisateur
+              <span className="hidden sm:inline">Nouvel Utilisateur</span>
+              <span className="sm:hidden">Nouveau</span>
             </Button>
           </div>
         </div>
@@ -248,7 +249,7 @@ export default function UsersManagementPage() {
         </Card>
 
         {/* Users Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredUsers.map((user) => (
             <Card key={user._id} className={`transition-all hover:shadow-lg ${!user.isActive ? 'opacity-60' : ''}`}>
               <CardHeader className="pb-3">
@@ -343,7 +344,7 @@ export default function UsersManagementPage() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}
@@ -399,11 +400,11 @@ export default function UsersManagementPage() {
               </div>
             )}
 
-            <div className="flex space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="w-full sm:flex-1">
                 Annuler
               </Button>
-              <Button type="submit" className="flex-1">
+              <Button type="submit" className="w-full sm:flex-1">
                 {editingUser ? 'Modifier' : 'Créer'}
               </Button>
             </div>
