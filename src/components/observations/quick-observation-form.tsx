@@ -1,0 +1,259 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { FileText, Plus, Save, X, ThumbsUp, ThumbsDown, AlertTriangle, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
+import { toast } from 'sonner';
+
+interface Patient {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  isActive: boolean;
+}
+
+interface QuickObservationFormProps {
+  onSuccess?: () => void;
+  trigger?: React.ReactNode;
+}
+
+interface FormData {
+  patientId: string;
+  content: string;
+  isPositive: boolean;
+  isSignificant: boolean;
+}
+
+export function QuickObservationForm({ 
+  onSuccess,
+  trigger 
+}: QuickObservationFormProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [formData, setFormData] = useState<FormData>({
+    patientId: '',
+    content: '',
+    isPositive: true,
+    isSignificant: false,
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      checkSession();
+      fetchPatients();
+    }
+  }, [isOpen]);
+
+  const checkSession = async () => {
+    try {
+      const response = await fetch('/api/auth/session');
+      const data = await response.json();
+      
+      if (data.authenticated) {
+        setCurrentUser(data.user);
+      }
+    } catch (error) {
+      console.error('Session check error:', error);
+    }
+  };
+
+  const fetchPatients = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/patients');
+      const data = await response.json();
+      
+      if (data.success) {
+        const activePatients = data.patients.filter((p: Patient) => p.isActive);
+        setPatients(activePatients);
+      }
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+      toast.error('Erreur lors du chargement des résidents');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.patientId || !formData.content.trim()) {
+      toast.error('Veuillez sélectionner un résident et ajouter du contenu');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await fetch('/api/observations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          patientId: formData.patientId,
+          content: formData.content,
+          isPositive: formData.isPositive,
+          isSignificant: formData.isSignificant,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('✅ Observation ajoutée avec succès');
+        handleClose();
+        onSuccess?.();
+      } else {
+        toast.error(`Erreur: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error creating observation:', error);
+      toast.error('Erreur lors de la création de l\'observation');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setFormData({
+      patientId: '',
+      content: '',
+      isPositive: true,
+      isSignificant: false,
+    });
+  };
+
+  const selectedPatient = patients.find(p => p._id === formData.patientId);
+
+  return (
+    <>
+      <div onClick={() => setIsOpen(true)}>
+        {trigger || (
+          <Button variant="outline" className="h-16 flex flex-col">
+            <FileText className="h-5 w-5 mb-1" />
+            <span className="text-sm">Nouvelle Observation</span>
+          </Button>
+        )}
+      </div>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <FileText className="h-5 w-5 mr-2" />
+              Nouvelle Observation
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* Patient Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="patient">Résident *</Label>
+              <Select
+                value={formData.patientId}
+                onValueChange={(value) => setFormData({ ...formData, patientId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un résident">
+                    {selectedPatient && (
+                      <div className="flex items-center">
+                        <Users className="h-4 w-4 mr-2" />
+                        {selectedPatient.firstName} {selectedPatient.lastName}
+                      </div>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {loading ? (
+                    <SelectItem value="loading" disabled>Chargement...</SelectItem>
+                  ) : patients.length > 0 ? (
+                    patients.map((patient) => (
+                      <SelectItem key={patient._id} value={patient._id}>
+                        <div className="flex items-center">
+                          <Users className="h-4 w-4 mr-2" />
+                          {patient.firstName} {patient.lastName}
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="none" disabled>Aucun résident actif</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Observation Content */}
+            <div className="space-y-2">
+              <Label>Contenu de l'observation *</Label>
+              <RichTextEditor
+                content={formData.content}
+                onChange={(content) => setFormData({ ...formData, content })}
+                placeholder="Décrivez l'observation, comportement, ou événement notable..."
+              />
+            </div>
+
+            {/* Flags */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                <div className="flex items-center space-x-2">
+                  {formData.isPositive ? (
+                    <ThumbsUp className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <ThumbsDown className="h-5 w-5 text-red-600" />
+                  )}
+                  <Label htmlFor="isPositive">Observation positive</Label>
+                </div>
+                <Switch
+                  id="isPositive"
+                  checked={formData.isPositive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isPositive: checked })}
+                />
+              </div>
+
+              <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className={`h-5 w-5 ${formData.isSignificant ? 'text-orange-600' : 'text-gray-400'}`} />
+                  <Label htmlFor="isSignificant">Observation significative</Label>
+                </div>
+                <Switch
+                  id="isSignificant"
+                  checked={formData.isSignificant}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isSignificant: checked })}
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3 pt-6 border-t">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={saving}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Annuler
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={saving || !formData.patientId || !formData.content.trim()}
+                className="bg-primary text-primary-foreground"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {saving ? 'Enregistrement...' : 'Enregistrer'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: irielle-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: securepassword
+      MONGO_INITDB_DATABASE: irielle
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/01-mongo-init.js:ro
+      - ./docker/seed-data.js:/docker-entrypoint-initdb.d/02-seed-data.js:ro
+    networks:
+      - irielle-network
+
+  # ChromaDB for Vector Storage
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: irielle-chromadb
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    networks:
+      - irielle-network
+
+  # Python FastAPI Backend for AI
+  ai-backend:
+    build:
+      context: ./ai-backend
+      dockerfile: Dockerfile
+    container_name: irielle-ai-backend
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    environment:
+      - MONGODB_URL=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
+      - CHROMA_URL=http://chromadb:8000
+      - OLLAMA_HOST=host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mongodb
+      - chromadb
+    networks:
+      - irielle-network
+
+  # Next.js Frontend Application
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: irielle-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
+      - AI_BACKEND_URL=http://ai-backend:8000
+      - NEXTAUTH_SECRET=your-nextauth-secret-key-here
+      - NEXTAUTH_URL=http://localhost:3000
+    depends_on:
+      - mongodb
+      - ai-backend
+    networks:
+      - irielle-network
+
+volumes:
+  mongodb_data:
+  chromadb_data:
+
+networks:
+  irielle-network:
+    driver: bridge
