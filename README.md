@@ -4,13 +4,44 @@ This is a [Next.js](https://nextjs.org) healthcare management platform bootstrap
 
 ## 🚀 Production Deployment
 
-The application is automatically deployed to production via GitHub Actions CI/CD pipeline.
+The application uses Docker Compose with Nginx reverse proxy and SSL support:
 
-- **Production URL:** http://89.116.170.202:3000
-- **Deployment:** Automatic on push to main branch
-- **Container:** Docker with Node.js 20
+- **Frontend:** Next.js application (port 3000 internal)
+- **Backend:** FastAPI AI service (port 8001 -> 8000 internal)
+- **Database:** MongoDB (port 27017)
+- **Vector DB:** ChromaDB (port 8000)
+- **Reverse Proxy:** Nginx with SSL termination (ports 80/443)
+- **SSL:** Let's Encrypt certificates via certbot
 
-## Getting Started
+### Quick Start (Production)
+
+1. **Clone and setup:**
+```bash
+git clone <repository-url>
+cd irielle
+```
+
+2. **Configure environment:**
+```bash
+# Copy and edit environment file
+cp .env.production.example .env.production
+# Edit with your actual values (MongoDB, JWT secrets, etc.)
+```
+
+3. **Start all services:**
+```bash
+docker compose up -d
+```
+
+4. **Setup SSL certificates (production):**
+```bash
+# Replace with your domain and email
+./docker/certbot/init-letsencrypt.sh yourdomain.com admin@yourdomain.com 0
+```
+
+For detailed setup instructions, see [Docker Setup Guide](./docker/README.md).
+
+## 🛠️ Development Setup
 
 First, run the development server:
 
