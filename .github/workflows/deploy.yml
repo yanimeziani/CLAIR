@@ -45,7 +45,7 @@ jobs:
         MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
         AI_BACKEND_URL=http://ai-backend:8000
         NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-        NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+        NEXTAUTH_URL=https://dev.meziani.org
         EOF
     
     - name: Stop existing containers
@@ -54,16 +54,41 @@ jobs:
     - name: Remove old images
       run: docker system prune -f || true
     
-    - name: Start services with Docker Compose
-      run: docker compose up -d --build
+    - name: Start services without SSL first
+      run: |
+        # Use init config for certificate generation
+        cp nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf.bak
+        mv nginx/conf.d/irielle.conf nginx/conf.d/irielle-ssl.conf
+        mv nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf
+        docker compose up -d --build mongodb chromadb ai-backend frontend nginx
     
-    - name: Wait for services to be ready
+    - name: Wait for services and get SSL certificate
       run: |
         echo "Waiting for services to start..."
         sleep 30
-        docker compose logs --tail=20
+        echo "Requesting SSL certificate..."
+        docker compose run --rm certbot || echo "Certificate already exists or failed"
+        sleep 10
+    
+    - name: Switch to SSL configuration
+      run: |
+        # Check if certificate exists and switch to SSL config
+        if docker exec irielle-nginx test -f /etc/letsencrypt/live/dev.meziani.org/fullchain.pem; then
+          echo "Certificate found, switching to SSL configuration..."
+          mv nginx/conf.d/irielle.conf nginx/conf.d/irielle-init.conf
+          mv nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle.conf
+          docker compose restart nginx
+        else
+          echo "Certificate not found, continuing with HTTP only..."
+        fi
+    
+    - name: Start all services
+      run: docker compose up -d
     
     - name: Verify deployment
       run: |
-        curl -f http://localhost:3000 || exit 1
+        echo "Waiting for final startup..."
+        sleep 20
+        docker compose logs --tail=20
+        curl -f http://localhost || curl -f https://dev.meziani.org || exit 1
         echo "Deployment successful!"
