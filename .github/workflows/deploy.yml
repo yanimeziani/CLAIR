@@ -70,7 +70,15 @@ jobs:
         cp nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf.bak
         mv nginx/conf.d/irielle.conf nginx/conf.d/irielle-ssl.conf
         mv nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf
-        docker compose up -d --build mongodb chromadb ai-backend frontend nginx
+        docker compose up -d --build mongodb chromadb ollama frontend nginx
+        
+    - name: Initialize Ollama model
+      run: |
+        echo "Waiting for Ollama to start..."
+        sleep 30
+        echo "Pulling gemma3:4b model..."
+        docker exec irielle-ollama ollama pull gemma3:4b || echo "Model pull failed, will retry"
+        sleep 10
     
     - name: Wait for services and get SSL certificate
       run: |
@@ -92,8 +100,11 @@ jobs:
           echo "Certificate not found, continuing with HTTP only..."
         fi
     
-    - name: Start all services
-      run: docker compose up -d
+    - name: Start all services including AI backend
+      run: |
+        docker compose up -d --build ai-backend
+        echo "Waiting for AI backend to start..."
+        sleep 20
     
     - name: Verify deployment
       run: |

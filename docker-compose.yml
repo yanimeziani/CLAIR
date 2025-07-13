@@ -29,6 +29,18 @@ services:
     networks:
       - irielle-network
 
+  # Ollama AI Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: irielle-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - irielle-network
+
   # Python FastAPI Backend for AI
   ai-backend:
     build:
@@ -41,12 +53,11 @@ services:
     environment:
       - MONGODB_URL=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
       - CHROMA_URL=http://chromadb:8000
-      - OLLAMA_HOST=host.docker.internal:11434
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - OLLAMA_HOST=ollama:11434
     depends_on:
       - mongodb
       - chromadb
+      - ollama
     networks:
       - irielle-network
 
@@ -99,6 +110,7 @@ services:
 volumes:
   mongodb_data:
   chromadb_data:
+  ollama_data:
   certbot_data:
   certbot_www:
 
