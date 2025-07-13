@@ -49,19 +49,19 @@ jobs:
         EOF
     
     - name: Stop existing containers
-      run: docker-compose down || true
+      run: docker compose down || true
     
     - name: Remove old images
       run: docker system prune -f || true
     
     - name: Start services with Docker Compose
-      run: docker-compose up -d --build
+      run: docker compose up -d --build
     
     - name: Wait for services to be ready
       run: |
         echo "Waiting for services to start..."
         sleep 30
-        docker-compose logs --tail=20
+        docker compose logs --tail=20
     
     - name: Verify deployment
       run: |
