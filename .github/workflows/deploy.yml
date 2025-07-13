@@ -48,11 +48,10 @@ jobs:
         NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
         EOF
     
-    - name: Stop existing containers
-      run: docker compose down || true
-    
-    - name: Remove old images
-      run: docker system prune -f || true
+    - name: Stop and remove existing containers
+      run: |
+        docker compose down --remove-orphans || true
+        docker container prune -f || true
     
     - name: Start services with Docker Compose
       run: docker compose up -d --build
