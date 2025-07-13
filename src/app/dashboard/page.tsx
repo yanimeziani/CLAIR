@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Heart, Bell, Users, MessageSquare, FileText, Calendar, 
-  Settings, LogOut, Activity, BarChart3, Plus, Search,
-  AlertTriangle, Clock, User, Brain, Check, X, Eye
+  Settings, LogOut, BarChart3, Plus, Search,
+  Clock, User, Brain, Check, X, Eye
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -26,60 +26,22 @@ interface SessionUser {
 export default function DashboardPage() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    urgentMessages: 0,
-    activeResidents: 0,
-    todayReports: 0,
-    connectedTeam: 0
-  });
   const [recentCommunications, setRecentCommunications] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     checkSession();
-    fetchDashboardStats();
+    fetchDashboardData();
   }, []);
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const [patientsRes, reportsRes, usersRes, communicationsRes] = await Promise.all([
-        fetch('/api/patients'),
-        fetch('/api/reports'),
-        fetch('/api/users'),
-        fetch('/api/communications')
-      ]);
-
-      if (patientsRes.ok) {
-        const patientsData = await patientsRes.json();
-        const activeResidents = patientsData.patients?.filter((p: any) => p.isActive).length || 0;
-        setStats(prev => ({ ...prev, activeResidents }));
-      }
-
-      if (reportsRes.ok) {
-        const reportsData = await reportsRes.json();
-        const today = new Date().toISOString().split('T')[0];
-        const todayReports = reportsData.reports?.filter((r: any) => 
-          r.reportDate.startsWith(today)
-        ).length || 0;
-        setStats(prev => ({ ...prev, todayReports }));
-      }
-
-      if (usersRes.ok) {
-        const usersData = await usersRes.json();
-        const connectedTeam = usersData.users?.filter((u: any) => u.isActive).length || 0;
-        setStats(prev => ({ ...prev, connectedTeam }));
-      }
+      const communicationsRes = await fetch('/api/communications');
 
       if (communicationsRes.ok) {
         const communicationsData = await communicationsRes.json();
         const communications = communicationsData.communications || [];
-        
-        // Get urgent unread messages count
-        const urgentMessages = communications.filter((c: any) => 
-          c.isUrgent && !c.readBy?.some((r: any) => r.userId === user?.userId)
-        ).length || 0;
-        setStats(prev => ({ ...prev, urgentMessages }));
         
         // Get recent communications for today
         const today = new Date().toISOString().split('T')[0];
@@ -95,7 +57,7 @@ export default function DashboardPage() {
         setNotifications(unreadNotifications);
       }
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      console.error('Error fetching dashboard data:', error);
     }
   };
 
@@ -137,7 +99,7 @@ export default function DashboardPage() {
 
       if (response.ok) {
         setNotifications(prev => prev.filter(n => n._id !== notificationId));
-        fetchDashboardStats(); // Refresh stats
+        fetchDashboardData(); // Refresh data
         toast.success('Notification marquée comme lue');
       }
     } catch (error) {
@@ -154,7 +116,7 @@ export default function DashboardPage() {
       
       await Promise.all(readPromises);
       setNotifications([]);
-      fetchDashboardStats();
+      fetchDashboardData();
       toast.success('Toutes les notifications marquées comme lues');
     } catch (error) {
       console.error('Error clearing notifications:', error);
@@ -311,56 +273,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-600 text-sm font-medium">Messages Urgents</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.urgentMessages}</p>
-                </div>
-                <AlertTriangle className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-600 text-sm font-medium">Résidents Actifs</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.activeResidents}</p>
-                </div>
-                <Users className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-600 text-sm font-medium">Rapports Aujourd'hui</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.todayReports}</p>
-                </div>
-                <FileText className="h-8 w-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-amber-600 text-sm font-medium">Équipe Connectée</p>
-                  <p className="text-2xl font-bold text-foreground">{stats.connectedTeam}</p>
-                </div>
-                <Activity className="h-8 w-8 text-amber-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Quick Actions - Moved to top for instant visibility */}
         <Card className="bg-card/50 backdrop-blur-sm mb-8">
