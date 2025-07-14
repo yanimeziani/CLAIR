@@ -327,7 +327,7 @@ export default function TemplatesPage() {
 
       {/* Template Editor Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto mx-4 sm:mx-auto">
           <DialogHeader>
             <DialogTitle>
               {editingTemplate ? 'Modifier le modèle' : 'Nouveau modèle'}
@@ -350,14 +350,14 @@ export default function TemplatesPage() {
               <div className="space-y-2">
                 <Label htmlFor="patientSelect">Assigner à un patient (optionnel)</Label>
                 <Select 
-                  value={formData.assignedPatientId} 
-                  onValueChange={(value) => setFormData({ ...formData, assignedPatientId: value })}
+                  value={formData.assignedPatientId || "none"} 
+                  onValueChange={(value) => setFormData({ ...formData, assignedPatientId: value === "none" ? "" : value })}
                 >
                   <SelectTrigger id="patientSelect">
                     <SelectValue placeholder="Sélectionner un patient spécifique..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Aucun patient (modèle général)</SelectItem>
+                    <SelectItem value="none">Aucun patient (modèle général)</SelectItem>
                     {patients.map(patient => (
                       <SelectItem key={patient._id} value={patient._id}>
                         {patient.firstName} {patient.lastName}
@@ -382,7 +382,7 @@ export default function TemplatesPage() {
 
               {formData.fields.map((field, index) => (
                 <Card key={index} className="p-4">
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label>Nom du champ *</Label>
                       <Input

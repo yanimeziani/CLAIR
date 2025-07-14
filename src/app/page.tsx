@@ -134,7 +134,7 @@ export default function Home() {
               <div className="bg-blue-100 p-1.5 rounded-full">
                 <Heart className="h-4 w-4 text-blue-600" />
               </div>
-              <span className="text-sm font-medium text-blue-800">MSSS Québec • Centre Logiciel d'Aide</span>
+              <span className="text-sm font-medium text-blue-800">Québec • Projet pilote DI-TSA</span>
               <div className="fleur-de-lis">⚜️</div>
             </div>
           </div>
@@ -150,10 +150,10 @@ export default function Home() {
           
           <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
             <strong>Des interventions plus claires, des résidences plus efficaces.</strong><br />
-            Solution MSSS pour la gestion des résidences DI-TSA avec intelligence artificielle intégrée.
+            Projet pilote pour la gestion des résidences DI-TSA avec intelligence artificielle intégrée.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 px-4 sm:px-0">
             <button 
               onClick={handleLogin}
               disabled={isLoading}
@@ -182,7 +182,7 @@ export default function Home() {
           </div>
 
           {/* Government Trust Indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-600">
+          <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 text-sm text-gray-600 px-4 sm:px-0">
             <div className="flex items-center space-x-2 government-badge">
               <CheckCircle className="h-4 w-4 text-green-600" />
               <span>Conformité gouvernementale</span>
@@ -193,7 +193,7 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-2 government-badge">
               <Award className="h-4 w-4 text-red-600" />
-              <span>Solution MSSS officielle</span>
+              <span>Projet pilote Québec</span>
             </div>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <div className="ws-card group">
               <div className="bg-primary/10 p-4 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Users className="h-8 w-8 text-primary" />

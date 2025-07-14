@@ -49,14 +49,14 @@ export default function PatientQueryPage() {
               <div className="h-6 w-6">
                 <Image 
                   src="/logo.svg" 
-                  alt="Logo Irielle" 
+                  alt="Logo CLAIR" 
                   width={24} 
                   height={24}
                   className="h-full w-full"
                 />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-foreground">Irielle IA</h1>
+                <h1 className="text-lg font-bold text-foreground">CLAIR IA</h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">Assistant intelligent</p>
               </div>
             </div>
@@ -71,7 +71,7 @@ export default function PatientQueryPage() {
           {/* Title */}
           <div className="mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-              Bonjour, je suis Irielle IA
+              Bonjour, je suis CLAIR IA
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base">
               Comment puis-je vous aider aujourd'hui ?
@@ -131,7 +131,7 @@ export default function PatientQueryPage() {
           {/* Status Text */}
           {isLoading && (
             <p className="text-sm text-muted-foreground mt-6 animate-pulse">
-              Irielle IA traite votre demande...
+              CLAIR IA traite votre demande...
             </p>
           )}
         </div>

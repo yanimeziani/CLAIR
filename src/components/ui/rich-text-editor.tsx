@@ -9,6 +9,9 @@ import { Table } from '@tiptap/extension-table';
 import { TableRow } from '@tiptap/extension-table-row';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { TableCell } from '@tiptap/extension-table-cell';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { Color } from '@tiptap/extension-color';
+import Highlight from '@tiptap/extension-highlight';
 import { 
   Bold, 
   Italic, 
@@ -21,7 +24,9 @@ import {
   Link as LinkIcon,
   Unlink,
   Table as TableIcon,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Palette,
+  Highlighter
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -64,6 +69,14 @@ export function RichTextEditor({
   const editor = useEditor({
     extensions: [
       StarterKit,
+      TextStyle,
+      Color,
+      Highlight.configure({
+        multicolor: true,
+        HTMLAttributes: {
+          class: 'highlight',
+        },
+      }),
       Placeholder.configure({
         placeholder,
       }),
@@ -327,6 +340,24 @@ export function RichTextEditor({
           >
             <TableIcon className="h-4 w-4" />
           </Button>
+
+          {/* Color and Highlight Tools */}
+          <div className="flex gap-1">
+            <input
+              type="color"
+              onInput={(e) => editor.chain().focus().setColor((e.target as HTMLInputElement).value).run()}
+              value={editor.getAttributes('textStyle').color || '#000000'}
+              className="w-8 h-8 border border-border rounded cursor-pointer"
+              title="Couleur du texte"
+            />
+            <input
+              type="color"
+              onInput={(e) => editor.chain().focus().setHighlight({ color: (e.target as HTMLInputElement).value }).run()}
+              value={editor.getAttributes('highlight').color || '#ffff00'}
+              className="w-8 h-8 border border-border rounded cursor-pointer"
+              title="Couleur de surbrillance"
+            />
+          </div>
 
           <div className="w-px h-6 bg-border mx-1" />
 

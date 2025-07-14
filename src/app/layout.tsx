@@ -18,16 +18,15 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles",
-  description: "Des interventions plus claires, des résidences plus efficaces. Solution MSSS pour la gestion des résidences DI-TSA avec IA intégrée.",
-  keywords: "CLAIR, MSSS, Québec, DI-TSA, résidences, interventions, intelligence artificielle, healthcare",
+  description: "Des interventions plus claires, des résidences plus efficaces. Projet pilote pour la gestion des résidences DI-TSA avec IA intégrée.",
+  keywords: "CLAIR, Québec, DI-TSA, résidences, interventions, intelligence artificielle, healthcare, projet pilote",
   icons: {
     icon: "/logo.svg",
     apple: "/logo.svg",
   },
-  metadataBase: new URL('https://clair.msss.gouv.qc.ca'),
   openGraph: {
     title: "CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles",
-    description: "Des interventions plus claires, des résidences plus efficaces. Solution MSSS pour la gestion des résidences DI-TSA.",
+    description: "Des interventions plus claires, des résidences plus efficaces. Projet pilote pour la gestion des résidences DI-TSA.",
     type: "website",
     locale: "fr_CA",
     siteName: "CLAIR"

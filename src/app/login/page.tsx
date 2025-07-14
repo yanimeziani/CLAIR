@@ -114,17 +114,17 @@ export default function LoginPage() {
             <div className="h-16 w-16 mx-auto mb-4">
               <Image 
                 src="/logo.svg" 
-                alt="Irielle Logo" 
+                alt="CLAIR Logo" 
                 width={64} 
                 height={64}
                 className="h-full w-full"
               />
             </div>
             <h1 className="text-3xl font-semibold text-white mb-2">
-              Bienvenue sur Irielle
+              Bienvenue sur CLAIR
             </h1>
             <p className="text-white/80 text-base">
-              Plateforme sécurisée pour résidences DI-TSA
+              Centre Logiciel d'Aide aux Interventions Résidentielles
             </p>
           </div>
 

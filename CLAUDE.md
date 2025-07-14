@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Irielle is a specialized healthcare management platform for DI-TSA (Intellectual Disability - Autism Spectrum Disorder) residences in Quebec. The platform features a multilingual (French) interface with AI-powered text assistance, PIN-based authentication, and comprehensive resident management tools.
+CLAIR (Centre Logiciel d'Aide aux Interventions Résidentielles) is a specialized healthcare management platform for DI-TSA (Intellectual Disability - Autism Spectrum Disorder) residences in Quebec. The platform features a multilingual (French) interface with AI-powered text assistance, PIN-based authentication, and comprehensive resident management tools.
 
 **Production Environment:** http://89.116.170.202:3000
 **Tech Stack:** Next.js 15, TypeScript, MongoDB, FastAPI (Python AI backend), Ollama AI, TailwindCSS, Radix UI

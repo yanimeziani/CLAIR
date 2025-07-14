@@ -145,14 +145,14 @@ export default function DashboardPage() {
               <div className="h-8 w-8">
                 <Image 
                   src="/logo.svg" 
-                  alt="Logo Irielle - Plateforme de gestion pour résidences DI-TSA" 
+                  alt="Logo CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles" 
                   width={32} 
                   height={32}
                   className="h-full w-full"
                 />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-foreground">Irielle</h1>
+                <h1 className="text-xl font-semibold text-foreground">CLAIR</h1>
                 <p className="text-sm text-muted-foreground">
                   {user?.isReplacement ? `Remplacement: ${user.name.replace('Remplacement: ', '')}` : user?.name}
                   {user?.role && !user?.isReplacement && ` • ${user.role}`}
@@ -161,15 +161,6 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex items-center space-x-3">
-              {/* Irielle AI Button */}
-              <button 
-                onClick={() => router.push('/patient-query')}
-                className="ws-button-outline !px-4 !py-2 bg-accent/5 border-accent/20 text-accent hover:bg-accent/10"
-              >
-                <Brain className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">IA Assistant</span>
-              </button>
-
               {/* Notifications Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
