@@ -1,0 +1,34 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#239e9f;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4f6bff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34b675;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="plusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.7" />
+    </linearGradient>
+    <filter id="softGlow">
+      <feMorphology operator="dilate" radius="1"/>
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Healthcare Heart Shape - Scaled to fill container -->
+  <path d="M50 85C50 85 10 65 10 35C10 25 17.5 20 25 20C30 20 35 22.5 40 27.5C42.5 25 45 22.5 50 21C55 22.5 57.5 25 60 27.5C65 22.5 70 20 75 20C82.5 20 90 25 90 35C90 65 50 85 50 85Z" 
+        fill="url(#heartGradient)" 
+        filter="url(#softGlow)"/>
+  
+  <!-- Medical Cross/Plus Symbol - Scaled proportionally -->
+  <rect x="45" y="30" width="10" height="35" rx="2" fill="url(#plusGradient)"/>
+  <rect x="32.5" y="42.5" width="35" height="10" rx="2" fill="url(#plusGradient)"/>
+  
+  <!-- Small caring accent dots - Scaled -->
+  <circle cx="35" cy="32" r="3" fill="white" opacity="0.4"/>
+  <circle cx="65" cy="32" r="3" fill="white" opacity="0.4"/>
+</svg>

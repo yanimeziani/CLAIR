@@ -46,13 +46,13 @@ export default function PatientQueryPage() {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour
               </Button>
-              <div className="bg-orange-500/10 p-2 rounded-lg">
+              <div className="h-6 w-6">
                 <Image 
-                  src="/logo.png" 
+                  src="/logo.svg" 
                   alt="Logo Irielle" 
                   width={24} 
                   height={24}
-                  className="h-6 w-6"
+                  className="h-full w-full"
                 />
               </div>
               <div>

@@ -111,13 +111,13 @@ export default function LoginPage() {
         <div className="ws-card !p-0 overflow-hidden">
           {/* Header Section */}
           <div className="bg-gradient-to-br from-primary to-accent p-8 text-center">
-            <div className="bg-white/20 p-4 rounded-2xl inline-block mb-4 backdrop-blur-sm">
+            <div className="h-16 w-16 mx-auto mb-4">
               <Image 
-                src="/logo.png" 
+                src="/logo.svg" 
                 alt="Irielle Logo" 
-                width={48} 
-                height={48}
-                className="h-12 w-12"
+                width={64} 
+                height={64}
+                className="h-full w-full"
               />
             </div>
             <h1 className="text-3xl font-semibold text-white mb-2">

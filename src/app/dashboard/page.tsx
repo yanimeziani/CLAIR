@@ -142,13 +142,13 @@ export default function DashboardPage() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="bg-primary/10 p-2 rounded-xl">
+              <div className="h-8 w-8">
                 <Image 
-                  src="/logo.png" 
+                  src="/logo.svg" 
                   alt="Logo Irielle - Plateforme de gestion pour résidences DI-TSA" 
                   width={32} 
                   height={32}
-                  className="h-8 w-8"
+                  className="h-full w-full"
                 />
               </div>
               <div>

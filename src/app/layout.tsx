@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   title: "Irielle - Plateforme DI-TSA",
   description: "Plateforme de gestion spécialisée pour résidences DI-TSA au Québec",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo.svg",
+    apple: "/logo.svg",
   },
 };
 

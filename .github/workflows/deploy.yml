@@ -59,7 +59,7 @@ jobs:
         EOF
     
     - name: Stop existing containers
-      run: docker compose down || true
+      run: docker-compose down || true
     
     - name: Remove old images
       run: docker system prune -f || true
@@ -70,7 +70,7 @@ jobs:
         cp nginx/conf.d/irielle.conf nginx/conf.d/irielle.conf.backup || true
         cp nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle-ssl.conf.backup || true
         cp nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf
-        docker compose up -d --build --no-cache mongodb chromadb ollama frontend nginx
+        docker-compose up -d --build --no-cache mongodb chromadb ollama frontend nginx
         
     - name: Initialize Ollama model
       run: |
@@ -97,7 +97,7 @@ jobs:
         
         # Generate certificate
         echo "Requesting SSL certificate..."
-        if docker compose run --rm certbot; then
+        if docker-compose run --rm certbot; then
           echo "✅ SSL certificate generated successfully"
         else
           echo "❌ SSL certificate generation failed, continuing with HTTP only"
@@ -115,12 +115,12 @@ jobs:
           # Test nginx config before restarting
           if docker exec irielle-nginx nginx -t; then
             echo "✅ Nginx config test passed, restarting..."
-            docker compose restart nginx
+            docker-compose restart nginx
             echo "✅ Switched to HTTPS successfully"
           else
             echo "❌ Nginx config test failed, reverting to HTTP"
             cp nginx/conf.d/irielle-init.conf nginx/conf.d/irielle.conf
-            docker compose restart nginx
+            docker-compose restart nginx
           fi
         else
           echo "⚠️ Certificate not found, continuing with HTTP only..."
@@ -129,7 +129,7 @@ jobs:
     
     - name: Start all services including AI backend
       run: |
-        docker compose up -d --build --no-cache ai-backend
+        docker-compose up -d --build --no-cache ai-backend
         echo "Waiting for AI backend to start..."
         sleep 20
     
@@ -140,9 +140,9 @@ jobs:
         
         # Show logs for debugging
         echo "=== Container Status ==="
-        docker compose ps
+        docker-compose ps
         echo "=== Recent Logs ==="
-        docker compose logs --tail=20
+        docker-compose logs --tail=20
         
         # Test deployment
         echo "=== Testing Deployment ==="
