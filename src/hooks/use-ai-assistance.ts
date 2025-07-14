@@ -40,7 +40,12 @@ export function useAIAssistance(options: UseAIAssistanceOptions = {}) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentSuggestion, setCurrentSuggestion] = useState<AISuggestion | null>(null);
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
-  const [realtimeErrors, setRealtimeErrors] = useState<AISuggestion['metadata']['errors_found']>([]);
+  const [realtimeErrors, setRealtimeErrors] = useState<Array<{
+    type: 'grammar' | 'spelling' | 'style';
+    message: string;
+    start: number;
+    end: number;
+  }>>([]);
 
   const {
     context = 'healthcare',
@@ -50,7 +55,12 @@ export function useAIAssistance(options: UseAIAssistanceOptions = {}) {
   } = options;
 
   // Real-time text analysis for Grammarly-like underlines
-  const analyzeText = useCallback(async (text: string): Promise<AISuggestion['metadata']['errors_found']> => {
+  const analyzeText = useCallback(async (text: string): Promise<Array<{
+    type: 'grammar' | 'spelling' | 'style';
+    message: string;
+    start: number;
+    end: number;
+  }>> => {
     if (!text.trim() || !enableSuggestions) return [];
 
     try {

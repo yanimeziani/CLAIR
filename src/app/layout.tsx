@@ -17,12 +17,21 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Irielle - Plateforme DI-TSA",
-  description: "Plateforme de gestion spécialisée pour résidences DI-TSA au Québec",
+  title: "CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles",
+  description: "Des interventions plus claires, des résidences plus efficaces. Solution MSSS pour la gestion des résidences DI-TSA avec IA intégrée.",
+  keywords: "CLAIR, MSSS, Québec, DI-TSA, résidences, interventions, intelligence artificielle, healthcare",
   icons: {
     icon: "/logo.svg",
     apple: "/logo.svg",
   },
+  metadataBase: new URL('https://clair.msss.gouv.qc.ca'),
+  openGraph: {
+    title: "CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles",
+    description: "Des interventions plus claires, des résidences plus efficaces. Solution MSSS pour la gestion des résidences DI-TSA.",
+    type: "website",
+    locale: "fr_CA",
+    siteName: "CLAIR"
+  }
 };
 
 export default function RootLayout({

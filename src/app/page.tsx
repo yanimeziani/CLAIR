@@ -76,7 +76,7 @@ export default function Home() {
                 />
               </div>
               <span className="text-2xl font-semibold text-foreground">
-                Irielle
+                CLAIR
               </span>
             </div>
             
@@ -134,23 +134,23 @@ export default function Home() {
               <div className="bg-blue-100 p-1.5 rounded-full">
                 <Heart className="h-4 w-4 text-blue-600" />
               </div>
-              <span className="text-sm font-medium text-blue-800">Gouvernement du Québec • DI-TSA</span>
+              <span className="text-sm font-medium text-blue-800">MSSS Québec • Centre Logiciel d'Aide</span>
               <div className="fleur-de-lis">⚜️</div>
             </div>
           </div>
           
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight text-gray-900 hero-title">
-            Plateforme de gestion
+            Centre Logiciel d'Aide aux
             <br />
             <span className="text-blue-600 relative">
-              DI-TSA Québec
+              Interventions Résidentielles
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full opacity-60"></div>
             </span>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Solution officielle pour la gestion des résidences spécialisées DI-TSA. 
-            Conçue pour les professionnels de la santé du Québec avec des outils adaptés et conformes.
+            <strong>Des interventions plus claires, des résidences plus efficaces.</strong><br />
+            Solution MSSS pour la gestion des résidences DI-TSA avec intelligence artificielle intégrée.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -168,7 +168,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <span>Accéder à la plateforme</span>
+                    <span>Accéder à CLAIR</span>
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -193,7 +193,7 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-2 government-badge">
               <Award className="h-4 w-4 text-red-600" />
-              <span>Solution officielle Québec</span>
+              <span>Solution MSSS officielle</span>
             </div>
           </div>
         </div>

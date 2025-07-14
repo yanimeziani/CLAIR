@@ -53,7 +53,7 @@ export const AIEnhancedInput = forwardRef<HTMLInputElement, AIEnhancedInputProps
 
     // Analyze text for real-time errors
     useEffect(() => {
-      if (showRealtimeErrors && internalValue) {
+      if (showRealtimeErrors && internalValue && typeof internalValue === 'string') {
         analyzeTextRealtime(internalValue);
       }
     }, [internalValue, analyzeTextRealtime, showRealtimeErrors]);
@@ -70,19 +70,27 @@ export const AIEnhancedInput = forwardRef<HTMLInputElement, AIEnhancedInputProps
     };
 
     const handleQuickCorrect = async () => {
-      await correctText(internalValue);
+      if (typeof internalValue === 'string') {
+        await correctText(internalValue);
+      }
     };
 
     const handleCorrection = async () => {
-      await correctText(internalValue);
+      if (typeof internalValue === 'string') {
+        await correctText(internalValue);
+      }
     };
 
     const handleSummary = async () => {
-      await summarizeText(internalValue);
+      if (typeof internalValue === 'string') {
+        await summarizeText(internalValue);
+      }
     };
 
     const handleEnhancement = async (type: 'professional' | 'concise' | 'detailed' = 'professional') => {
-      await enhanceText(internalValue, type);
+      if (typeof internalValue === 'string') {
+        await enhanceText(internalValue, type);
+      }
     };
 
     const handleAcceptSuggestion = () => {
@@ -108,7 +116,7 @@ export const AIEnhancedInput = forwardRef<HTMLInputElement, AIEnhancedInputProps
             onSummarize={handleSummary}
             onEnhance={handleEnhancement}
             isProcessing={isProcessing}
-            hasContent={!!internalValue.trim()}
+            hasContent={!!(typeof internalValue === 'string' && internalValue.trim())}
             errorCount={realtimeErrors?.length || 0}
             variant="compact"
           />
@@ -132,13 +140,13 @@ export const AIEnhancedInput = forwardRef<HTMLInputElement, AIEnhancedInputProps
           <div className="absolute right-2 flex items-center gap-1">
             {/* Error indicator */}
             {showRealtimeErrors && hasErrors && (
-              <div className="flex items-center">
-                <AlertCircle className="h-4 w-4 text-red-500" title={`${realtimeErrors?.length} erreur(s) détectée(s)`} />
+              <div className="flex items-center" title={`${realtimeErrors?.length} erreur(s) détectée(s)`}>
+                <AlertCircle className="h-4 w-4 text-red-500" />
               </div>
             )}
 
             {/* Quick correct button */}
-            {showQuickCorrect && internalValue.trim() && (
+            {showQuickCorrect && typeof internalValue === 'string' && internalValue.trim() && (
               <Button
                 type="button"
                 variant="ghost"

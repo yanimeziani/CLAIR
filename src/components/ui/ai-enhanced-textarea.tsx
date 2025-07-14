@@ -50,7 +50,7 @@ export const AIEnhancedTextarea = forwardRef<HTMLTextAreaElement, AIEnhancedText
 
     // Analyze text for real-time errors
     useEffect(() => {
-      if (showRealtimeErrors && internalValue) {
+      if (showRealtimeErrors && internalValue && typeof internalValue === 'string') {
         analyzeTextRealtime(internalValue);
       }
     }, [internalValue, analyzeTextRealtime, showRealtimeErrors]);
@@ -58,7 +58,7 @@ export const AIEnhancedTextarea = forwardRef<HTMLTextAreaElement, AIEnhancedText
     // Update error highlights when errors change
     useEffect(() => {
       if (realtimeErrors) {
-        const highlights = realtimeErrors.map(error => ({
+        const highlights = realtimeErrors.map((error: any) => ({
           start: error.start,
           end: error.end,
           type: error.type
@@ -74,15 +74,21 @@ export const AIEnhancedTextarea = forwardRef<HTMLTextAreaElement, AIEnhancedText
     };
 
     const handleCorrection = async () => {
-      await correctText(internalValue);
+      if (typeof internalValue === 'string') {
+        await correctText(internalValue);
+      }
     };
 
     const handleSummary = async () => {
-      await summarizeText(internalValue);
+      if (typeof internalValue === 'string') {
+        await summarizeText(internalValue);
+      }
     };
 
     const handleEnhancement = async (type: 'professional' | 'concise' | 'detailed' = 'professional') => {
-      await enhanceText(internalValue, type);
+      if (typeof internalValue === 'string') {
+        await enhanceText(internalValue, type);
+      }
     };
 
     const handleAcceptSuggestion = () => {
@@ -116,7 +122,7 @@ export const AIEnhancedTextarea = forwardRef<HTMLTextAreaElement, AIEnhancedText
             textIndent: 'inherit'
           }}
         >
-          {renderHighlightedText(internalValue, errorHighlights)}
+          {typeof internalValue === 'string' ? renderHighlightedText(internalValue, errorHighlights) : ''}
         </div>
       );
     };
@@ -129,7 +135,7 @@ export const AIEnhancedTextarea = forwardRef<HTMLTextAreaElement, AIEnhancedText
             onSummarize={handleSummary}
             onEnhance={handleEnhancement}
             isProcessing={isProcessing}
-            hasContent={!!internalValue.trim()}
+            hasContent={!!(typeof internalValue === 'string' && internalValue.trim())}
             errorCount={realtimeErrors?.length || 0}
           />
         )}
