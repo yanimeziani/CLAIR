@@ -86,13 +86,13 @@ export function useAIAssistance(options: UseAIAssistanceOptions = {}) {
   }, [context, language, enableSuggestions]);
 
   // Debounced real-time analysis
-  const analyzeTextRealtime = useCallback(
-    debounce(async (text: string) => {
-      const errors = await analyzeText(text);
+  const analyzeTextRealtime = useCallback((text: string) => {
+    const debouncedAnalyze = debounce(async (inputText: string) => {
+      const errors = await analyzeText(inputText);
       setRealtimeErrors(errors);
-    }, 1000),
-    [analyzeText]
-  );
+    }, 1000);
+    debouncedAnalyze(text);
+  }, [analyzeText]);
 
   // Grammar and style correction
   const correctText = useCallback(async (text: string): Promise<boolean> => {

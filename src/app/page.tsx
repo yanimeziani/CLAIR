@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Shield, Users, MessageSquare, FileText, Heart, Activity, Calendar, BarChart3, 
@@ -14,6 +14,19 @@ import { Card, CardContent } from '@/components/ui/card';
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const checkSession = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/session');
+      const data = await response.json();
+      
+      if (data.authenticated) {
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Session check error:', error);
+    }
+  }, [router]);
 
   useEffect(() => {
     checkSession();
@@ -39,20 +52,7 @@ export default function Home() {
     return () => {
       fadeInElements.forEach((el) => observer.unobserve(el));
     };
-  }, []);
-
-  const checkSession = async () => {
-    try {
-      const response = await fetch('/api/auth/session');
-      const data = await response.json();
-      
-      if (data.authenticated) {
-        router.push('/dashboard');
-      }
-    } catch (error) {
-      console.error('Session check error:', error);
-    }
-  };
+  }, [checkSession]);
 
   const handleLogin = () => {
     setIsLoading(true);
