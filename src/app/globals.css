@@ -42,6 +42,12 @@
 :root {
   --radius: 12px;
   
+  /* Quebec Government Healthcare Palette */
+  --quebec-blue: 0 61 165;      /* #003DA5 - Quebec official blue */
+  --quebec-red: 227 24 55;      /* #E31837 - Quebec official red */
+  --quebec-white: 255 255 255;  /* #FFFFFF */
+  --quebec-gray: 245 247 250;   /* #F5F7FA */
+  
   /* Wealthsimple-inspired Healthcare Palette */
   --ws-teal: 35 158 159;
   --ws-blue: 79 107 255;
@@ -378,4 +384,236 @@
   background-image: 
     radial-gradient(circle at 1px 1px, rgb(var(--ws-gray-700)) 1px, transparent 0);
   background-size: 32px 32px;
+}
+
+/* ===== QUEBEC GOVERNMENT 3D HERO SECTION ===== */
+
+/* Quebec Government Buttons */
+.quebec-button-primary {
+  @apply inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white rounded-xl transition-all duration-300 ease-out;
+  background: linear-gradient(135deg, rgb(var(--quebec-blue)) 0%, rgb(0 50 130) 100%);
+  box-shadow: 0 8px 32px -4px rgba(var(--quebec-blue), 0.4);
+}
+
+.quebec-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px -4px rgba(var(--quebec-blue), 0.5);
+}
+
+.quebec-button-outline {
+  @apply inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl border-2 transition-all duration-300;
+  border-color: rgb(var(--quebec-blue));
+  color: rgb(var(--quebec-blue));
+  background: rgba(var(--quebec-blue), 0.05);
+}
+
+.quebec-button-outline:hover {
+  background: rgba(var(--quebec-blue), 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -4px rgba(var(--quebec-blue), 0.2);
+}
+
+/* Quebec Badge Styling */
+.quebec-badge {
+  backdrop-filter: blur(12px);
+  animation: badge-float 3s ease-in-out infinite;
+}
+
+.fleur-de-lis {
+  font-size: 16px;
+  filter: drop-shadow(0 2px 4px rgba(var(--quebec-blue), 0.3));
+  animation: fleur-glow 2s ease-in-out infinite alternate;
+}
+
+/* Government Trust Badges */
+.government-badge {
+  @apply transition-all duration-300;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(var(--quebec-blue), 0.05);
+  border: 1px solid rgba(var(--quebec-blue), 0.1);
+}
+
+.government-badge:hover {
+  background: rgba(var(--quebec-blue), 0.1);
+  transform: translateY(-1px);
+}
+
+/* Hero Title Animation */
+.hero-title {
+  animation: title-entrance 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* 3D Floating Shapes */
+.floating-shape {
+  position: absolute;
+  pointer-events: none;
+  backdrop-filter: blur(1px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.floating-shape-1 {
+  top: 10%;
+  left: 10%;
+  animation: float-1 6s ease-in-out infinite;
+  transform: perspective(1000px) rotateX(15deg) rotateY(-15deg);
+}
+
+.floating-shape-2 {
+  top: 20%;
+  right: 15%;
+  animation: float-2 8s ease-in-out infinite;
+  transform: perspective(1000px) rotateX(-10deg) rotateY(20deg);
+}
+
+.floating-shape-3 {
+  top: 60%;
+  left: 5%;
+  animation: float-3 7s ease-in-out infinite;
+  transform: perspective(1000px) rotateX(20deg) rotateY(-10deg);
+}
+
+.floating-shape-4 {
+  top: 70%;
+  right: 20%;
+  animation: float-4 5s ease-in-out infinite;
+  transform: perspective(1000px) rotateX(-15deg) rotateY(15deg);
+}
+
+.floating-shape-5 {
+  top: 40%;
+  right: 5%;
+  animation: float-5 9s ease-in-out infinite;
+  transform: perspective(1000px) rotateX(10deg) rotateY(-20deg);
+}
+
+.floating-shape-6 {
+  top: 80%;
+  left: 15%;
+  animation: float-6 6s ease-in-out infinite;
+  transform: perspective(1000px) rotateX(-20deg) rotateY(10deg);
+}
+
+/* Keyframe Animations */
+@keyframes float-1 {
+  0%, 100% { 
+    transform: perspective(1000px) rotateX(15deg) rotateY(-15deg) translateY(0px) translateX(0px);
+  }
+  33% { 
+    transform: perspective(1000px) rotateX(25deg) rotateY(-5deg) translateY(-20px) translateX(10px);
+  }
+  66% { 
+    transform: perspective(1000px) rotateX(5deg) rotateY(-25deg) translateY(-10px) translateX(-15px);
+  }
+}
+
+@keyframes float-2 {
+  0%, 100% { 
+    transform: perspective(1000px) rotateX(-10deg) rotateY(20deg) translateY(0px) translateX(0px);
+  }
+  50% { 
+    transform: perspective(1000px) rotateX(-20deg) rotateY(30deg) translateY(-25px) translateX(-20px);
+  }
+}
+
+@keyframes float-3 {
+  0%, 100% { 
+    transform: perspective(1000px) rotateX(20deg) rotateY(-10deg) translateY(0px) translateX(0px);
+  }
+  25% { 
+    transform: perspective(1000px) rotateX(30deg) rotateY(0deg) translateY(-15px) translateX(20px);
+  }
+  75% { 
+    transform: perspective(1000px) rotateX(10deg) rotateY(-20deg) translateY(-5px) translateX(-10px);
+  }
+}
+
+@keyframes float-4 {
+  0%, 100% { 
+    transform: perspective(1000px) rotateX(-15deg) rotateY(15deg) translateY(0px) translateX(0px);
+  }
+  40% { 
+    transform: perspective(1000px) rotateX(-25deg) rotateY(25deg) translateY(-30px) translateX(15px);
+  }
+  80% { 
+    transform: perspective(1000px) rotateX(-5deg) rotateY(5deg) translateY(-10px) translateX(-25px);
+  }
+}
+
+@keyframes float-5 {
+  0%, 100% { 
+    transform: perspective(1000px) rotateX(10deg) rotateY(-20deg) translateY(0px) translateX(0px);
+  }
+  30% { 
+    transform: perspective(1000px) rotateX(20deg) rotateY(-30deg) translateY(-18px) translateX(-12px);
+  }
+  70% { 
+    transform: perspective(1000px) rotateX(0deg) rotateY(-10deg) translateY(-8px) translateX(18px);
+  }
+}
+
+@keyframes float-6 {
+  0%, 100% { 
+    transform: perspective(1000px) rotateX(-20deg) rotateY(10deg) translateY(0px) translateX(0px);
+  }
+  50% { 
+    transform: perspective(1000px) rotateX(-30deg) rotateY(20deg) translateY(-22px) translateX(25px);
+  }
+}
+
+@keyframes badge-float {
+  0%, 100% { 
+    transform: translateY(0px);
+  }
+  50% { 
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes fleur-glow {
+  0% { 
+    filter: drop-shadow(0 2px 4px rgba(var(--quebec-blue), 0.3));
+  }
+  100% { 
+    filter: drop-shadow(0 4px 8px rgba(var(--quebec-blue), 0.6));
+  }
+}
+
+@keyframes title-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+/* Responsive 3D Effects */
+@media (max-width: 768px) {
+  .floating-shape {
+    opacity: 0.6;
+    transform: scale(0.7);
+  }
+  
+  .floating-shape-1, .floating-shape-2, .floating-shape-5 {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .floating-shape,
+  .quebec-badge,
+  .fleur-de-lis,
+  .hero-title {
+    animation: none;
+  }
+  
+  .quebec-button-primary:hover,
+  .quebec-button-outline:hover {
+    transform: none;
+  }
 }

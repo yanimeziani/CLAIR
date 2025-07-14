@@ -114,71 +114,86 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-32">
-        <div className="container mx-auto px-6 text-center">
-          {/* Badge */}
+      {/* Hero Section with 3D Elements */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        {/* 3D Background Elements */}
+        <div className="absolute inset-0 -z-10">
+          {/* Floating geometric shapes */}
+          <div className="floating-shape floating-shape-1 bg-gradient-to-br from-blue-500/20 to-blue-600/10 w-32 h-32 rounded-3xl"></div>
+          <div className="floating-shape floating-shape-2 bg-gradient-to-br from-blue-600/15 to-blue-700/10 w-24 h-24 rounded-full"></div>
+          <div className="floating-shape floating-shape-3 bg-gradient-to-br from-blue-400/25 to-blue-500/15 w-20 h-20 rounded-2xl"></div>
+          <div className="floating-shape floating-shape-4 bg-gradient-to-br from-red-500/20 to-red-600/10 w-16 h-16 rounded-full"></div>
+          <div className="floating-shape floating-shape-5 bg-gradient-to-br from-blue-500/30 to-blue-600/20 w-28 h-28 rounded-3xl"></div>
+          <div className="floating-shape floating-shape-6 bg-gradient-to-br from-blue-300/20 to-blue-400/15 w-36 h-20 rounded-2xl"></div>
+        </div>
+
+        <div className="container mx-auto px-6 text-center relative z-10">
+          {/* Quebec Government Badge */}
           <div className="mb-8">
-            <div className="inline-flex items-center space-x-3 bg-primary/10 border border-primary/20 rounded-full px-6 py-3">
-              <div className="bg-primary/20 p-1.5 rounded-full">
-                <Heart className="h-4 w-4 text-primary" />
+            <div className="inline-flex items-center space-x-3 bg-blue-50 border border-blue-200 rounded-full px-6 py-3 quebec-badge">
+              <div className="bg-blue-100 p-1.5 rounded-full">
+                <Heart className="h-4 w-4 text-blue-600" />
               </div>
-              <span className="text-sm font-medium text-primary">Plateforme spécialisée DI-TSA</span>
-              <Star className="h-4 w-4 text-warning fill-current" />
+              <span className="text-sm font-medium text-blue-800">Gouvernement du Québec • DI-TSA</span>
+              <div className="fleur-de-lis">⚜️</div>
             </div>
           </div>
           
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold mb-8 leading-tight text-foreground">
-            Gestion spécialisée pour
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight text-gray-900 hero-title">
+            Plateforme de gestion
             <br />
-            <span className="text-primary">
-              résidences DI-TSA
+            <span className="text-blue-600 relative">
+              DI-TSA Québec
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full opacity-60"></div>
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
-            Irielle transforme la gestion des résidences pour personnes ayant une déficience intellectuelle 
-            et troubles du spectre de l'autisme au Québec avec des outils adaptés et sécurisés.
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+            Solution officielle pour la gestion des résidences spécialisées DI-TSA. 
+            Conçue pour les professionnels de la santé du Québec avec des outils adaptés et conformes.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <button 
               onClick={handleLogin}
               disabled={isLoading}
-              className="ws-button-primary !px-8 !py-4 text-lg font-medium group"
+              className="quebec-button-primary group relative overflow-hidden"
             >
-              {isLoading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Chargement...</span>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-2">
-                  <span>Découvrir la plateforme</span>
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              )}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 transition-transform duration-300 group-hover:scale-105"></div>
+              <div className="relative z-10 flex items-center space-x-2">
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Connexion...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Accéder à la plateforme</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </div>
             </button>
-            <button className="ws-button-outline !px-8 !py-4 text-lg font-medium">
+            <button className="quebec-button-outline group">
               <Calendar className="h-5 w-5 mr-2" />
-              <span className="hidden sm:inline">Demander une démonstration</span>
-              <span className="sm:hidden">Démonstration</span>
+              <span className="hidden sm:inline">Formation et support</span>
+              <span className="sm:hidden">Formation</span>
             </button>
           </div>
 
-          {/* Trust indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-muted-foreground">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="h-4 w-4 text-success" />
-              <span>Conforme HIPAA</span>
+          {/* Government Trust Indicators */}
+          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-600">
+            <div className="flex items-center space-x-2 government-badge">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span>Conformité gouvernementale</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Shield className="h-4 w-4 text-primary" />
-              <span>Sécurité renforcée</span>
+            <div className="flex items-center space-x-2 government-badge">
+              <Shield className="h-4 w-4 text-blue-600" />
+              <span>Sécurité certifiée</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <Award className="h-4 w-4 text-warning" />
-              <span>Spécialisé DI-TSA</span>
+            <div className="flex items-center space-x-2 government-badge">
+              <Award className="h-4 w-4 text-red-600" />
+              <span>Solution officielle Québec</span>
             </div>
           </div>
         </div>

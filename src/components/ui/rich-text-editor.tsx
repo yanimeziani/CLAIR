@@ -21,15 +21,13 @@ import {
   Link as LinkIcon,
   Unlink,
   Table as TableIcon,
-  Image as ImageIcon,
-  Sparkles,
-  FileText,
-  Loader2
+  Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useCallback, useState } from 'react';
-import { toast } from 'sonner';
+import { useCallback } from 'react';
+import { useAIAssistance, UseAIAssistanceOptions } from '@/hooks/use-ai-assistance';
+import { AIAssistanceToolbar } from './ai-assistance-toolbar';
 import { AISuggestionModal } from './ai-suggestion-modal';
 
 interface RichTextEditorProps {
@@ -38,6 +36,8 @@ interface RichTextEditorProps {
   placeholder?: string;
   editable?: boolean;
   className?: string;
+  aiOptions?: UseAIAssistanceOptions;
+  showAIToolbar?: boolean;
 }
 
 export function RichTextEditor({ 
@@ -45,12 +45,22 @@ export function RichTextEditor({
   onChange, 
   placeholder = 'Commencez à taper...', 
   editable = true,
-  className 
+  className,
+  aiOptions = { context: 'healthcare', language: 'french' },
+  showAIToolbar = true
 }: RichTextEditorProps) {
-  const [isCorrectingText, setIsCorrectingText] = useState(false);
-  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
-  const [suggestion, setSuggestion] = useState<any>(null);
-  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
+  const {
+    isProcessing,
+    currentSuggestion,
+    showSuggestionModal,
+    realtimeErrors,
+    correctText,
+    summarizeText,
+    enhanceText,
+    acceptSuggestion,
+    rejectSuggestion,
+    setShowSuggestionModal
+  } = useAIAssistance(aiOptions);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -116,109 +126,33 @@ export function RichTextEditor({
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
 
-  const correctText = useCallback(async () => {
-    if (!editor || !content.trim()) {
-      toast.error('Aucun contenu à corriger');
-      return;
-    }
+  const handleCorrection = useCallback(async () => {
+    if (!editor) return;
+    const textContent = editor.getText();
+    await correctText(textContent);
+  }, [editor, correctText]);
 
-    setIsCorrectingText(true);
-    try {
-      const textContent = editor.getText();
-      
-      const response = await fetch('/api/ai/correct-text', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textContent })
-      });
+  const handleSummary = useCallback(async () => {
+    if (!editor) return;
+    const textContent = editor.getText();
+    await summarizeText(textContent);
+  }, [editor, summarizeText]);
 
-      if (!response.ok) {
-        throw new Error('Erreur lors de la correction');
-      }
+  const handleEnhancement = useCallback(async (type: 'professional' | 'concise' | 'detailed' = 'professional') => {
+    if (!editor) return;
+    const textContent = editor.getText();
+    await enhanceText(textContent, type);
+  }, [editor, enhanceText]);
 
-      const data = await response.json();
-      
-      if (data.success && data.corrected_text) {
-        // Show suggestion modal instead of directly applying
-        setSuggestion({
-          type: 'correction',
-          original_text: data.original_text,
-          suggested_text: data.corrected_text,
-          metadata: {
-            has_changes: data.has_changes,
-            model_used: data.model_used,
-            suggestions: data.suggestions
-          }
-        });
-        setShowSuggestionModal(true);
-      } else {
-        toast.error(data.error || 'Erreur lors de la correction du texte');
-      }
-    } catch (error) {
-      console.error('Error correcting text:', error);
-      toast.error('🚫 Service IA indisponible - Veuillez réessayer plus tard');
-    } finally {
-      setIsCorrectingText(false);
-    }
-  }, [editor, content]);
+  const handleAcceptSuggestion = useCallback(() => {
+    const suggestedText = acceptSuggestion();
+    if (!editor || !suggestedText || !currentSuggestion) return;
 
-  const generateSummary = useCallback(async () => {
-    if (!editor || !content.trim()) {
-      toast.error('Aucun contenu à résumer');
-      return;
-    }
-
-    setIsGeneratingSummary(true);
-    try {
-      const textContent = editor.getText();
-      
-      const response = await fetch('/api/ai/generate-summary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textContent, context: 'healthcare', language: 'french' })
-      });
-
-      if (!response.ok) {
-        throw new Error('Erreur lors de la génération du résumé');
-      }
-
-      const data = await response.json();
-      
-      if (data.success && data.summary) {
-        // Show suggestion modal instead of directly applying
-        setSuggestion({
-          type: 'summary',
-          original_text: data.original_text,
-          suggested_text: data.summary,
-          metadata: {
-            word_count_original: data.word_count_original,
-            word_count_summary: data.word_count_summary,
-            compression_ratio: data.compression_ratio,
-            model_used: data.model_used,
-            context: data.context
-          }
-        });
-        setShowSuggestionModal(true);
-      } else {
-        toast.error(data.error || 'Erreur lors de la génération du résumé');
-      }
-    } catch (error) {
-      console.error('Error generating summary:', error);
-      toast.error('🚫 Service IA indisponible - Veuillez réessayer plus tard');
-    } finally {
-      setIsGeneratingSummary(false);
-    }
-  }, [editor, content]);
-
-  const handleAcceptSuggestion = useCallback((suggestedText: string) => {
-    if (!editor || !suggestion) return;
-
-    if (suggestion.type === 'correction') {
+    if (currentSuggestion.type === 'correction' || currentSuggestion.type === 'enhancement') {
       // Convert markdown to HTML and replace content
       const htmlContent = convertMarkdownToHtml(suggestedText);
       editor.chain().focus().setContent(htmlContent).run();
-      toast.success('✨ Correction appliquée avec succès');
-    } else if (suggestion.type === 'summary') {
+    } else if (currentSuggestion.type === 'summary') {
       // Convert markdown summary to HTML and add at beginning
       const currentContent = editor.getHTML();
       const summaryHtml = convertMarkdownToHtml(suggestedText);
@@ -227,11 +161,8 @@ export function RichTextEditor({
         <div class="mt-2">${summaryHtml}</div>
       </div>${currentContent}`;
       editor.chain().focus().setContent(summaryContent).run();
-      toast.success('📝 Résumé ajouté avec succès');
     }
-    
-    setSuggestion(null);
-  }, [editor, suggestion]);
+  }, [editor, acceptSuggestion, currentSuggestion]);
 
   // Helper function to convert markdown to HTML
   const convertMarkdownToHtml = (markdown: string): string => {
@@ -257,10 +188,6 @@ export function RichTextEditor({
     return html;
   };
 
-  const handleRejectSuggestion = useCallback(() => {
-    setSuggestion(null);
-    toast.info('Suggestion ignorée');
-  }, []);
 
   if (!editor) {
     return null;
@@ -268,6 +195,18 @@ export function RichTextEditor({
 
   return (
     <div className={cn('border border-border rounded-md', className)}>
+      {editable && showAIToolbar && (
+        <AIAssistanceToolbar
+          onCorrect={handleCorrection}
+          onSummarize={handleSummary}
+          onEnhance={handleEnhancement}
+          isProcessing={isProcessing}
+          hasContent={!!content.trim()}
+          errorCount={realtimeErrors?.length || 0}
+          variant="compact"
+        />
+      )}
+      
       {editable && (
         <div className="border-b border-border p-2 flex flex-wrap gap-1 bg-muted/30">
           <Button
@@ -391,59 +330,6 @@ export function RichTextEditor({
 
           <div className="w-px h-6 bg-border mx-1" />
 
-          {/* AI Functions - Made Prominent */}
-          <div className="flex gap-1 p-1 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-md border border-blue-200/50 dark:border-blue-800/50">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={correctText}
-              disabled={isCorrectingText}
-              className={cn(
-                "h-8 w-auto px-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-sm",
-                isCorrectingText && "opacity-75"
-              )}
-              title="✨ Correction automatique par IA"
-            >
-              {isCorrectingText ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-xs font-medium">Correction...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  <span className="text-xs font-medium">Corriger IA</span>
-                </div>
-              )}
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={generateSummary}
-              disabled={isGeneratingSummary}
-              className={cn(
-                "h-8 w-auto px-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-sm",
-                isGeneratingSummary && "opacity-75"
-              )}
-              title="📝 Générer un résumé automatique"
-            >
-              {isGeneratingSummary ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-xs font-medium">Résumé...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  <span className="text-xs font-medium">Résumé IA</span>
-                </div>
-              )}
-            </Button>
-          </div>
-
-          <div className="w-px h-6 bg-border mx-1" />
-
           <Button
             variant="ghost"
             size="sm"
@@ -487,9 +373,9 @@ export function RichTextEditor({
       <AISuggestionModal
         isOpen={showSuggestionModal}
         onClose={() => setShowSuggestionModal(false)}
-        suggestion={suggestion}
+        suggestion={currentSuggestion}
         onAccept={handleAcceptSuggestion}
-        onReject={handleRejectSuggestion}
+        onReject={rejectSuggestion}
       />
     </div>
   );

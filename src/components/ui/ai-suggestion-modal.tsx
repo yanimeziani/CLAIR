@@ -9,19 +9,34 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
 interface AISuggestion {
-  type: 'correction' | 'summary';
+  type: 'correction' | 'summary' | 'enhancement';
   original_text: string;
   suggested_text: string;
   metadata?: {
     has_changes?: boolean;
     word_count_original?: number;
     word_count_summary?: number;
+    word_count_enhanced?: number;
     compression_ratio?: number;
     model_used?: string;
+    confidence_score?: number;
     suggestions?: {
       grammar_improvements?: boolean;
       style_improvements?: boolean;
+      medical_terminology?: boolean;
+      tone_adjustment?: boolean;
     };
+    improvements?: {
+      tone_improved?: boolean;
+      clarity_improved?: boolean;
+      medical_terminology_enhanced?: boolean;
+    };
+    errors_found?: Array<{
+      type: 'grammar' | 'spelling' | 'style';
+      message: string;
+      start: number;
+      end: number;
+    }>;
   };
 }
 
