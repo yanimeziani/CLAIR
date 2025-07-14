@@ -13,11 +13,11 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme={THEME_CONFIG.defaultTheme}
-      enableSystem={THEME_CONFIG.enableSystemTheme}
+      defaultTheme="light"
+      enableSystem={false}
       disableTransitionOnChange
       enableColorScheme={false}
-      forcedTheme={THEME_CONFIG.defaultTheme}
+      forcedTheme="light"
       {...props}
     >
       {children}

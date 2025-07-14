@@ -166,7 +166,7 @@ export default function CommunicationsPage() {
                 <p className="text-muted-foreground">Messages sécurisés de l'équipe</p>
               </div>
             </div>
-            <Button onClick={() => router.push('/communications/new')}>
+            <Button onClick={() => router.push('/communications/new')} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
               <Plus className="h-4 w-4 mr-2" />
               Nouveau Message
             </Button>
@@ -307,7 +307,7 @@ export default function CommunicationsPage() {
                   : 'Aucun message pour aujourd\'hui'
                 }
               </p>
-              <Button onClick={() => router.push('/communications/new')}>
+              <Button onClick={() => router.push('/communications/new')} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                 <Plus className="h-4 w-4 mr-2" />
                 Envoyer le premier message
               </Button>

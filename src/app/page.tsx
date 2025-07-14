@@ -60,162 +60,171 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-healthcare">
-      {/* Subtle Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-r from-primary/10 to-primary/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 right-1/4 w-48 h-48 bg-gradient-to-r from-accent/5 to-accent/2 rounded-full blur-2xl"></div>
-      </div>
-      
-      <div className="relative z-10">
-        {/* Header */}
-        <header className="border-b border-border/20 backdrop-blur-sm bg-card/30">
-          <div className="container mx-auto px-4 sm:px-6 py-4">
-            <nav className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center space-x-3">
-                <div className="bg-primary/10 p-2 rounded-lg">
-                  <Image 
-                    src="/logo.png" 
-                    alt="Irielle Logo" 
-                    width={32} 
-                    height={32}
-                    className="h-8 w-8"
-                  />
-                </div>
-                <span className="text-xl sm:text-2xl font-bold text-foreground">
-                  Irielle
-                </span>
+    <div className="min-h-screen ws-gradient-main">
+      {/* Header */}
+      <header className="bg-white/95 backdrop-blur-lg border-b border-border sticky top-0 z-50">
+        <div className="container mx-auto px-6 py-4">
+          <nav className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-primary/10 p-2.5 rounded-xl">
+                <Image 
+                  src="/logo.png" 
+                  alt="Irielle Logo" 
+                  width={32} 
+                  height={32}
+                  className="h-8 w-8"
+                />
               </div>
-              
-              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full sm:w-auto">
-                <div className="hidden lg:flex items-center space-x-6">
-                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground font-medium">
-                    Fonctionnalités
-                  </Button>
-                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground font-medium">
-                    Avantages
-                  </Button>
-                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground font-medium">
-                    Contact
-                  </Button>
-                </div>
-                <Button 
-                  onClick={handleLogin}
-                  disabled={isLoading}
-                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-                >
-                  {isLoading ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Connexion...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <Lock className="h-4 w-4" />
-                      <span>Connexion</span>
-                    </div>
-                  )}
-                </Button>
-              </div>
-            </nav>
-          </div>
-        </header>
-
-        {/* Hero Section */}
-        <section className="relative py-12 sm:py-20 lg:py-24">
-          <div className="container mx-auto px-4 sm:px-6 text-center">
-            {/* Badge */}
-            <div className="mb-6 sm:mb-8">
-              <div className="inline-flex items-center space-x-2 sm:space-x-3 bg-primary/10 border border-primary/20 rounded-full px-4 sm:px-6 py-2 sm:py-3 backdrop-blur-sm">
-                <div className="bg-primary/20 p-1 rounded-full">
-                  <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
-                </div>
-                <span className="text-xs sm:text-sm font-medium text-primary">Plateforme spécialisée DI-TSA</span>
-                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500 fill-current" />
-              </div>
+              <span className="text-2xl font-semibold text-foreground">
+                Irielle
+              </span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 sm:mb-8 leading-tight text-foreground">
-              Gestion spécialisée pour
-              <br />
-              <span className="text-primary">
-                résidences DI-TSA
-              </span>
-            </h1>
-            
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-12 max-w-4xl mx-auto leading-relaxed">
-              Irielle transforme la gestion des résidences pour personnes ayant une déficience intellectuelle 
-              et troubles du spectre de l'autisme au Québec avec des outils adaptés et sécurisés.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-12 sm:mb-16">
-              <Button 
-                size="lg" 
+            <div className="flex items-center space-x-8">
+              <div className="hidden lg:flex items-center space-x-8">
+                <button className="text-muted-foreground hover:text-foreground font-medium transition-colors">
+                  Fonctionnalités
+                </button>
+                <button className="text-muted-foreground hover:text-foreground font-medium transition-colors">
+                  Avantages
+                </button>
+                <button className="text-muted-foreground hover:text-foreground font-medium transition-colors">
+                  Contact
+                </button>
+              </div>
+              <button 
                 onClick={handleLogin}
                 disabled={isLoading}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg group"
+                className="ws-button-primary"
               >
                 {isLoading ? (
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Chargement...</span>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Connexion...</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <span>Découvrir la plateforme</span>
-                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
+                    <Lock className="h-4 w-4" />
+                    <span>Connexion</span>
                   </div>
                 )}
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-2 text-foreground hover:bg-accent px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold"
-              >
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span className="hidden sm:inline">Demander une démonstration</span>
-                  <span className="sm:hidden">Démonstration</span>
-                </div>
-              </Button>
+              </button>
             </div>
+          </nav>
+        </div>
+      </header>
 
-            {/* Trust indicators */}
-            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm text-muted-foreground">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
-                <span>Conforme HIPAA</span>
+      {/* Hero Section */}
+      <section className="relative py-20 lg:py-32">
+        <div className="container mx-auto px-6 text-center">
+          {/* Badge */}
+          <div className="mb-8">
+            <div className="inline-flex items-center space-x-3 bg-primary/10 border border-primary/20 rounded-full px-6 py-3">
+              <div className="bg-primary/20 p-1.5 rounded-full">
+                <Heart className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex items-center space-x-2">
-                <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
-                <span>Sécurité renforcée</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Award className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
-                <span>Spécialisé DI-TSA</span>
-              </div>
+              <span className="text-sm font-medium text-primary">Plateforme spécialisée DI-TSA</span>
+              <Star className="h-4 w-4 text-warning fill-current" />
             </div>
           </div>
-        </section>
+          
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold mb-8 leading-tight text-foreground">
+            Gestion spécialisée pour
+            <br />
+            <span className="text-primary">
+              résidences DI-TSA
+            </span>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
+            Irielle transforme la gestion des résidences pour personnes ayant une déficience intellectuelle 
+            et troubles du spectre de l'autisme au Québec avec des outils adaptés et sécurisés.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <button 
+              onClick={handleLogin}
+              disabled={isLoading}
+              className="ws-button-primary !px-8 !py-4 text-lg font-medium group"
+            >
+              {isLoading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Chargement...</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <span>Découvrir la plateforme</span>
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </div>
+              )}
+            </button>
+            <button className="ws-button-outline !px-8 !py-4 text-lg font-medium">
+              <Calendar className="h-5 w-5 mr-2" />
+              <span className="hidden sm:inline">Demander une démonstration</span>
+              <span className="sm:hidden">Démonstration</span>
+            </button>
+          </div>
 
-        {/* Features Section */}
-        <section className="relative py-12 sm:py-20 bg-card/30">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-foreground">
-                Fonctionnalités principales
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-                Des outils spécialement conçus pour les défis uniques des résidences DI-TSA
+          {/* Trust indicators */}
+          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-muted-foreground">
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="h-4 w-4 text-success" />
+              <span>Conforme HIPAA</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Shield className="h-4 w-4 text-primary" />
+              <span>Sécurité renforcée</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Award className="h-4 w-4 text-warning" />
+              <span>Spécialisé DI-TSA</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="relative py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-semibold mb-6 text-foreground">
+              Fonctionnalités principales
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Des outils spécialement conçus pour les défis uniques des résidences DI-TSA
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="ws-card group">
+              <div className="bg-primary/10 p-4 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Users className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="text-2xl font-semibold text-foreground mb-4">Gestion des Résidents</h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Profils complets avec informations personnelles, médicales, allergies et contacts d'urgence. 
+                Observations signées électroniquement pour un suivi professionnel.
               </p>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                  <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
+                  <span>Profils médicaux avec éditeur riche</span>
+                </div>
+                <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                  <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
+                  <span>Observations signées numériquement</span>
+                </div>
+                <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                  <CheckCircle className="h-4 w-4 text-success flex-shrink-0" />
+                  <span>IA - Correction et résumés automatiques</span>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              <Card className="group bg-card/50 backdrop-blur-sm border hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="bg-primary/20 p-3 sm:p-4 rounded-xl w-fit mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <div className="ws-card group">
+              <div className="bg-accent/10 p-4 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
+                <MessageSquare className="h-8 w-8 text-accent" />
                   </div>
                   <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">Gestion des Résidents</h3>
                   <p className="text-muted-foreground mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
@@ -396,8 +405,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-      </div>
     </div>
   );
 }

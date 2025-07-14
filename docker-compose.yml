@@ -68,8 +68,8 @@ services:
       dockerfile: Dockerfile
     container_name: irielle-frontend
     restart: unless-stopped
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
     env_file:
       - .env.production
     depends_on:

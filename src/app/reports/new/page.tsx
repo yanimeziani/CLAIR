@@ -550,11 +550,11 @@ export default function NewReportPage() {
                 </Button>
                 
                 {currentStep < STEPS.length ? (
-                  <Button onClick={handleNext}>
+                  <Button onClick={handleNext} className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                     Suivant
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} disabled={saving}>
+                  <Button onClick={handleSubmit} disabled={saving} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                     <Save className="h-4 w-4 mr-2" />
                     {saving ? 'Création...' : 'Créer le rapport'}
                   </Button>

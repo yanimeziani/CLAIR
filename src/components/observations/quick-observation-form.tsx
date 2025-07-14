@@ -138,9 +138,11 @@ export function QuickObservationForm({
     <>
       <div onClick={() => setIsOpen(true)}>
         {trigger || (
-          <Button variant="outline" className="h-16 flex flex-col">
-            <FileText className="h-5 w-5 mb-1" />
-            <span className="text-sm">Nouvelle Observation</span>
+          <Button variant="outline" className="h-20 flex flex-col min-h-[44px] border-2 bg-gradient-to-br from-green-500/10 to-green-600/5 hover:from-green-500/20 hover:to-green-600/10 border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:scale-105 hover:shadow-lg group">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 p-2 rounded-lg mb-2 group-hover:from-green-600 group-hover:to-green-700 transition-all duration-300">
+              <FileText className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xs sm:text-sm font-medium">Nouvelle Observation</span>
           </Button>
         )}
       </div>
@@ -245,7 +247,7 @@ export function QuickObservationForm({
               <Button
                 onClick={handleSubmit}
                 disabled={saving || !formData.patientId || !formData.content.trim()}
-                className="bg-primary text-primary-foreground"
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {saving ? 'Enregistrement...' : 'Enregistrer'}

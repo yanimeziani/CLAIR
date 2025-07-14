@@ -293,7 +293,7 @@ export default function BristolPage() {
               </div>
             </div>
             {selectedPatient && currentUser?.role === 'admin' && (
-              <Button variant="outline" onClick={() => handleExport('csv')} className="w-full sm:w-auto">
+              <Button variant="outline" onClick={() => handleExport('csv')} className="w-full sm:w-auto bg-gradient-to-r from-blue-500/10 to-blue-600/5 hover:from-blue-500/20 hover:to-blue-600/10 border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:scale-105">
                 <Download className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Exporter CSV</span>
                 <span className="sm:hidden">Export</span>
@@ -576,7 +576,7 @@ export default function BristolPage() {
                 <X className="h-4 w-4 mr-2" />
                 Annuler
               </Button>
-              <Button onClick={handleSaveEntry} className="flex-1">
+              <Button onClick={handleSaveEntry} className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                 <Save className="h-4 w-4 mr-2" />
                 Enregistrer
               </Button>

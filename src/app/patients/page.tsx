@@ -274,15 +274,24 @@ export default function PatientsPage() {
                 <p className="text-muted-foreground">Profils et informations des résidents</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" onClick={() => handleExport('csv')}>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button 
+                variant="outline" 
+                onClick={() => handleExport('csv')} 
+                className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500/10 to-blue-600/5 hover:from-blue-500/20 hover:to-blue-600/10 border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:scale-105"
+              >
                 <Download className="h-4 w-4 mr-2" />
-                Exporter CSV
+                <span className="hidden sm:inline">Exporter CSV</span>
+                <span className="sm:hidden">CSV</span>
               </Button>
               {isAdmin() && (
-                <Button onClick={openCreateDialog}>
+                <Button 
+                  onClick={openCreateDialog} 
+                  className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                >
                   <Plus className="h-4 w-4 mr-2" />
-                  Nouveau Résident
+                  <span className="hidden sm:inline">Nouveau Résident</span>
+                  <span className="sm:hidden">Nouveau</span>
                 </Button>
               )}
             </div>
@@ -447,7 +456,7 @@ export default function PatientsPage() {
                 }
               </p>
               {!searchTerm && statusFilter === 'active' && isAdmin() && (
-                <Button onClick={openCreateDialog}>
+                <Button onClick={openCreateDialog} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                   <Plus className="h-4 w-4 mr-2" />
                   Ajouter un résident
                 </Button>
@@ -572,7 +581,7 @@ export default function PatientsPage() {
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1">
                 Annuler
               </Button>
-              <Button type="submit" className="flex-1">
+              <Button type="submit" className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 hover:scale-105 hover:shadow-lg">
                 {editingPatient ? 'Modifier' : 'Créer'}
               </Button>
             </div>

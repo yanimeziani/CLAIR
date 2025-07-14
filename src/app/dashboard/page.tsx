@@ -136,13 +136,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-healthcare">
+    <div className="min-h-screen ws-gradient-main">
       {/* Top Navigation */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <header className="bg-white/90 backdrop-blur-lg border-b border-border sticky top-0 z-40 shadow-sm">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="bg-orange-500/10 p-2 rounded-lg">
+              <div className="bg-primary/10 p-2 rounded-xl">
                 <Image 
                   src="/logo.png" 
                   alt="Logo Irielle - Plateforme de gestion pour résidences DI-TSA" 
@@ -152,25 +152,23 @@ export default function DashboardPage() {
                 />
               </div>
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-foreground">Plateforme Irielle</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground">
+                <h1 className="text-xl font-semibold text-foreground">Irielle</h1>
+                <p className="text-sm text-muted-foreground">
                   {user?.isReplacement ? `Remplacement: ${user.name.replace('Remplacement: ', '')}` : user?.name}
                   {user?.role && !user?.isReplacement && ` • ${user.role}`}
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <div className="flex items-center space-x-3">
               {/* Irielle AI Button */}
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <button 
                 onClick={() => router.push('/patient-query')}
-                className="bg-gradient-to-r from-blue-500/10 to-blue-600/10 border-blue-500/20 hover:from-blue-500/20 hover:to-blue-600/20"
+                className="ws-button-outline !px-4 !py-2 bg-accent/5 border-accent/20 text-accent hover:bg-accent/10"
               >
-                <Brain className="h-4 w-4 mr-2 text-blue-500" />
-                <span className="hidden sm:inline">Irielle IA</span>
-              </Button>
+                <Brain className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">IA Assistant</span>
+              </button>
 
               {/* Notifications Dropdown */}
               <DropdownMenu>
@@ -264,110 +262,169 @@ export default function DashboardPage() {
 
       <div className="container mx-auto px-6 py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">
-            Bon{new Date().getHours() < 12 ? 'jour' : new Date().getHours() < 18 ? ' après-midi' : 'soir'}
+        <div className="mb-12">
+          <h2 className="text-4xl font-semibold text-foreground mb-3">
+            Bonjour {user?.isReplacement ? user.name.replace('Remplacement: ', '') : user?.name?.split(' ')[0]}
           </h2>
-          <p className="text-muted-foreground">
-            Voici un aperçu des activités importantes d'aujourd'hui
+          <p className="text-xl text-muted-foreground">
+            Voici un aperçu de vos activités importantes
           </p>
         </div>
 
 
-        {/* Quick Actions - Moved to top for instant visibility */}
-        <Card className="bg-card/50 backdrop-blur-sm mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Plus className="h-5 w-5 mr-2 text-primary" />
-              Actions Rapides
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/reports/new')}>
-                <Plus className="h-5 w-5 mb-1" />
-                <span className="text-xs sm:text-sm">Nouveau Rapport</span>
-              </Button>
-              <QuickObservationForm />
-              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/bristol')}>
-                <BarChart3 className="h-5 w-5 mb-1" />
-                <span className="text-xs sm:text-sm">Suivi Bristol</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/communications/new')}>
-                <MessageSquare className="h-5 w-5 mb-1" />
-                <span className="text-xs sm:text-sm">Envoyer Message</span>
-              </Button>
-              <Button variant="outline" className="h-16 flex flex-col min-h-[44px]" onClick={() => router.push('/patients')}>
-                <Users className="h-5 w-5 mb-1" />
-                <span className="text-xs sm:text-sm">Gérer Résidents</span>
-              </Button>
+        {/* Quick Actions */}
+        <div className="ws-card mb-12">
+          <div className="flex items-center mb-6">
+            <div className="bg-primary/10 p-3 rounded-xl mr-4">
+              <Plus className="h-6 w-6 text-primary" />
             </div>
-          </CardContent>
-        </Card>
+            <h3 className="text-2xl font-semibold text-foreground">Actions Rapides</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <button 
+              onClick={() => router.push('/reports/new')}
+              className="flex flex-col items-center p-6 rounded-xl border-2 border-accent/20 bg-accent/5 hover:bg-accent/10 hover:border-accent/40 transition-all duration-200 group"
+            >
+              <div className="bg-accent p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
+                <Plus className="h-6 w-6 text-white" />
+              </div>
+              <span className="font-medium text-sm text-foreground">Nouveau Rapport</span>
+            </button>
+            
+            <QuickObservationForm 
+              trigger={
+                <button className="flex flex-col items-center p-6 rounded-xl border-2 border-success/20 bg-success/5 hover:bg-success/10 hover:border-success/40 transition-all duration-200 group w-full">
+                  <div className="bg-success p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
+                    <FileText className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="font-medium text-sm text-foreground">Nouvelle Observation</span>
+                </button>
+              }
+            />
+            
+            <button 
+              onClick={() => router.push('/bristol')}
+              className="flex flex-col items-center p-6 rounded-xl border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 transition-all duration-200 group"
+            >
+              <div className="bg-primary p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
+              <span className="font-medium text-sm text-foreground">Suivi Bristol</span>
+            </button>
+            
+            <button 
+              onClick={() => router.push('/communications/new')}
+              className="flex flex-col items-center p-6 rounded-xl border-2 border-warning/20 bg-warning/5 hover:bg-warning/10 hover:border-warning/40 transition-all duration-200 group"
+            >
+              <div className="bg-warning p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
+                <MessageSquare className="h-6 w-6 text-warning-foreground" />
+              </div>
+              <span className="font-medium text-sm text-foreground">Envoyer Message</span>
+            </button>
+            
+            <button 
+              onClick={() => router.push('/patients')}
+              className="flex flex-col items-center p-6 rounded-xl border-2 border-accent/20 bg-accent/5 hover:bg-accent/10 hover:border-accent/40 transition-all duration-200 group"
+            >
+              <div className="bg-accent p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+              <span className="font-medium text-sm text-foreground">Gérer Résidents</span>
+            </button>
+          </div>
+        </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Communications */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Today's Important Messages */}
-            <Card className="bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MessageSquare className="h-5 w-5 mr-2 text-primary" />
-                  Communications Importantes - {new Date().toLocaleDateString('fr-FR')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="ws-card">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <div className="bg-primary/10 p-3 rounded-xl mr-4">
+                    <MessageSquare className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-foreground">Communications d'aujourd'hui</h3>
+                    <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString('fr-FR')}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
                 {recentCommunications.length > 0 ? recentCommunications.map((comm, index) => (
-                  <div key={index} className={`p-4 rounded-lg border ${comm.isUrgent ? 'border-red-500/50 bg-red-500/10' : 'border-border bg-muted/30'}`}>
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium text-sm">{comm.authorDisplayName}</span>
-                        {comm.isUrgent && (
-                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">URGENT</span>
-                        )}
+                  <div key={index} className={`p-5 rounded-xl border-2 transition-all duration-200 ${
+                    comm.isUrgent 
+                      ? 'border-destructive/30 bg-destructive/5' 
+                      : 'border-border bg-muted/30 hover:bg-muted/50'
+                  }`}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="bg-primary/10 p-2 rounded-lg">
+                          <User className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-foreground">{comm.authorDisplayName}</span>
+                          {comm.isUrgent && (
+                            <span className="ml-3 ws-status-error">URGENT</span>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-xs text-muted-foreground flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
+                      <div className="flex items-center text-muted-foreground text-sm">
+                        <Clock className="h-4 w-4 mr-1" />
                         {new Date(comm.creationDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-foreground">{comm.content}</p>
+                    <p className="text-foreground/90 leading-relaxed">{comm.content}</p>
                   </div>
                 )) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">Aucune communication aujourd'hui</p>
+                  <div className="text-center py-12">
+                    <div className="bg-muted/30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <MessageSquare className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <h4 className="font-medium text-foreground mb-2">Aucune communication aujourd'hui</h4>
+                    <p className="text-sm text-muted-foreground">Les nouvelles communications apparaîtront ici</p>
                   </div>
                 )}
                 
-                <Button className="w-full mt-4" onClick={() => router.push('/communications')}>
+                <button 
+                  onClick={() => router.push('/communications')}
+                  className="ws-button-primary w-full !h-12 mt-6"
+                >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Voir toutes les communications
-                </Button>
-              </CardContent>
-            </Card>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Right Column - Residents & Admin */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Residents Quick View */}
-            <Card className="bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="flex items-center">
-                    <Users className="h-5 w-5 mr-2 text-primary" />
-                    Résidents
-                  </span>
-                  <Button size="sm" variant="ghost" onClick={() => router.push('/patients')}>
-                    Voir tout
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="relative mb-4">
+            <div className="ws-card">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <div className="bg-success/10 p-3 rounded-xl mr-4">
+                    <Users className="h-6 w-6 text-success" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground">Résidents</h3>
+                </div>
+                <button 
+                  onClick={() => router.push('/patients')}
+                  className="ws-button-outline !px-3 !py-1.5 text-sm"
+                >
+                  Voir tout
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Rechercher un résident..." className="pl-10" />
+                  <input 
+                    placeholder="Rechercher un résident..." 
+                    className="ws-input !pl-10"
+                  />
                 </div>
                 
                 <div className="space-y-3">
@@ -376,22 +433,27 @@ export default function DashboardPage() {
                     { name: "Pierre Gagnon", status: "Suivi médical" },
                     { name: "Julie Bouchard", status: "Stable" }
                   ].map((resident, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer">
-                      <div>
-                        <p className="font-medium text-sm">{resident.name}</p>
+                    <div key={index} className="ws-patient-card !p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="bg-primary/10 p-2 rounded-lg">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <span className="font-medium text-foreground">{resident.name}</span>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          resident.status === 'Nouvelle' ? 'bg-accent/10 text-accent border border-accent/20' :
+                          resident.status === 'Suivi médical' ? 'bg-warning/10 text-warning border border-warning/20' :
+                          'bg-success/10 text-success border border-success/20'
+                        }`}>
+                          {resident.status}
+                        </span>
                       </div>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        resident.status === 'Nouvelle' ? 'bg-blue-500/20 text-blue-600' :
-                        resident.status === 'Suivi médical' ? 'bg-amber-500/20 text-amber-600' :
-                        'bg-green-500/20 text-green-600'
-                      }`}>
-                        {resident.status}
-                      </span>
                     </div>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Recent Observations (only for admins) */}
             {user?.role === 'admin' && (
@@ -403,28 +465,54 @@ export default function DashboardPage() {
 
             {/* Admin Panel (only for admins) */}
             {user?.role === 'admin' && (
-              <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Settings className="h-5 w-5 mr-2 text-primary" />
+              <Card className="bg-gradient-to-br from-card/80 to-card/50 backdrop-blur-sm border-orange-200/50 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 rounded-t-lg">
+                  <CardTitle className="flex items-center text-lg">
+                    <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-2 rounded-lg mr-3">
+                      <Settings className="h-5 w-5 text-white" />
+                    </div>
                     Administration
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/admin/users')}>
-                    <Users className="h-4 w-4 mr-2" />
+                <CardContent className="space-y-4 p-6">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start h-12 bg-gradient-to-r from-blue-500/10 to-blue-600/5 hover:from-blue-500/20 hover:to-blue-600/10 border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+                    onClick={() => router.push('/admin/users')}
+                  >
+                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-1.5 rounded mr-3">
+                      <Users className="h-4 w-4 text-white" />
+                    </div>
                     Gestion Utilisateurs
                   </Button>
-                  <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/admin/templates')}>
-                    <FileText className="h-4 w-4 mr-2" />
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start h-12 bg-gradient-to-r from-green-500/10 to-green-600/5 hover:from-green-500/20 hover:to-green-600/10 border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+                    onClick={() => router.push('/admin/templates')}
+                  >
+                    <div className="bg-gradient-to-r from-green-500 to-green-600 p-1.5 rounded mr-3">
+                      <FileText className="h-4 w-4 text-white" />
+                    </div>
                     Modèles de Rapports
                   </Button>
-                  <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/admin/exports')}>
-                    <BarChart3 className="h-4 w-4 mr-2" />
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start h-12 bg-gradient-to-r from-purple-500/10 to-purple-600/5 hover:from-purple-500/20 hover:to-purple-600/10 border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+                    onClick={() => router.push('/admin/exports')}
+                  >
+                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-1.5 rounded mr-3">
+                      <BarChart3 className="h-4 w-4 text-white" />
+                    </div>
                     Statistiques & Exports
                   </Button>
-                  <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/admin/settings')}>
-                    <Settings className="h-4 w-4 mr-2" />
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start h-12 bg-gradient-to-r from-amber-500/10 to-amber-600/5 hover:from-amber-500/20 hover:to-amber-600/10 border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+                    onClick={() => router.push('/admin/settings')}
+                  >
+                    <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-1.5 rounded mr-3">
+                      <Settings className="h-4 w-4 text-white" />
+                    </div>
                     Paramètres Système
                   </Button>
                 </CardContent>

@@ -96,168 +96,188 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-professional flex items-center justify-center p-4">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="w-full h-full" 
-             style={{
-               backgroundImage: `url('/login-healthcare-pattern.svg')`,
-               backgroundSize: '400px 400px',
-               backgroundRepeat: 'repeat'
-             }}>
-          {/* AI Generated Image Prompt: Subtle medical pattern with healthcare icons, crosses, heart symbols, and geometric shapes in a repeating pattern, very light and minimal */}
-        </div>
-      </div>
-
-      <div className="relative z-10 w-full max-w-md">
+    <div className="min-h-screen ws-gradient-main flex items-center justify-center p-4 ws-page-pattern">
+      <div className="w-full max-w-lg">
         {/* Back Button */}
-        <Button 
-          variant="ghost" 
+        <button 
           onClick={goBack}
-          className="mb-6 text-muted-foreground hover:text-foreground"
+          className="ws-button-ghost mb-8 !px-4 !py-2"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour à l'accueil
-        </Button>
+        </button>
 
-        <Card className="bg-card/80 backdrop-blur-md border-border/50 shadow-2xl">
-          <CardHeader className="text-center pb-6">
-            <div className="flex items-center justify-center mb-4">
-              <div className="bg-orange-500/10 p-3 rounded-full">
-                <Image 
-                  src="/logo.png" 
-                  alt="Irielle Logo" 
-                  width={40} 
-                  height={40}
-                  className="h-10 w-10"
-                />
-              </div>
+        {/* Main Login Card */}
+        <div className="ws-card !p-0 overflow-hidden">
+          {/* Header Section */}
+          <div className="bg-gradient-to-br from-primary to-accent p-8 text-center">
+            <div className="bg-white/20 p-4 rounded-2xl inline-block mb-4 backdrop-blur-sm">
+              <Image 
+                src="/logo.png" 
+                alt="Irielle Logo" 
+                width={48} 
+                height={48}
+                className="h-12 w-12"
+              />
             </div>
-            <CardTitle className="text-2xl font-bold text-foreground">
-              Connexion Irielle
-            </CardTitle>
-            <p className="text-muted-foreground text-sm mt-2">
+            <h1 className="text-3xl font-semibold text-white mb-2">
+              Bienvenue sur Irielle
+            </h1>
+            <p className="text-white/80 text-base">
               Plateforme sécurisée pour résidences DI-TSA
             </p>
-          </CardHeader>
+          </div>
 
-          <CardContent className="space-y-6">
+          {/* Form Section */}
+          <div className="p-8 space-y-6">
             {/* User Type Selection */}
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                type="button"
-                variant={!isReplacement ? "default" : "outline"}
-                onClick={() => setIsReplacement(false)}
-                className="flex flex-col items-center p-4 h-auto"
-              >
-                <Users className="h-6 w-6 mb-2" />
-                <span className="text-xs">Personnel</span>
-              </Button>
-              <Button
-                type="button"
-                variant={isReplacement ? "default" : "outline"}
-                onClick={() => setIsReplacement(true)}
-                className="flex flex-col items-center p-4 h-auto"
-              >
-                <Shield className="h-6 w-6 mb-2" />
-                <span className="text-xs">Remplacement</span>
-              </Button>
+            <div className="space-y-3">
+              <h3 className="text-lg font-medium text-foreground">Type de connexion</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsReplacement(false)}
+                  className={`flex flex-col items-center p-6 rounded-xl border-2 transition-all duration-200 ${
+                    !isReplacement 
+                      ? 'border-primary bg-primary/5 text-primary' 
+                      : 'border-border bg-background text-muted-foreground hover:border-primary/30'
+                  }`}
+                >
+                  <Users className="h-8 w-8 mb-3" />
+                  <span className="font-medium">Personnel</span>
+                  <span className="text-xs opacity-70">Équipe régulière</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsReplacement(true)}
+                  className={`flex flex-col items-center p-6 rounded-xl border-2 transition-all duration-200 ${
+                    isReplacement 
+                      ? 'border-primary bg-primary/5 text-primary' 
+                      : 'border-border bg-background text-muted-foreground hover:border-primary/30'
+                  }`}
+                >
+                  <Shield className="h-8 w-8 mb-3" />
+                  <span className="font-medium">Remplacement</span>
+                  <span className="text-xs opacity-70">Personnel temporaire</span>
+                </button>
+              </div>
             </div>
 
-            <Separator />
+            <div className="h-px bg-border"></div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-6">
               {!isReplacement ? (
                 <>
                   {/* Regular User Login */}
-                  <div className="space-y-2">
-                    <Label htmlFor="user-select">Sélectionner l'utilisateur</Label>
+                  <div className="ws-form-group">
+                    <label className="ws-form-label">Sélectionner l'utilisateur</label>
                     <Select value={selectedUser} onValueChange={setSelectedUser}>
-                      <SelectTrigger>
+                      <SelectTrigger className="ws-input !h-14">
                         <SelectValue placeholder={loadingUsers ? "Chargement..." : "Choisir un utilisateur"} />
                       </SelectTrigger>
                       <SelectContent>
                         {users.map((user) => (
                           <SelectItem key={user._id} value={user._id}>
-                            {user.firstName} {user.lastName} ({user.role})
+                            <div className="flex flex-col items-start">
+                              <span className="font-medium">{user.firstName} {user.lastName}</span>
+                              <span className="text-xs text-muted-foreground">{user.role}</span>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="pin">PIN à 4 chiffres</Label>
+                  <div className="ws-form-group">
+                    <label className="ws-form-label">PIN à 4 chiffres</label>
                     <div className="relative">
-                      <Input
+                      <input
                         id="pin"
                         type="password"
                         placeholder="••••"
                         value={pin}
                         onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                         maxLength={4}
-                        className="text-center text-lg tracking-widest"
+                        className="ws-input text-center text-xl tracking-[0.5em] !h-14"
                       />
-                      <KeyRound className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <KeyRound className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     </div>
+                    <p className="ws-form-description">Entrez votre code PIN personnel</p>
                   </div>
                 </>
               ) : (
                 <>
                   {/* Replacement User Login */}
-                  <div className="space-y-2">
-                    <Label htmlFor="replacement-name">Nom complet du remplaçant</Label>
-                    <Input
+                  <div className="ws-form-group">
+                    <label className="ws-form-label">Nom complet du remplaçant</label>
+                    <input
                       id="replacement-name"
                       type="text"
                       placeholder="Entrez votre nom complet"
                       value={replacementName}
                       onChange={(e) => setReplacementName(e.target.value)}
-                      className="text-center"
+                      className="ws-input !h-14"
                     />
+                    <p className="ws-form-description">Votre nom sera enregistré pour cette session</p>
                   </div>
-                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-                    <p className="text-amber-600 text-xs text-center">
-                      Mode remplacement : Aucun PIN requis
-                    </p>
+                  <div className="bg-warning/10 border border-warning/20 rounded-xl p-4">
+                    <div className="flex items-center space-x-3">
+                      <Shield className="h-5 w-5 text-warning flex-shrink-0" />
+                      <div>
+                        <p className="font-medium text-warning">Mode remplacement</p>
+                        <p className="text-xs text-warning/80">Aucun PIN requis pour cette connexion</p>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
 
-              <Button 
+              <button
                 type="submit" 
-                className="w-full bg-primary hover:bg-primary/90" 
+                className="ws-button-primary w-full !h-14 text-lg font-medium"
                 disabled={isLoading || loadingUsers}
               >
-                {isLoading ? 'Connexion...' : 'Se connecter'}
-              </Button>
+                {isLoading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white"></div>
+                    <span>Connexion...</span>
+                  </div>
+                ) : (
+                  'Se connecter'
+                )}
+              </button>
             </form>
 
             {/* Security Notice */}
-            <div className="bg-muted/50 rounded-lg p-3 mt-6">
-              <div className="flex items-start space-x-2">
-                <Shield className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+            <div className="bg-success/5 border border-success/20 rounded-xl p-4">
+              <div className="flex items-start space-x-3">
+                <Shield className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-xs text-muted-foreground">
-                    Connexion sécurisée avec authentification locale. 
-                    Toutes les données restent sur votre serveur.
+                  <p className="font-medium text-success text-sm">Sécurité garantie</p>
+                  <p className="text-xs text-success/70 mt-1">
+                    Authentification locale sécurisée. Toutes vos données restent privées sur votre serveur.
                   </p>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Demo Credentials */}
-        <Card className="mt-4 bg-card/60 backdrop-blur-sm border-border/30">
-          <CardContent className="p-4">
-            <h4 className="text-sm font-semibold text-foreground mb-2">Démonstration</h4>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p><strong>Utilisateur:</strong> Admin Principal</p>
-              <p><strong>PIN:</strong> 1234</p>
+        <div className="ws-card-compact mt-6 bg-muted/20 border-muted">
+          <div className="flex items-start space-x-3">
+            <div className="bg-accent/10 p-2 rounded-lg">
+              <Heart className="h-4 w-4 text-accent" />
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <h4 className="font-medium text-foreground text-sm mb-1">Mode Démonstration</h4>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p><strong>Utilisateur:</strong> Admin Principal</p>
+                <p><strong>PIN:</strong> 1234</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
