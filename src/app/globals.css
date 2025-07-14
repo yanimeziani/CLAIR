@@ -34,6 +34,7 @@
   --color-sidebar-ring: rgb(var(--ws-teal));
   --font-sans: var(--font-inter);
   --font-mono: var(--font-inter);
+  --font-heading: var(--font-crimson);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -616,4 +617,194 @@
   .quebec-button-outline:hover {
     transform: none;
   }
+}
+
+/* Wealthsimple-Inspired Design System for CLAIR */
+
+/* Typography - Elegant serif headings with clean sans-serif body */
+.heading-display {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: rgb(var(--ws-gray-900));
+}
+
+.heading-xl {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.heading-lg {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.heading-md {
+  font-family: var(--font-heading);
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.body-text {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgb(var(--ws-gray-700));
+}
+
+.body-text-lg {
+  font-size: 1.125rem;
+  line-height: 1.7;
+}
+
+/* Clean, minimal cards inspired by Wealthsimple */
+.wealth-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgb(var(--ws-gray-200));
+  transition: all 0.2s ease;
+}
+
+.wealth-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.wealth-card-compact {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgb(var(--ws-gray-200));
+  transition: all 0.2s ease;
+}
+
+/* Elegant buttons with clean styling */
+.wealth-button-primary {
+  background: rgb(var(--ws-gray-900));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wealth-button-primary:hover {
+  background: rgb(var(--ws-gray-800));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.wealth-button-secondary {
+  background: white;
+  color: rgb(var(--ws-gray-700));
+  border: 1px solid rgb(var(--ws-gray-300));
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wealth-button-secondary:hover {
+  background: rgb(var(--ws-gray-50));
+  border-color: rgb(var(--ws-gray-400));
+}
+
+/* Clean form inputs */
+.wealth-input {
+  background: white;
+  border: 1px solid rgb(var(--ws-gray-300));
+  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.wealth-input:focus {
+  outline: none;
+  border-color: rgb(var(--ws-teal));
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+/* Minimal layout helpers */
+.wealth-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.wealth-section {
+  padding: 4rem 0;
+}
+
+.wealth-section-lg {
+  padding: 6rem 0;
+}
+
+/* Subtle hero section */
+.wealth-hero {
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--ws-gray-50)) 0%,
+    white 100%
+  );
+  border-bottom: 1px solid rgb(var(--ws-gray-200));
+}
+
+/* Clean navigation */
+.wealth-nav {
+  background: white;
+  border-bottom: 1px solid rgb(var(--ws-gray-200));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Status indicators */
+.wealth-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgb(var(--ws-gray-100));
+  color: rgb(var(--ws-gray-700));
+}
+
+.wealth-badge-success {
+  background: rgb(34, 197, 94, 0.1);
+  color: rgb(21, 128, 61);
+}
+
+.wealth-badge-warning {
+  background: rgb(251, 191, 36, 0.1);
+  color: rgb(146, 64, 14);
+}
+
+.wealth-badge-error {
+  background: rgb(239, 68, 68, 0.1);
+  color: rgb(153, 27, 27);
 }
