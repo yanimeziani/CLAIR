@@ -205,6 +205,105 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex items-center space-x-3">
+              {/* CIUSSCN Tools Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative h-10 w-10 rounded-full bg-white/50 hover:bg-white/80 border border-white/50">
+                    <Globe className="h-5 w-5 text-gray-700" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 border-0 bg-white/95 backdrop-blur-xl shadow-2xl">
+                  <div className="p-4 border-b border-gray-100">
+                    <h3 className="font-semibold text-gray-900">Outils CIUSSS-CN</h3>
+                    <p className="text-sm text-gray-600">Accès sécurisé aux systèmes</p>
+                  </div>
+                  
+                  <DropdownMenuItem className="p-0">
+                    <a 
+                      href="https://intranet.ciusss-cn.ca" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full p-3 hover:bg-blue-50/50 transition-colors flex items-center space-x-3"
+                    >
+                      <div className="bg-blue-100 p-2 rounded-lg">
+                        <Globe className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-900 block">Intranet CIUSSS</span>
+                        <span className="text-xs text-gray-500">Portail principal</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-gray-400" />
+                    </a>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem className="p-0">
+                    <a 
+                      href="https://dossierpatient.ciusss-cn.ca" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full p-3 hover:bg-green-50/50 transition-colors flex items-center space-x-3"
+                    >
+                      <div className="bg-green-100 p-2 rounded-lg">
+                        <FileText className="h-4 w-4 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-900 block">Dossier Patient</span>
+                        <span className="text-xs text-gray-500">Système de dossiers</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-gray-400" />
+                    </a>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem className="p-0">
+                    <a 
+                      href="https://formation.ciusss-cn.ca" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full p-3 hover:bg-purple-50/50 transition-colors flex items-center space-x-3"
+                    >
+                      <div className="bg-purple-100 p-2 rounded-lg">
+                        <Brain className="h-4 w-4 text-purple-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-900 block">Formation</span>
+                        <span className="text-xs text-gray-500">Plateforme d'apprentissage</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-gray-400" />
+                    </a>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem className="p-0">
+                    <a 
+                      href="https://securite.ciusss-cn.ca" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full p-3 hover:bg-orange-50/50 transition-colors flex items-center space-x-3"
+                    >
+                      <div className="bg-orange-100 p-2 rounded-lg">
+                        <Shield className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-900 block">Sécurité</span>
+                        <span className="text-xs text-gray-500">Portail sécurité</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-gray-400" />
+                    </a>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <div className="p-3">
+                    <div className="flex items-start space-x-2">
+                      <Shield className="h-4 w-4 text-blue-600 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-medium text-blue-900">Accès Sécurisé</p>
+                        <p className="text-xs text-blue-700">Authentification réseau requise</p>
+                      </div>
+                    </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               {/* Notifications with advanced styling */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -264,9 +363,10 @@ export default function DashboardPage() {
                               <X className="h-3 w-3" />
                             </Button>
                           </div>
-                          <p className="text-sm text-gray-700 line-clamp-2 mb-2">
-                            {notification.content}
-                          </p>
+                          <div 
+                            className="text-sm text-gray-700 mb-2 rich-content prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: notification.content }}
+                          />
                           <p className="text-xs text-gray-500">
                             {new Date(notification.creationDate).toLocaleString('fr-FR', {
                               day: '2-digit',
@@ -334,81 +434,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Beautiful Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-          <Card className="border-0 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm mb-1">Résidents actifs</p>
-                  <p className="text-3xl font-bold">{stats.totalPatients}</p>
-                </div>
-                <div className="bg-white/20 p-3 rounded-xl">
-                  <Users className="h-8 w-8" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-xl shadow-green-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100 text-sm mb-1">Rapports aujourd'hui</p>
-                  <p className="text-3xl font-bold">{stats.todayReports}</p>
-                </div>
-                <div className="bg-white/20 p-3 rounded-xl">
-                  <FileText className="h-8 w-8" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-xl shadow-amber-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-amber-100 text-sm mb-1">Messages urgents</p>
-                  <p className="text-3xl font-bold">{stats.urgentMessages}</p>
-                </div>
-                <div className="bg-white/20 p-3 rounded-xl">
-                  <AlertTriangle className="h-8 w-8" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-xl shadow-purple-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-purple-100 text-sm mb-1">Tâches complétées</p>
-                  <p className="text-3xl font-bold">{stats.completedTasks}</p>
-                </div>
-                <div className="bg-white/20 p-3 rounded-xl">
-                  <CheckCircle className="h-8 w-8" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Enhanced Quick Actions */}
+        {/* Main Actions Section */}
         <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50 mb-12">
           <CardHeader className="pb-6">
             <div className="flex items-center space-x-3">
               <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl shadow-lg">
-                <Zap className="h-6 w-6 text-white" />
+                <Target className="h-6 w-6 text-white" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-bold text-gray-900">Actions Rapides</CardTitle>
-                <p className="text-gray-600">Accès direct aux fonctionnalités principales</p>
+                <CardTitle className="text-2xl font-bold text-gray-900">Actions Principales</CardTitle>
+                <p className="text-gray-600">Accès rapide aux fonctionnalités essentielles</p>
               </div>
             </div>
           </CardHeader>
           
           <CardContent className="pt-0">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               <button 
                 onClick={() => router.push('/reports/new')}
                 className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
@@ -474,102 +515,24 @@ export default function DashboardPage() {
                   <span className="font-semibold text-gray-800 text-center">Gérer Résidents</span>
                 </div>
               </button>
+
+              <button 
+                onClick={() => router.push('/communications')}
+                className="group relative overflow-hidden bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 border-2 border-indigo-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative z-10 flex flex-col items-center space-y-3">
+                  <div className="bg-indigo-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
+                    <MessageSquare className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="font-semibold text-gray-800 text-center">Voir Messages</span>
+                </div>
+              </button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Enhanced External Tools */}
-        <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50 mb-12">
-          <CardHeader className="pb-6">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-br from-indigo-500 to-blue-600 p-3 rounded-xl shadow-lg">
-                <Globe className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl font-bold text-gray-900">Outils CIUSSS-CN</CardTitle>
-                <p className="text-gray-600">Accès sécurisé aux systèmes externes</p>
-              </div>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="pt-0">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <a 
-                href="https://intranet.ciusss-cn.ca" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-              >
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="bg-blue-500 p-2 rounded-lg shadow">
-                    <Globe className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-medium text-gray-800 text-center text-sm">Intranet CIUSSS</span>
-                  <ExternalLink className="h-3 w-3 text-gray-400" />
-                </div>
-              </a>
-              
-              <a 
-                href="https://dossierpatient.ciusss-cn.ca" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-              >
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="bg-green-500 p-2 rounded-lg shadow">
-                    <FileText className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-medium text-gray-800 text-center text-sm">Dossier Patient</span>
-                  <ExternalLink className="h-3 w-3 text-gray-400" />
-                </div>
-              </a>
-              
-              <a 
-                href="https://formation.ciusss-cn.ca" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-              >
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="bg-purple-500 p-2 rounded-lg shadow">
-                    <Brain className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-medium text-gray-800 text-center text-sm">Formation</span>
-                  <ExternalLink className="h-3 w-3 text-gray-400" />
-                </div>
-              </a>
-              
-              <a 
-                href="https://securite.ciusss-cn.ca" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 border-2 border-orange-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-              >
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="bg-orange-500 p-2 rounded-lg shadow">
-                    <Shield className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-medium text-gray-800 text-center text-sm">Sécurité</span>
-                  <ExternalLink className="h-3 w-3 text-gray-400" />
-                </div>
-              </a>
-            </div>
-            
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
-              <div className="flex items-start space-x-3">
-                <div className="bg-blue-100 p-2 rounded-lg">
-                  <Shield className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-blue-900 mb-1">Accès Sécurisé</h4>
-                  <p className="text-sm text-blue-700">
-                    Liens vers les systèmes officiels CIUSSS-CN. Authentification réseau requise pour l'accès.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-3 gap-8">

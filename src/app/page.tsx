@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Shield, Heart, Calendar, ArrowRight, CheckCircle, Lock, 
-  Award
+  Award, Sparkles, Star, Users, Brain, Activity
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -59,40 +59,39 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header - Simplified for internal tool */}
-      <header className="wealth-nav sticky top-0 z-50">
-        <div className="wealth-container py-4 sm:py-6 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Floating Header */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-white/50 shadow-lg shadow-blue-100/50">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="h-7 w-7 sm:h-8 sm:w-8">
-                <Image 
-                  src="/logo.svg" 
-                  alt="CLAIR Logo" 
-                  width={32} 
-                  height={32}
-                  className="h-full w-full"
-                />
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Heart className="h-6 w-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-400 rounded-full animate-pulse"></div>
               </div>
-              <span className="text-lg sm:text-xl font-bold text-gray-800">
-                CLAIR
-              </span>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  CLAIR
+                </h1>
+                <p className="text-sm text-gray-600">Centre Logiciel d'Aide aux Interventions</p>
+              </div>
             </div>
             
-            {/* Login Button Only */}
             <button 
               onClick={handleLogin}
               disabled={isLoading}
-              className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl hover:scale-105"
             >
               {isLoading ? (
                 <>
-                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span className="hidden sm:inline">Connexion...</span>
                 </>
               ) : (
                 <>
-                  <Lock className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Lock className="h-4 w-4" />
                   <span className="hidden sm:inline">Se connecter</span>
                 </>
               )}
@@ -101,84 +100,134 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section - Mesh Gradient Background */}
-      <section className="relative min-h-screen overflow-hidden">
-        {/* Mesh Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-teal-100/40 via-transparent to-transparent"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-slate-50/20 to-transparent"></div>
+      {/* Hero Section */}
+      <section className="relative min-h-screen overflow-hidden flex items-center">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-40 right-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-20 left-40 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
         
-        {/* Floating Elements - Subtle accents */}
-        <div className="absolute top-16 left-4 sm:top-20 sm:left-10 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-400/60 rounded-full animate-pulse"></div>
-        <div className="absolute top-32 right-8 sm:top-40 sm:right-20 w-1 h-1 bg-blue-400/60 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute bottom-16 left-8 sm:bottom-20 sm:left-20 w-1 h-1 sm:w-1.5 sm:h-1.5 bg-slate-400/60 rounded-full animate-pulse delay-500"></div>
-        
-        <div className="px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-center min-h-screen text-center text-gray-800 max-w-7xl mx-auto">
-          {/* Badge */}
-          <div className="mb-6 sm:mb-8">
-            <div className="inline-flex items-center space-x-2 sm:space-x-3 bg-white/80 backdrop-blur-md border border-teal-200/50 rounded-full px-3 py-2 sm:px-6 sm:py-3 shadow-lg shadow-teal-500/10">
-              <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
-              <span className="text-xs sm:text-sm font-medium text-gray-700">Québec • Innovation DI-TSA</span>
-              <span className="text-amber-500 text-sm">⚜️</span>
-            </div>
+        {/* Floating Icons */}
+        <div className="absolute top-20 left-10 animate-float">
+          <div className="w-16 h-16 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg flex items-center justify-center">
+            <Users className="h-8 w-8 text-blue-500" />
           </div>
-          
-          {/* Main Heading */}
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 max-w-6xl mx-auto leading-tight">
-            <span className="block sm:inline text-gray-800">L'avenir des soins</span>
-            <br className="hidden sm:block" /><span className="hidden sm:inline"> </span>
-            <span className="bg-gradient-to-r from-teal-600 via-blue-600 to-slate-700 bg-clip-text text-transparent block sm:inline">
-              commence ici
-            </span>
-          </h1>
-          
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 max-w-3xl mx-auto text-gray-600 leading-relaxed px-4">
-            Révolutionnez la gestion de vos résidences DI-TSA avec l'intelligence artificielle, 
-            des outils intuitifs et une sécurité sans compromis.
-          </p>
-          
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-12 sm:mb-16 px-4">
-            <button 
-              onClick={handleLogin}
-              disabled={isLoading}
-              className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold shadow-2xl shadow-cyan-500/25 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 min-h-[44px]"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center space-x-3">
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Connexion...</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center space-x-3">
-                  <span>Découvrir CLAIR</span>
-                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                </div>
-              )}
-            </button>
-            <button className="w-full sm:w-auto bg-white/70 backdrop-blur-sm border border-gray-200 text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold hover:bg-white/90 transition-all duration-300 hover:scale-105 min-h-[44px] shadow-lg">
-              <div className="flex items-center justify-center space-x-3">
-                <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span>Démo guidée</span>
+        </div>
+        <div className="absolute top-40 right-10 animate-float animation-delay-1000">
+          <div className="w-16 h-16 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg flex items-center justify-center">
+            <Brain className="h-8 w-8 text-purple-500" />
+          </div>
+        </div>
+        <div className="absolute bottom-40 left-20 animate-float animation-delay-2000">
+          <div className="w-16 h-16 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg flex items-center justify-center">
+            <Activity className="h-8 w-8 text-indigo-500" />
+          </div>
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-6xl mx-auto text-center">
+            {/* Badge */}
+            <div className="mb-8">
+              <div className="inline-flex items-center space-x-3 bg-white/80 backdrop-blur-xl border border-blue-200/50 rounded-full px-6 py-3 shadow-xl shadow-blue-500/10">
+                <Star className="h-5 w-5 text-amber-500" />
+                <span className="text-sm font-semibold text-gray-700">Québec • Innovation en Santé DI-TSA</span>
+                <Sparkles className="h-5 w-5 text-blue-500" />
               </div>
-            </button>
-          </div>
+            </div>
+            
+            {/* Main Heading */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight">
+              <span className="text-gray-800">L'avenir des soins</span>
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                commence ici
+              </span>
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-lg sm:text-xl lg:text-2xl mb-12 max-w-4xl mx-auto text-gray-600 leading-relaxed">
+              Révolutionnez la gestion de vos résidences DI-TSA avec l'intelligence artificielle, 
+              des outils intuitifs et une sécurité sans compromis.
+            </p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+              <button 
+                onClick={handleLogin}
+                disabled={isLoading}
+                className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-2xl text-lg font-semibold shadow-2xl shadow-blue-500/25 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 min-h-[56px]"
+              >
+                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                {isLoading ? (
+                  <div className="relative flex items-center justify-center space-x-3">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Connexion...</span>
+                  </div>
+                ) : (
+                  <div className="relative flex items-center justify-center space-x-3">
+                    <span>Accéder à CLAIR</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                )}
+              </button>
+              
+              <button className="group bg-white/80 backdrop-blur-xl border border-gray-200 text-gray-700 px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white/90 transition-all duration-300 hover:scale-105 min-h-[56px] shadow-xl">
+                <div className="flex items-center justify-center space-x-3">
+                  <Calendar className="h-5 w-5 group-hover:rotate-12 transition-transform" />
+                  <span>Voir la démo</span>
+                </div>
+              </button>
+            </div>
 
-          {/* Trust Indicators */}
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-8 text-xs sm:text-sm text-gray-600 px-4">
-            <div className="flex items-center space-x-2 sm:space-x-3 bg-white/60 backdrop-blur-md border border-gray-200/50 rounded-full px-3 sm:px-4 py-2 shadow-lg shadow-teal-500/10">
-              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
-              <span>Sécurité locale</span>
+            {/* Enhanced Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+              <Card className="border-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-blue-100/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <Shield className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">Sécurité Avancée</h3>
+                  <p className="text-gray-600">Protection des données avec authentification locale et chiffrement de bout en bout</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-purple-100/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <Brain className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">IA Intégrée</h3>
+                  <p className="text-gray-600">Assistance intelligente pour la rédaction et l'analyse des rapports médicaux</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="border-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-indigo-100/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <Users className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">Collaboration</h3>
+                  <p className="text-gray-600">Travail d'équipe simplifié avec communication en temps réel et partage sécurisé</p>
+                </CardContent>
+              </Card>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-3 bg-white/60 backdrop-blur-md border border-gray-200/50 rounded-full px-3 sm:px-4 py-2 shadow-lg shadow-teal-500/10">
-              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
-              <span>Données privées</span>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-3 bg-white/60 backdrop-blur-md border border-gray-200/50 rounded-full px-3 sm:px-4 py-2 shadow-lg shadow-teal-500/10">
-              <Award className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500" />
-              <span>Projet pilote</span>
+
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-600">
+              <div className="flex items-center space-x-3 bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-full px-4 py-2 shadow-lg">
+                <Shield className="h-4 w-4 text-blue-500" />
+                <span>Conformité HIPAA</span>
+              </div>
+              <div className="flex items-center space-x-3 bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-full px-4 py-2 shadow-lg">
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                <span>Données locales</span>
+              </div>
+              <div className="flex items-center space-x-3 bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-full px-4 py-2 shadow-lg">
+                <Award className="h-4 w-4 text-amber-500" />
+                <span>Innovation Québec</span>
+              </div>
             </div>
           </div>
         </div>
