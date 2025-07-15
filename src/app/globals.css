@@ -809,60 +809,84 @@
   color: rgb(153, 27, 27);
 }
 
-/* Rich Text Content Rendering */
-.rich-content {
-  @apply prose prose-sm max-w-none;
-}
-
+/* Rich Text Content - Simple Implementation */
 .rich-content h1 {
-  @apply text-xl font-bold text-gray-900 mb-2;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: rgb(31 41 55);
+  margin-bottom: 0.5rem;
 }
 
 .rich-content h2 {
-  @apply text-lg font-bold text-gray-900 mb-2;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: rgb(31 41 55);
+  margin-bottom: 0.5rem;
 }
 
 .rich-content h3 {
-  @apply text-base font-bold text-gray-900 mb-2;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgb(31 41 55);
+  margin-bottom: 0.5rem;
 }
 
 .rich-content p {
-  @apply text-gray-800 mb-2 leading-relaxed;
+  color: rgb(55 65 81);
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
 }
 
 .rich-content strong {
-  @apply font-bold text-gray-900;
+  font-weight: 700;
+  color: rgb(31 41 55);
 }
 
 .rich-content em {
-  @apply italic text-gray-700;
+  font-style: italic;
+  color: rgb(75 85 99);
 }
 
 .rich-content u {
-  @apply underline;
+  text-decoration: underline;
 }
 
 .rich-content mark,
 .rich-content .highlight {
-  @apply bg-yellow-200 px-1 rounded;
+  background-color: rgb(254 240 138);
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
 }
 
 .rich-content ul {
-  @apply list-disc list-inside mb-2 space-y-1;
+  list-style-type: disc;
+  list-style-position: inside;
+  margin-bottom: 0.5rem;
 }
 
 .rich-content ol {
-  @apply list-decimal list-inside mb-2 space-y-1;
+  list-style-type: decimal;
+  list-style-position: inside;
+  margin-bottom: 0.5rem;
 }
 
 .rich-content li {
-  @apply text-gray-800;
+  color: rgb(55 65 81);
+  margin-bottom: 0.25rem;
 }
 
 .rich-content blockquote {
-  @apply border-l-4 border-gray-300 pl-4 italic text-gray-600;
+  border-left: 4px solid rgb(209 213 219);
+  padding-left: 1rem;
+  font-style: italic;
+  color: rgb(107 114 128);
 }
 
 .rich-content a {
-  @apply text-blue-600 hover:text-blue-800 underline;
+  color: rgb(37 99 235);
+  text-decoration: underline;
+}
+
+.rich-content a:hover {
+  color: rgb(29 78 216);
 }
