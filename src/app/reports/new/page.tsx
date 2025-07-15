@@ -236,7 +236,7 @@ export default function NewReportPage() {
               <SelectValue placeholder={`Sélectionner ${field.fieldName.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
-              {field.options.map((option: string) => (
+              {field.options.filter((option: string) => option && option.trim()).map((option: string) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>

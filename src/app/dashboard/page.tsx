@@ -137,12 +137,12 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen ws-gradient-main">
-      {/* Top Navigation */}
+      {/* Top Navigation - Mobile Optimized */}
       <header className="bg-white/90 backdrop-blur-lg border-b border-border sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="h-8 w-8">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+              <div className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0">
                 <Image 
                   src="/logo.svg" 
                   alt="Logo CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles" 
@@ -151,16 +151,16 @@ export default function DashboardPage() {
                   className="h-full w-full"
                 />
               </div>
-              <div>
-                <h1 className="text-xl font-semibold text-foreground">CLAIR</h1>
-                <p className="text-sm text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-semibold text-foreground">CLAIR</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">
                   {user?.isReplacement ? `Remplacement: ${user.name.replace('Remplacement: ', '')}` : user?.name}
                   {user?.role && !user?.isReplacement && ` • ${user.role}`}
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
               {/* Notifications Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+                <DropdownMenuContent align="end" className="w-72 sm:w-80 max-h-96 overflow-y-auto">
                   <div className="flex items-center justify-between p-3 border-b">
                     <h3 className="font-semibold">Notifications</h3>
                     {notifications.length > 0 && (
@@ -251,93 +251,93 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-semibold text-foreground mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground mb-2">
             Bonjour {user?.isReplacement ? user.name.replace('Remplacement: ', '') : user?.name?.split(' ')[0]}
           </h2>
-          <p className="text-base text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Voici un aperçu de vos activités importantes
           </p>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg border p-6 mb-6">
+        <div className="bg-white rounded-lg border p-4 sm:p-6 mb-6">
           <div className="flex items-center mb-4">
             <div className="bg-primary/10 p-2 rounded-lg mr-3">
-              <Plus className="h-5 w-5 text-primary" />
+              <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground">Actions Rapides</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">Actions Rapides</h3>
           </div>
           
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
             <button 
               onClick={() => router.push('/reports/new')}
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
             >
-              <div className="bg-blue-500 p-2 rounded-lg mb-2">
-                <Plus className="h-4 w-4 text-white" />
+              <div className="bg-blue-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
+                <Plus className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700">Nouveau Rapport</span>
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Nouveau Rapport</span>
             </button>
             
             <QuickObservationForm 
               trigger={
-                <button className="flex flex-col items-center p-4 rounded-lg border-2 border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group w-full">
-                  <div className="bg-green-500 p-2 rounded-lg mb-2">
-                    <FileText className="h-4 w-4 text-white" />
+                <button className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group w-full min-h-[80px] sm:min-h-[auto]">
+                  <div className="bg-green-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
+                    <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
-                  <span className="font-medium text-xs text-gray-700">Nouvelle Observation</span>
+                  <span className="font-medium text-xs text-gray-700 text-center leading-tight">Nouvelle Observation</span>
                 </button>
               }
             />
             
             <button 
               onClick={() => router.push('/bristol')}
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-cyan-200 bg-cyan-50 hover:bg-cyan-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-cyan-200 bg-cyan-50 hover:bg-cyan-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
             >
-              <div className="bg-cyan-500 p-2 rounded-lg mb-2">
-                <BarChart3 className="h-4 w-4 text-white" />
+              <div className="bg-cyan-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
+                <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700">Suivi Bristol</span>
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Suivi Bristol</span>
             </button>
             
             <button 
               onClick={() => router.push('/communications/new')}
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50 hover:bg-yellow-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50 hover:bg-yellow-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
             >
-              <div className="bg-yellow-500 p-2 rounded-lg mb-2">
-                <MessageSquare className="h-4 w-4 text-white" />
+              <div className="bg-yellow-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
+                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700">Envoyer Message</span>
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Envoyer Message</span>
             </button>
             
             <button 
               onClick={() => router.push('/patients')}
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
             >
-              <div className="bg-purple-500 p-2 rounded-lg mb-2">
-                <Users className="h-4 w-4 text-white" />
+              <div className="bg-purple-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700">Gérer Résidents</span>
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Gérer Résidents</span>
             </button>
           </div>
         </div>
 
         {/* CIUSSS-CN External Tools */}
-        <div className="bg-white rounded-lg border p-6 mb-6">
+        <div className="bg-white rounded-lg border p-4 sm:p-6 mb-6">
           <div className="flex items-center mb-4">
             <div className="bg-blue-500/10 p-2 rounded-lg mr-3">
-              <Globe className="h-5 w-5 text-blue-500" />
+              <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Outils CIUSSS-CN</h3>
-              <p className="text-xs text-muted-foreground">Accès rapide aux systèmes internes du réseau</p>
+              <h3 className="text-base sm:text-lg font-semibold text-foreground">Outils CIUSSS-CN</h3>
+              <p className="text-xs text-muted-foreground hidden sm:block">Accès rapide aux systèmes internes du réseau</p>
             </div>
           </div>
           
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             <a 
               href="https://intranet.ciusss-cn.ca" 
               target="_blank" 
@@ -407,11 +407,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Left Column - Communications */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-8">
             {/* Today's Important Messages */}
-            <div className="bg-white rounded-lg border p-6">
+            <div className="bg-white rounded-lg border p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
                   <div className="bg-primary/10 p-2 rounded-lg mr-3">
@@ -462,7 +462,7 @@ export default function DashboardPage() {
                 
                 <button 
                   onClick={() => router.push('/communications')}
-                  className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg w-full text-sm transition-colors duration-200"
+                  className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-medium py-2 px-4 rounded-lg w-full text-sm transition-colors duration-200"
                 >
                   <MessageSquare className="h-4 w-4 mr-2 inline" />
                   Voir toutes les communications
@@ -472,9 +472,9 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Column - Residents & Admin */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Residents Quick View */}
-            <div className="bg-white rounded-lg border p-6">
+            <div className="bg-white rounded-lg border p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
                   <div className="bg-success/10 p-2 rounded-lg mr-3">
@@ -527,14 +527,14 @@ export default function DashboardPage() {
 
             {/* Admin Panel (only for admins) - Simplified */}
             {user?.role === 'admin' && (
-              <div className="bg-white rounded-lg border p-6">
+              <div className="bg-white rounded-lg border p-4 sm:p-6">
                 <div className="flex items-center mb-4">
                   <div className="bg-orange-500/10 p-2 rounded-lg mr-3">
                     <Settings className="h-5 w-5 text-orange-500" />
                   </div>
                   <h3 className="text-lg font-semibold text-foreground">Administration</h3>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <button 
                     onClick={() => router.push('/admin/users')}
                     className="flex items-center justify-center p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"

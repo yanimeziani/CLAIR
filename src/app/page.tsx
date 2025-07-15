@@ -3,9 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  Shield, Users, MessageSquare, FileText, Heart, Activity, Calendar, BarChart3, 
-  Download, Database, Star, ArrowRight, CheckCircle, Sparkles, Lock, 
-  Clock, Zap, Award, Target
+  Shield, Heart, Calendar, ArrowRight, CheckCircle, Lock, 
+  Award
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -61,12 +60,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
+      {/* Header - Simplified for internal tool */}
       <header className="wealth-nav sticky top-0 z-50">
-        <div className="wealth-container py-4">
+        <div className="wealth-container py-4 sm:py-6 px-4">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="h-8 w-8">
+            <div className="flex items-center space-x-2">
+              <div className="h-7 w-7 sm:h-8 sm:w-8">
                 <Image 
                   src="/logo.svg" 
                   alt="CLAIR Logo" 
@@ -75,134 +74,110 @@ export default function Home() {
                   className="h-full w-full"
                 />
               </div>
-              <span className="heading-md">
+              <span className="text-lg sm:text-xl font-bold text-gray-800">
                 CLAIR
               </span>
             </div>
             
-            <div className="flex items-center space-x-8">
-              <div className="hidden lg:flex items-center space-x-8">
-                <button className="body-text hover:text-gray-900 font-medium transition-colors">
-                  Fonctionnalités
-                </button>
-                <button className="body-text hover:text-gray-900 font-medium transition-colors">
-                  Avantages
-                </button>
-                <button className="body-text hover:text-gray-900 font-medium transition-colors">
-                  Contact
-                </button>
-              </div>
-              <button 
-                onClick={handleLogin}
-                disabled={isLoading}
-                className="wealth-button-primary"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Connexion...</span>
-                  </>
-                ) : (
-                  <>
-                    <Lock className="h-4 w-4" />
-                    <span>Se connecter</span>
-                  </>
-                )}
-              </button>
-            </div>
+            {/* Login Button Only */}
+            <button 
+              onClick={handleLogin}
+              disabled={isLoading}
+              className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span className="hidden sm:inline">Connexion...</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Se connecter</span>
+                </>
+              )}
+            </button>
           </nav>
         </div>
       </header>
 
-      {/* Hero Section - Enhanced with mockingjay theme */}
+      {/* Hero Section - Mesh Gradient Background */}
       <section className="relative min-h-screen overflow-hidden">
-        {/* Background Video */}
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover blur-md scale-105"
-          style={{ filter: 'blur(8px) brightness(0.6)' }}
-        >
-          <source src="/loop-bg.mp4" type="video/mp4" />
-          {/* Fallback background image */}
-          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{backgroundImage: "url('/bg.jpg')"}}></div>
-        </video>
+        {/* Mesh Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-teal-100/40 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-slate-50/20 to-transparent"></div>
         
-        {/* Multi-layer overlay for optimal text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/20 via-slate-900/40 to-slate-900/60"></div>
-        <div className="absolute inset-0 backdrop-blur-sm bg-slate-900/10"></div>
+        {/* Floating Elements - Subtle accents */}
+        <div className="absolute top-16 left-4 sm:top-20 sm:left-10 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-400/60 rounded-full animate-pulse"></div>
+        <div className="absolute top-32 right-8 sm:top-40 sm:right-20 w-1 h-1 bg-blue-400/60 rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute bottom-16 left-8 sm:bottom-20 sm:left-20 w-1 h-1 sm:w-1.5 sm:h-1.5 bg-slate-400/60 rounded-full animate-pulse delay-500"></div>
         
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-1 h-1 bg-red-400 rounded-full animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-20 w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse delay-500"></div>
-        
-        <div className="wealth-container relative z-10 flex flex-col justify-center min-h-screen text-center text-white">
+        <div className="px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col justify-center min-h-screen text-center text-gray-800 max-w-7xl mx-auto">
           {/* Badge */}
-          <div className="mb-8">
-            <div className="inline-flex items-center space-x-3 bg-white/15 backdrop-blur-md border border-white/30 rounded-full px-6 py-3 shadow-lg shadow-black/10">
-              <Heart className="h-4 w-4 text-red-400" />
-              <span className="text-sm font-medium">Québec • Innovation DI-TSA</span>
-              <span className="text-amber-400">⚜️</span>
+          <div className="mb-6 sm:mb-8">
+            <div className="inline-flex items-center space-x-2 sm:space-x-3 bg-white/80 backdrop-blur-md border border-teal-200/50 rounded-full px-3 py-2 sm:px-6 sm:py-3 shadow-lg shadow-teal-500/10">
+              <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
+              <span className="text-xs sm:text-sm font-medium text-gray-700">Québec • Innovation DI-TSA</span>
+              <span className="text-amber-500 text-sm">⚜️</span>
             </div>
           </div>
           
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 max-w-6xl mx-auto leading-tight">
-            L'avenir des soins
-            <br />
-            <span className="bg-gradient-to-r from-amber-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 max-w-6xl mx-auto leading-tight">
+            <span className="block sm:inline text-gray-800">L'avenir des soins</span>
+            <br className="hidden sm:block" /><span className="hidden sm:inline"> </span>
+            <span className="bg-gradient-to-r from-teal-600 via-blue-600 to-slate-700 bg-clip-text text-transparent block sm:inline">
               commence ici
             </span>
           </h1>
           
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-slate-300 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 max-w-3xl mx-auto text-gray-600 leading-relaxed px-4">
             Révolutionnez la gestion de vos résidences DI-TSA avec l'intelligence artificielle, 
             des outils intuitifs et une sécurité sans compromis.
           </p>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-12 sm:mb-16 px-4">
             <button 
               onClick={handleLogin}
               disabled={isLoading}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-2xl shadow-orange-500/25 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+              className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold shadow-2xl shadow-cyan-500/25 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 min-h-[44px]"
             >
               {isLoading ? (
-                <div className="flex items-center space-x-3">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="flex items-center justify-center space-x-3">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Connexion...</span>
                 </div>
               ) : (
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center justify-center space-x-3">
                   <span>Découvrir CLAIR</span>
-                  <ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
               )}
             </button>
-            <button className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/20 transition-all duration-300 hover:scale-105">
-              <div className="flex items-center space-x-3">
-                <Calendar className="h-5 w-5" />
+            <button className="w-full sm:w-auto bg-white/70 backdrop-blur-sm border border-gray-200 text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-base sm:text-lg font-semibold hover:bg-white/90 transition-all duration-300 hover:scale-105 min-h-[44px] shadow-lg">
+              <div className="flex items-center justify-center space-x-3">
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>Démo guidée</span>
               </div>
             </button>
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-slate-300">
-            <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 shadow-lg shadow-black/10">
-              <Shield className="h-4 w-4 text-blue-400" />
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-4 md:gap-8 text-xs sm:text-sm text-gray-600 px-4">
+            <div className="flex items-center space-x-2 sm:space-x-3 bg-white/60 backdrop-blur-md border border-gray-200/50 rounded-full px-3 sm:px-4 py-2 shadow-lg shadow-teal-500/10">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
               <span>Sécurité locale</span>
             </div>
-            <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 shadow-lg shadow-black/10">
-              <CheckCircle className="h-4 w-4 text-green-400" />
+            <div className="flex items-center space-x-2 sm:space-x-3 bg-white/60 backdrop-blur-md border border-gray-200/50 rounded-full px-3 sm:px-4 py-2 shadow-lg shadow-teal-500/10">
+              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
               <span>Données privées</span>
             </div>
-            <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 shadow-lg shadow-black/10">
-              <Award className="h-4 w-4 text-amber-400" />
+            <div className="flex items-center space-x-2 sm:space-x-3 bg-white/60 backdrop-blur-md border border-gray-200/50 rounded-full px-3 sm:px-4 py-2 shadow-lg shadow-teal-500/10">
+              <Award className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500" />
               <span>Projet pilote</span>
             </div>
           </div>

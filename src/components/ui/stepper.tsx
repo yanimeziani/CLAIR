@@ -12,7 +12,7 @@ const Stepper = React.forwardRef<
   <ol
     ref={ref}
     className={cn(
-      "flex items-center w-full text-sm font-medium text-center text-gray-500 dark:text-gray-400 sm:text-base",
+      "flex items-center w-full text-xs sm:text-sm font-medium text-center text-gray-500 dark:text-gray-400 overflow-x-auto pb-2",
       className
     )}
     {...props}
@@ -31,22 +31,22 @@ const StepperItem = React.forwardRef<
   <li
     ref={ref}
     className={cn(
-      "flex md:w-full items-center",
-      !isLast && "md:after:content-[''] md:after:w-full md:after:h-1 md:after:border-b md:after:border-gray-200 md:after:border-1 md:after:hidden sm:after:inline-block md:after:mx-6 xl:after:mx-10 dark:after:border-gray-700",
+      "flex w-full items-center min-w-0 relative",
+      !isLast && "after:content-[''] after:w-full after:h-0.5 after:bg-gray-200 dark:after:bg-gray-700 after:absolute after:top-1/2 after:-translate-y-1/2 after:left-8 sm:after:left-10 after:z-0",
       className
     )}
     {...props}
   >
     <span
       className={cn(
-        "flex items-center justify-center w-10 h-10 rounded-full lg:h-12 lg:w-12 shrink-0",
+        "flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full shrink-0 relative z-10 text-xs sm:text-sm font-medium",
         isCompleted && "bg-primary text-primary-foreground",
         isActive && !isCompleted && "bg-primary/20 text-primary border-2 border-primary",
         !isActive && !isCompleted && "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
       )}
     >
       {isCompleted ? (
-        <Check className="w-4 h-4 lg:w-5 lg:h-5" />
+        <Check className="w-3 h-3 sm:w-4 sm:h-4" />
       ) : (
         children
       )}
@@ -61,7 +61,7 @@ const StepperContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("mt-8", className)}
+    className={cn("mt-4 sm:mt-6 md:mt-8", className)}
     {...props}
   />
 ))
@@ -73,7 +73,7 @@ const StepperHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("mb-8", className)}
+    className={cn("mb-4 sm:mb-6 md:mb-8", className)}
     {...props}
   />
 ))
@@ -85,7 +85,7 @@ const StepperTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h2
     ref={ref}
-    className={cn("text-xl font-semibold leading-none tracking-tight", className)}
+    className={cn("text-lg sm:text-xl font-semibold leading-tight tracking-tight", className)}
     {...props}
   />
 ))
@@ -97,7 +97,7 @@ const StepperDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-xs sm:text-sm text-muted-foreground mt-1", className)}
     {...props}
   />
 ))
@@ -109,7 +109,7 @@ const StepperNavigation = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex justify-between mt-8", className)}
+    className={cn("flex flex-col-reverse gap-3 sm:flex-row sm:justify-between sm:gap-0 mt-6 sm:mt-8", className)}
     {...props}
   />
 ))
