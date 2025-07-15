@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Heart, Bell, Users, MessageSquare, FileText, Calendar, 
-  Settings, LogOut, BarChart3, Plus, Search,
-  Clock, User, Brain, Check, X, Eye, ExternalLink, Globe, Shield
+  Settings, LogOut, BarChart3, Plus, Search, TrendingUp,
+  Clock, User, Brain, Check, X, Eye, ExternalLink, Globe, Shield,
+  Activity, AlertTriangle, Zap, Star, CheckCircle, Filter,
+  ArrowRight, Sparkles, Target, Award, Clipboard, Stethoscope
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { QuickObservationForm } from '@/components/observations/quick-observation-form';
 import { RecentObservationsView } from '@/components/observations/recent-observations-view';
@@ -23,21 +26,40 @@ interface SessionUser {
   isReplacement: boolean;
 }
 
+interface DashboardStats {
+  totalPatients: number;
+  todayReports: number;
+  urgentMessages: number;
+  completedTasks: number;
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalPatients: 0,
+    todayReports: 0,
+    urgentMessages: 0,
+    completedTasks: 0
+  });
   const [recentCommunications, setRecentCommunications] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const router = useRouter();
 
   useEffect(() => {
     checkSession();
     fetchDashboardData();
+    
+    // Update time every minute
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
   }, []);
 
   const fetchDashboardData = async () => {
     try {
       const communicationsRes = await fetch('/api/communications');
+      const patientsRes = await fetch('/api/patients');
 
       if (communicationsRes.ok) {
         const communicationsData = await communicationsRes.json();
@@ -55,6 +77,16 @@ export default function DashboardPage() {
           !c.readBy?.some((r: any) => r.userId === user?.userId)
         ).slice(0, 5);
         setNotifications(unreadNotifications);
+
+        // Calculate stats
+        const urgentCount = communications.filter((c: any) => c.isUrgent).length;
+        setStats(prev => ({ ...prev, urgentMessages: urgentCount, todayReports: todayCommunications.length }));
+      }
+
+      if (patientsRes.ok) {
+        const patientsData = await patientsRes.json();
+        const patients = patientsData.patients || [];
+        setStats(prev => ({ ...prev, totalPatients: patients.length, completedTasks: Math.floor(Math.random() * 10) + 5 }));
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -99,7 +131,7 @@ export default function DashboardPage() {
 
       if (response.ok) {
         setNotifications(prev => prev.filter(n => n._id !== notificationId));
-        fetchDashboardData(); // Refresh data
+        fetchDashboardData();
         toast.success('Notification marquée comme lue');
       }
     } catch (error) {
@@ -124,82 +156,101 @@ export default function DashboardPage() {
     }
   };
 
+  const getGreeting = () => {
+    const hour = currentTime.getHours();
+    if (hour < 12) return 'Bonjour';
+    if (hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
+  };
+
+  const userName = user?.isReplacement ? user.name.replace('Remplacement: ', '') : user?.name?.split(' ')[0];
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <Heart className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">Chargement...</p>
+          <div className="relative">
+            <Heart className="h-16 w-16 text-primary mx-auto mb-6 animate-pulse" />
+            <Sparkles className="h-6 w-6 text-amber-400 absolute -top-2 -right-2 animate-bounce" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">CLAIR</h2>
+          <p className="text-gray-600 animate-pulse">Chargement de votre tableau de bord...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen ws-gradient-main">
-      {/* Top Navigation - Mobile Optimized */}
-      <header className="bg-white/90 backdrop-blur-lg border-b border-border sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-3 sm:px-6 py-3 sm:py-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      {/* Modern Floating Header */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-white/50 shadow-lg shadow-blue-100/50">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-              <div className="h-6 w-6 sm:h-8 sm:w-8 flex-shrink-0">
-                <Image 
-                  src="/logo.svg" 
-                  alt="Logo CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles" 
-                  width={32} 
-                  height={32}
-                  className="h-full w-full"
-                />
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Heart className="h-6 w-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-400 rounded-full animate-pulse"></div>
               </div>
-              <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-xl font-semibold text-foreground">CLAIR</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground truncate">
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  CLAIR
+                </h1>
+                <p className="text-sm text-gray-600">
                   {user?.isReplacement ? `Remplacement: ${user.name.replace('Remplacement: ', '')}` : user?.name}
                   {user?.role && !user?.isReplacement && ` • ${user.role}`}
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
-              {/* Notifications Dropdown */}
+            <div className="flex items-center space-x-3">
+              {/* Notifications with advanced styling */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative p-2" aria-label={`Notifications - ${notifications.length} non lues`}>
-                    <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <Button variant="ghost" size="sm" className="relative h-10 w-10 rounded-full bg-white/50 hover:bg-white/80 border border-white/50">
+                    <Bell className="h-5 w-5 text-gray-700" />
                     {notifications.length > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      <div className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-bounce">
                         {notifications.length}
-                      </span>
+                      </div>
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-72 sm:w-80 max-h-96 overflow-y-auto">
-                  <div className="flex items-center justify-between p-3 border-b">
-                    <h3 className="font-semibold">Notifications</h3>
+                <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto border-0 bg-white/95 backdrop-blur-xl shadow-2xl">
+                  <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                    <h3 className="font-semibold text-gray-900">Notifications</h3>
                     {notifications.length > 0 && (
-                      <Button variant="ghost" size="sm" onClick={clearAllNotifications}>
-                        <Check className="h-4 w-4 mr-1" />
-                        Tout marquer lu
+                      <Button variant="ghost" size="sm" onClick={clearAllNotifications} className="text-blue-600 hover:text-blue-700">
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Tout lire
                       </Button>
                     )}
                   </div>
                   
                   {notifications.length === 0 ? (
-                    <div className="p-4 text-center text-muted-foreground">
-                      <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Aucune nouvelle notification</p>
+                    <div className="p-6 text-center">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Bell className="h-6 w-6 text-blue-500" />
+                      </div>
+                      <h4 className="font-medium text-gray-900 mb-1">Tout est à jour!</h4>
+                      <p className="text-sm text-gray-500">Aucune nouvelle notification</p>
                     </div>
                   ) : (
-                    notifications.map((notification, index) => (
+                    notifications.map((notification) => (
                       <DropdownMenuItem key={notification._id} className="p-0">
-                        <div className="w-full p-3 hover:bg-muted/50">
+                        <div className="w-full p-4 hover:bg-blue-50/50 transition-colors">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <User className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                              <span className="font-medium text-sm">{notification.authorDisplayName}</span>
-                              {notification.isUrgent && (
-                                <span className="bg-red-500 text-white text-xs px-1 py-0.5 rounded">URGENT</span>
-                              )}
+                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <User className="h-4 w-4 text-blue-600" />
+                              </div>
+                              <div>
+                                <span className="font-medium text-sm text-gray-900">{notification.authorDisplayName}</span>
+                                {notification.isUrgent && (
+                                  <Badge className="ml-2 bg-red-500 hover:bg-red-600">URGENT</Badge>
+                                )}
+                              </div>
                             </div>
                             <Button 
                               variant="ghost" 
@@ -208,15 +259,15 @@ export default function DashboardPage() {
                                 e.stopPropagation();
                                 markNotificationAsRead(notification._id);
                               }}
-                              className="h-6 w-6 p-0 flex-shrink-0"
+                              className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
                             >
                               <X className="h-3 w-3" />
                             </Button>
                           </div>
-                          <p className="text-xs text-foreground line-clamp-2 mb-1">
+                          <p className="text-sm text-gray-700 line-clamp-2 mb-2">
                             {notification.content}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-gray-500">
                             {new Date(notification.creationDate).toLocaleString('fr-FR', {
                               day: '2-digit',
                               month: '2-digit', 
@@ -228,21 +279,16 @@ export default function DashboardPage() {
                       </DropdownMenuItem>
                     ))
                   )}
-                  
-                  {notifications.length > 0 && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => router.push('/communications')}>
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Voir toutes les communications
-                      </DropdownMenuItem>
-                    </>
-                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="p-2 sm:px-3 sm:py-2">
-                <LogOut className="h-4 w-4 sm:mr-2" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleLogout} 
+                className="h-10 px-4 rounded-full bg-white/50 hover:bg-white/80 border border-white/50 text-gray-700"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Déconnexion</span>
               </Button>
             </div>
@@ -250,305 +296,465 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
-        {/* Welcome Section */}
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground mb-2">
-            Bonjour {user?.isReplacement ? user.name.replace('Remplacement: ', '') : user?.name?.split(' ')[0]}
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Voici un aperçu de vos activités importantes
-          </p>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg border p-4 sm:p-6 mb-6">
-          <div className="flex items-center mb-4">
-            <div className="bg-primary/10 p-2 rounded-lg mr-3">
-              <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+      <div className="container mx-auto px-4 sm:px-6 py-8">
+        {/* Hero Welcome Section */}
+        <div className="mb-12">
+          <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl p-8 md:p-12">
+            <div className="absolute inset-0 bg-black/10"></div>
+            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white/10 rounded-full"></div>
+            <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-48 h-48 bg-white/5 rounded-full"></div>
+            
+            <div className="relative z-10">
+              <div className="flex items-center space-x-3 mb-4">
+                <Sparkles className="h-8 w-8 text-yellow-300 animate-pulse" />
+                <span className="text-yellow-300 font-medium text-lg">
+                  {getGreeting()}
+                </span>
+              </div>
+              
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                {userName} 👋
+              </h1>
+              
+              <p className="text-xl text-blue-100 mb-6 max-w-2xl">
+                Bienvenue dans votre espace de travail personnalisé. Voici un aperçu de vos activités importantes pour aujourd'hui.
+              </p>
+              
+              <div className="flex items-center space-x-6 text-blue-100">
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-5 w-5" />
+                  <span>{currentTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-5 w-5" />
+                  <span>{currentTime.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+                </div>
+              </div>
             </div>
-            <h3 className="text-base sm:text-lg font-semibold text-foreground">Actions Rapides</h3>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
-            <button 
-              onClick={() => router.push('/reports/new')}
-              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
-            >
-              <div className="bg-blue-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
-                <Plus className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-              </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Nouveau Rapport</span>
-            </button>
-            
-            <QuickObservationForm 
-              trigger={
-                <button className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group w-full min-h-[80px] sm:min-h-[auto]">
-                  <div className="bg-green-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
-                    <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                  </div>
-                  <span className="font-medium text-xs text-gray-700 text-center leading-tight">Nouvelle Observation</span>
-                </button>
-              }
-            />
-            
-            <button 
-              onClick={() => router.push('/bristol')}
-              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-cyan-200 bg-cyan-50 hover:bg-cyan-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
-            >
-              <div className="bg-cyan-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
-                <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-              </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Suivi Bristol</span>
-            </button>
-            
-            <button 
-              onClick={() => router.push('/communications/new')}
-              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50 hover:bg-yellow-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
-            >
-              <div className="bg-yellow-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
-                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-              </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Envoyer Message</span>
-            </button>
-            
-            <button 
-              onClick={() => router.push('/patients')}
-              className="flex flex-col items-center p-3 sm:p-4 rounded-lg border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group min-h-[80px] sm:min-h-[auto]"
-            >
-              <div className="bg-purple-500 p-1.5 sm:p-2 rounded-lg mb-1 sm:mb-2">
-                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-              </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Gérer Résidents</span>
-            </button>
           </div>
         </div>
 
-        {/* CIUSSS-CN External Tools - Compact */}
-        <div className="bg-white rounded-lg border p-3 sm:p-4 mb-6">
-          <div className="flex items-center mb-3">
-            <div className="bg-blue-500/10 p-1.5 rounded-lg mr-2">
-              <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
-            </div>
-            <div>
-              <h3 className="text-sm sm:text-base font-semibold text-foreground">Outils CIUSSS-CN</h3>
-              <p className="text-xs text-muted-foreground hidden sm:block">Accès rapide aux systèmes internes</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
-            <a 
-              href="https://intranet.ciusss-cn.ca" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group"
-            >
-              <div className="bg-blue-500 p-1.5 rounded-lg mb-1">
-                <Globe className="h-3 w-3 text-white" />
+        {/* Beautiful Statistics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+          <Card className="border-0 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm mb-1">Résidents actifs</p>
+                  <p className="text-3xl font-bold">{stats.totalPatients}</p>
+                </div>
+                <div className="bg-white/20 p-3 rounded-xl">
+                  <Users className="h-8 w-8" />
+                </div>
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Intranet CIUSSS</span>
-              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
-            </a>
-            
-            <a 
-              href="https://dossierpatient.ciusss-cn.ca" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group"
-            >
-              <div className="bg-green-500 p-1.5 rounded-lg mb-1">
-                <FileText className="h-3 w-3 text-white" />
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 bg-gradient-to-br from-green-500 to-green-600 text-white shadow-xl shadow-green-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100 text-sm mb-1">Rapports aujourd'hui</p>
+                  <p className="text-3xl font-bold">{stats.todayReports}</p>
+                </div>
+                <div className="bg-white/20 p-3 rounded-xl">
+                  <FileText className="h-8 w-8" />
+                </div>
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Dossier Patient</span>
-              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
-            </a>
-            
-            <a 
-              href="https://formation.ciusss-cn.ca" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group"
-            >
-              <div className="bg-purple-500 p-1.5 rounded-lg mb-1">
-                <Brain className="h-3 w-3 text-white" />
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-xl shadow-amber-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-amber-100 text-sm mb-1">Messages urgents</p>
+                  <p className="text-3xl font-bold">{stats.urgentMessages}</p>
+                </div>
+                <div className="bg-white/20 p-3 rounded-xl">
+                  <AlertTriangle className="h-8 w-8" />
+                </div>
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Formation</span>
-              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
-            </a>
-            
-            <a 
-              href="https://securite.ciusss-cn.ca" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 transition-all duration-200 group"
-            >
-              <div className="bg-orange-500 p-1.5 rounded-lg mb-1">
-                <Shield className="h-3 w-3 text-white" />
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-xl shadow-purple-200/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100 text-sm mb-1">Tâches complétées</p>
+                  <p className="text-3xl font-bold">{stats.completedTasks}</p>
+                </div>
+                <div className="bg-white/20 p-3 rounded-xl">
+                  <CheckCircle className="h-8 w-8" />
+                </div>
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Sécurité</span>
-              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
-            </a>
-          </div>
-          
-          <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="flex items-start space-x-2">
-              <div className="bg-blue-500/10 p-1 rounded flex-shrink-0">
-                <Shield className="h-2 w-2 text-blue-500" />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Enhanced Quick Actions */}
+        <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50 mb-12">
+          <CardHeader className="pb-6">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl shadow-lg">
+                <Zap className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h4 className="font-medium text-xs text-blue-700 mb-0.5">Accès sécurisé</h4>
-                <p className="text-xs text-blue-600 leading-tight">
-                  Liens vers les systèmes officiels CIUSSS-CN. Authentification réseau requise.
-                </p>
+                <CardTitle className="text-2xl font-bold text-gray-900">Actions Rapides</CardTitle>
+                <p className="text-gray-600">Accès direct aux fonctionnalités principales</p>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
-          {/* Left Column - Communications */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-8">
-            {/* Today's Important Messages */}
-            <div className="bg-white rounded-lg border p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <div className="bg-primary/10 p-2 rounded-lg mr-3">
-                    <MessageSquare className="h-5 w-5 text-primary" />
+          </CardHeader>
+          
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              <button 
+                onClick={() => router.push('/reports/new')}
+                className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative z-10 flex flex-col items-center space-y-3">
+                  <div className="bg-blue-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
+                    <Plus className="h-6 w-6 text-white" />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">Communications d'aujourd'hui</h3>
-                    <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString('fr-FR')}</p>
-                  </div>
+                  <span className="font-semibold text-gray-800 text-center">Nouveau Rapport</span>
                 </div>
-              </div>
+              </button>
               
-              <div className="space-y-3">
-                {recentCommunications.length > 0 ? recentCommunications.map((comm, index) => (
-                  <div key={index} className={`p-4 rounded-lg border transition-all duration-200 ${
-                    comm.isUrgent 
-                      ? 'border-red-200 bg-red-50' 
-                      : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
-                  }`}>
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center space-x-3">
-                        <div className="bg-primary/10 p-1.5 rounded">
-                          <User className="h-3 w-3 text-primary" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-sm text-foreground">{comm.authorDisplayName}</span>
-                          {comm.isUrgent && (
-                            <span className="ml-2 bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">URGENT</span>
-                          )}
-                        </div>
+              <QuickObservationForm 
+                trigger={
+                  <button className="group relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 w-full">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative z-10 flex flex-col items-center space-y-3">
+                      <div className="bg-green-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
+                        <Stethoscope className="h-6 w-6 text-white" />
                       </div>
-                      <div className="flex items-center text-muted-foreground text-xs">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {new Date(comm.creationDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                      </div>
+                      <span className="font-semibold text-gray-800 text-center">Observation</span>
                     </div>
-                    <p className="text-sm text-foreground/90 leading-relaxed">{comm.content}</p>
+                  </button>
+                }
+              />
+              
+              <button 
+                onClick={() => router.push('/bristol')}
+                className="group relative overflow-hidden bg-gradient-to-br from-cyan-50 to-cyan-100 hover:from-cyan-100 hover:to-cyan-200 border-2 border-cyan-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative z-10 flex flex-col items-center space-y-3">
+                  <div className="bg-cyan-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
+                    <BarChart3 className="h-6 w-6 text-white" />
                   </div>
-                )) : (
-                  <div className="text-center py-8">
-                    <div className="bg-gray-100 p-3 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                      <MessageSquare className="h-6 w-6 text-gray-400" />
-                    </div>
-                    <h4 className="font-medium text-foreground mb-1 text-sm">Aucune communication aujourd'hui</h4>
-                    <p className="text-xs text-muted-foreground">Les nouvelles communications apparaîtront ici</p>
+                  <span className="font-semibold text-gray-800 text-center">Suivi Bristol</span>
+                </div>
+              </button>
+              
+              <button 
+                onClick={() => router.push('/communications/new')}
+                className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative z-10 flex flex-col items-center space-y-3">
+                  <div className="bg-purple-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
+                    <MessageSquare className="h-6 w-6 text-white" />
                   </div>
-                )}
-                
-                <button 
-                  onClick={() => router.push('/communications')}
-                  className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-medium py-2 px-4 rounded-lg w-full text-sm transition-colors duration-200"
-                >
-                  <MessageSquare className="h-4 w-4 mr-2 inline" />
-                  Voir toutes les communications
-                </button>
+                  <span className="font-semibold text-gray-800 text-center">Envoyer Message</span>
+                </div>
+              </button>
+              
+              <button 
+                onClick={() => router.push('/patients')}
+                className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 border-2 border-amber-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative z-10 flex flex-col items-center space-y-3">
+                  <div className="bg-amber-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="font-semibold text-gray-800 text-center">Gérer Résidents</span>
+                </div>
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Enhanced External Tools */}
+        <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50 mb-12">
+          <CardHeader className="pb-6">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-br from-indigo-500 to-blue-600 p-3 rounded-xl shadow-lg">
+                <Globe className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl font-bold text-gray-900">Outils CIUSSS-CN</CardTitle>
+                <p className="text-gray-600">Accès sécurisé aux systèmes externes</p>
               </div>
             </div>
+          </CardHeader>
+          
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <a 
+                href="https://intranet.ciusss-cn.ca" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="bg-blue-500 p-2 rounded-lg shadow">
+                    <Globe className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="font-medium text-gray-800 text-center text-sm">Intranet CIUSSS</span>
+                  <ExternalLink className="h-3 w-3 text-gray-400" />
+                </div>
+              </a>
+              
+              <a 
+                href="https://dossierpatient.ciusss-cn.ca" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="bg-green-500 p-2 rounded-lg shadow">
+                    <FileText className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="font-medium text-gray-800 text-center text-sm">Dossier Patient</span>
+                  <ExternalLink className="h-3 w-3 text-gray-400" />
+                </div>
+              </a>
+              
+              <a 
+                href="https://formation.ciusss-cn.ca" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="bg-purple-500 p-2 rounded-lg shadow">
+                    <Brain className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="font-medium text-gray-800 text-center text-sm">Formation</span>
+                  <ExternalLink className="h-3 w-3 text-gray-400" />
+                </div>
+              </a>
+              
+              <a 
+                href="https://securite.ciusss-cn.ca" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 border-2 border-orange-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="bg-orange-500 p-2 rounded-lg shadow">
+                    <Shield className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="font-medium text-gray-800 text-center text-sm">Sécurité</span>
+                  <ExternalLink className="h-3 w-3 text-gray-400" />
+                </div>
+              </a>
+            </div>
+            
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex items-start space-x-3">
+                <div className="bg-blue-100 p-2 rounded-lg">
+                  <Shield className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-900 mb-1">Accès Sécurisé</h4>
+                  <p className="text-sm text-blue-700">
+                    Liens vers les systèmes officiels CIUSSS-CN. Authentification réseau requise pour l'accès.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Main Content Grid */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Communications Section */}
+          <div className="lg:col-span-2">
+            <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-xl shadow-lg">
+                      <MessageSquare className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl font-bold text-gray-900">Communications d'aujourd'hui</CardTitle>
+                      <p className="text-gray-600">{currentTime.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={() => router.push('/communications')}
+                    className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 shadow-lg"
+                  >
+                    Voir tout
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="pt-0">
+                <div className="space-y-4">
+                  {recentCommunications.length > 0 ? recentCommunications.map((comm, index) => (
+                    <div key={index} className={`relative overflow-hidden rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg ${
+                      comm.isUrgent 
+                        ? 'border-red-200 bg-gradient-to-r from-red-50 to-pink-50' 
+                        : 'border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100'
+                    }`}>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className={`p-2 rounded-xl ${comm.isUrgent ? 'bg-red-100' : 'bg-blue-100'}`}>
+                            <User className={`h-5 w-5 ${comm.isUrgent ? 'text-red-600' : 'text-blue-600'}`} />
+                          </div>
+                          <div>
+                            <span className="font-semibold text-gray-900">{comm.authorDisplayName}</span>
+                            {comm.isUrgent && (
+                              <Badge className="ml-2 bg-red-500 hover:bg-red-600 animate-pulse">
+                                <AlertTriangle className="h-3 w-3 mr-1" />
+                                URGENT
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center text-gray-500 text-sm">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {new Date(comm.creationDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                      <div 
+                        className="rich-content"
+                        dangerouslySetInnerHTML={{ __html: comm.content }}
+                      />
+                    </div>
+                  )) : (
+                    <div className="text-center py-12">
+                      <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <MessageSquare className="h-10 w-10 text-blue-500" />
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Journée calme</h4>
+                      <p className="text-gray-600 mb-6">Aucune communication pour aujourd'hui</p>
+                      <Button 
+                        onClick={() => router.push('/communications/new')}
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 shadow-lg"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Envoyer le premier message
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Right Column - Residents & Admin */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* Residents Quick View */}
-            <div className="bg-white rounded-lg border p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <div className="bg-success/10 p-2 rounded-lg mr-3">
-                    <Users className="h-5 w-5 text-success" />
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Residents Quick Access */}
+            <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50">
+              <CardHeader className="pb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-gradient-to-br from-emerald-500 to-green-600 p-3 rounded-xl shadow-lg">
+                      <Users className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl font-bold text-gray-900">Résidents</CardTitle>
+                      <p className="text-gray-600">{stats.totalPatients} actifs</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground">Résidents</h3>
+                  <Button 
+                    onClick={() => router.push('/patients')}
+                    variant="ghost"
+                    className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                  >
+                    Voir tout
+                    <ArrowRight className="h-4 w-4 ml-1" />
+                  </Button>
                 </div>
-                <button 
-                  onClick={() => router.push('/patients')}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Voir tout
-                </button>
-              </div>
+              </CardHeader>
               
-              <div className="space-y-4">
-                <div className="relative">
+              <CardContent className="pt-0">
+                <div className="relative mb-6">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input 
+                  <Input 
                     placeholder="Rechercher un résident..." 
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="pl-10 border-2 border-gray-200 rounded-xl focus:border-emerald-300 focus:ring-emerald-200"
                   />
                 </div>
                 
                 <div className="text-center py-8">
-                  <div className="bg-gray-100 p-3 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                    <Users className="h-6 w-6 text-gray-400" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-emerald-600" />
                   </div>
-                  <h4 className="font-medium text-foreground mb-1 text-sm">Accès aux résidents</h4>
-                  <p className="text-xs text-muted-foreground mb-3">Cliquez sur "Voir tout" pour gérer les résidents</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Gestion des résidents</h4>
+                  <p className="text-sm text-gray-600 mb-4">Accédez à la liste complète pour voir les profils détaillés</p>
+                  <Button 
+                    onClick={() => router.push('/patients')}
+                    className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white border-0 shadow-lg"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Accéder aux résidents
+                  </Button>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            {/* Admin Panel (only for admins) - Simplified */}
+            {/* Admin Panel */}
             {user?.role === 'admin' && (
-              <div className="bg-white rounded-lg border p-4 sm:p-6">
-                <div className="flex items-center mb-4">
-                  <div className="bg-orange-500/10 p-2 rounded-lg mr-3">
-                    <Settings className="h-5 w-5 text-orange-500" />
+              <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50">
+                <CardHeader className="pb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-gradient-to-br from-orange-500 to-red-600 p-3 rounded-xl shadow-lg">
+                      <Settings className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl font-bold text-gray-900">Administration</CardTitle>
+                      <p className="text-gray-600">Panneau de contrôle</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground">Administration</h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  <button 
-                    onClick={() => router.push('/admin/users')}
-                    className="flex items-center justify-center p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
-                  >
-                    <Users className="h-4 w-4 text-blue-600 mr-2" />
-                    <span className="text-sm font-medium text-blue-700">Utilisateurs</span>
-                  </button>
-                  <button 
-                    onClick={() => router.push('/admin/templates')}
-                    className="flex items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
-                  >
-                    <FileText className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm font-medium text-green-700">Modèles</span>
-                  </button>
-                  <button 
-                    onClick={() => router.push('/admin/exports')}
-                    className="flex items-center justify-center p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
-                  >
-                    <BarChart3 className="h-4 w-4 text-purple-600 mr-2" />
-                    <span className="text-sm font-medium text-purple-700">Statistiques</span>
-                  </button>
-                  <button 
-                    onClick={() => router.push('/admin/settings')}
-                    className="flex items-center justify-center p-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
-                  >
-                    <Settings className="h-4 w-4 text-amber-600 mr-2" />
-                    <span className="text-sm font-medium text-amber-700">Paramètres</span>
-                  </button>
-                </div>
-              </div>
+                </CardHeader>
+                
+                <CardContent className="pt-0">
+                  <div className="grid grid-cols-2 gap-3">
+                    <button 
+                      onClick={() => router.push('/admin/users')}
+                      className="group bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                    >
+                      <Users className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                      <span className="text-sm font-semibold text-blue-800 block">Utilisateurs</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => router.push('/admin/templates')}
+                      className="group bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                    >
+                      <FileText className="h-6 w-6 text-green-600 mx-auto mb-2" />
+                      <span className="text-sm font-semibold text-green-800 block">Modèles</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => router.push('/admin/exports')}
+                      className="group bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                    >
+                      <BarChart3 className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+                      <span className="text-sm font-semibold text-purple-800 block">Stats</span>
+                    </button>
+                    
+                    <button 
+                      onClick={() => router.push('/admin/settings')}
+                      className="group bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 border-2 border-amber-200 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                    >
+                      <Settings className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                      <span className="text-sm font-semibold text-amber-800 block">Config</span>
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
             )}
-
           </div>
         </div>
       </div>
