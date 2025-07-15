@@ -12,14 +12,14 @@ import { TableCell } from '@tiptap/extension-table-cell';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
-import Underline from '@tiptap/extension-underline';
+import UnderlineExtension from '@tiptap/extension-underline';
 import { ListItem } from '@tiptap/extension-list-item';
 import { BulletList } from '@tiptap/extension-bullet-list';
 import { OrderedList } from '@tiptap/extension-ordered-list';
 import { 
   Bold, 
   Italic, 
-  Underline,
+  Underline as UnderlineIcon,
   List, 
   ListOrdered, 
   Quote,
@@ -80,7 +80,7 @@ export function RichTextEditor({
       }),
       TextStyle,
       Color,
-      Underline,
+      UnderlineExtension,
       BulletList.configure({
         HTMLAttributes: {
           class: 'list-disc list-inside space-y-2',
@@ -283,7 +283,7 @@ export function RichTextEditor({
               editor.isActive('underline') && 'bg-accent'
             )}
           >
-            <Underline className="h-4 w-4" />
+            <UnderlineIcon className="h-4 w-4" />
           </Button>
 
           <Button
