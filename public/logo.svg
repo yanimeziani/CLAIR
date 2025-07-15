@@ -1,85 +1,33 @@
 <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="mockingbirdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#003DA5;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#0056D1;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="wingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0056D1;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#003DA5;stop-opacity:0.9" />
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
     </linearGradient>
     <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#E31837;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FF4D6D;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
     </linearGradient>
   </defs>
   
-  <!-- Mockingbird Body (sleek, intelligent posture) -->
-  <ellipse cx="58" cy="60" rx="14" ry="8" fill="url(#mockingbirdGradient)" transform="rotate(-10 58 60)"/>
+  <!-- Main Circle -->
+  <circle cx="60" cy="60" r="35" fill="url(#primaryGradient)"/>
   
-  <!-- Mockingbird Head (alert, intelligent) -->
-  <ellipse cx="72" cy="48" rx="7" ry="6" fill="url(#mockingbirdGradient)" transform="rotate(-5 72 48)"/>
+  <!-- Inner Circle -->
+  <circle cx="60" cy="60" r="25" fill="white" opacity="0.15"/>
   
-  <!-- Distinctive Mockingbird Beak (slightly curved, elegant) -->
-  <path d="M79 46c4-0.5 6 0.5 7 2.5 0 1.5-1 2.5-2.5 2.5-2 0-3.5-1.5-4.5-3 0-1 0-2 0-2z" fill="#FF8C00"/>
+  <!-- Letter C -->
+  <path d="M45 60c0-12 8-20 20-20 6 0 11 2 15 6l-4 4c-3-3-7-5-11-5-8 0-14 6-14 15s6 15 14 15c4 0 8-2 11-5l4 4c-4 4-9 6-15 6-12 0-20-8-20-20z" fill="white"/>
   
-  <!-- Intelligent Eye (larger, more expressive) -->
-  <circle cx="76" cy="47" r="2" fill="white"/>
-  <circle cx="76" cy="47" r="1.2" fill="#333"/>
-  <circle cx="76.5" cy="46.5" r="0.4" fill="white" opacity="0.8"/>
-  
-  <!-- Left Wing (dynamic, showing movement and intelligence) -->
-  <path d="M52 56c-18-10-28-18-32-28-2-5-1-9 2-11 4-3 9-1 13 3 9 9 16 22 17 36z" fill="url(#wingGradient)"/>
-  
-  <!-- Right Wing (extended, showing adaptability) -->
-  <path d="M64 64c18 10 28 18 32 28 2 5 1 9-2 11-4 3-9 1-13-3-9-9-16-22-17-36z" fill="url(#wingGradient)"/>
-  
-  <!-- Wing Pattern Details (mockingbird distinctive markings) -->
-  <path d="M28 32c7 7 14 17 18 28" stroke="white" stroke-width="1.2" fill="none" opacity="0.7" stroke-linecap="round"/>
-  <path d="M32 36c6 6 11 14 16 23" stroke="white" stroke-width="1" fill="none" opacity="0.5" stroke-linecap="round"/>
-  <path d="M36 40c5 5 9 12 13 19" stroke="white" stroke-width="0.8" fill="none" opacity="0.3" stroke-linecap="round"/>
-  
-  <path d="M92 88c-7-7-14-17-18-28" stroke="white" stroke-width="1.2" fill="none" opacity="0.7" stroke-linecap="round"/>
-  <path d="M88 84c-6-6-11-14-16-23" stroke="white" stroke-width="1" fill="none" opacity="0.5" stroke-linecap="round"/>
-  <path d="M84 80c-5-5-9-12-13-19" stroke="white" stroke-width="0.8" fill="none" opacity="0.3" stroke-linecap="round"/>
-  
-  <!-- Mockingbird Tail (fan-shaped, characteristic) -->
-  <path d="M44 64c-10 6-18 12-22 18-2 3-2 6 1 7 3 1 6-1 10-4 6-4 11-10 11-21z" fill="url(#mockingbirdGradient)" opacity="0.95"/>
-  <path d="M46 66c-8 4-14 8-17 12-1 2-1 4 1 5 2 1 4 0 7-2 4-3 8-7 9-15z" fill="url(#wingGradient)" opacity="0.8"/>
-  
-  <!-- Sound Waves (representing mockingbird's mimicry ability) -->
-  <g transform="translate(85, 40)" opacity="0.6">
-    <path d="M0 0c3-2 6-3 8-2" stroke="url(#accentGradient)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M2 -3c4-3 8-4 11-2" stroke="url(#accentGradient)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <path d="M2 3c4 3 8 4 11 2" stroke="url(#accentGradient)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <path d="M4 -6c5-4 10-5 14-2" stroke="url(#accentGradient)" stroke-width="1" fill="none" stroke-linecap="round"/>
-    <path d="M4 6c5 4 10 5 14 2" stroke="url(#accentGradient)" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- Healthcare Cross -->
+  <g transform="translate(85, 35)">
+    <rect x="-1" y="-3" width="2" height="6" rx="1" fill="url(#accentGradient)"/>
+    <rect x="-3" y="-1" width="6" height="2" rx="1" fill="url(#accentGradient)"/>
   </g>
   
-  <!-- AI Neural Network Pattern (subtle, representing intelligence) -->
-  <g transform="translate(25, 25)" opacity="0.4">
-    <circle cx="0" cy="0" r="1" fill="#00D4AA"/>
-    <circle cx="8" cy="3" r="1" fill="#00D4AA"/>
-    <circle cx="5" cy="10" r="1" fill="#00D4AA"/>
-    <path d="M1 0L7 3" stroke="#00D4AA" stroke-width="0.5"/>
-    <path d="M8 4L5 9" stroke="#00D4AA" stroke-width="0.5"/>
-    <path d="M1 1L4 9" stroke="#00D4AA" stroke-width="0.5"/>
+  <!-- Quebec Accent -->
+  <g transform="translate(25, 85)">
+    <path d="M0 0c2 0 3 1 3 3s-1 3-3 3-3-1-3-3 1-3 3-3z" fill="url(#accentGradient)"/>
+    <path d="M0 -2c1 0 2 0.5 2 1.5s-1 1.5-2 1.5-2-0.5-2-1.5 1-1.5 2-1.5z" fill="url(#accentGradient)"/>
   </g>
-  
-  <!-- Quebec Fleur-de-lis (minimal accent) -->
-  <g transform="translate(95, 88) scale(0.35)" opacity="0.5">
-    <path d="M6 0c-0.5 0-0.5 0.5-0.5 1v1c0 0.5-0.5 0.5-0.5 0.5s-0.5 0-0.5-0.5V1c0-0.5 0-1-0.5-1s-0.5 0.5-0.5 1v1c0 1 0.5 1.5 1.5 1.5h1c1 0 1.5-0.5 1.5-1.5V1c0-0.5 0-1-0.5-1z" fill="url(#accentGradient)"/>
-    <circle cx="3.5" cy="6" r="1" fill="url(#accentGradient)"/>
-  </g>
-  
-  <!-- Healthcare Cross (subtle) -->
-  <g transform="translate(12, 12)" opacity="0.4">
-    <rect x="-0.5" y="-2" width="1" height="4" rx="0.5" fill="url(#accentGradient)"/>
-    <rect x="-2" y="-0.5" width="4" height="1" rx="0.5" fill="url(#accentGradient)"/>
-  </g>
-  
-  <!-- Motion/Intelligence Indicators -->
-  <path d="M18 75c10-3 20-6 25-8" stroke="#00D4AA" stroke-width="1" fill="none" opacity="0.3" stroke-linecap="round"/>
-  <path d="M22 80c8-2 16-4 20-6" stroke="#00D4AA" stroke-width="0.8" fill="none" opacity="0.25" stroke-linecap="round"/>
-  <path d="M26 85c6-1 12-3 15-4" stroke="#00D4AA" stroke-width="0.6" fill="none" opacity="0.2" stroke-linecap="round"/>
 </svg>

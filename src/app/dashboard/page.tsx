@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { 
   Heart, Bell, Users, MessageSquare, FileText, Calendar, 
   Settings, LogOut, BarChart3, Plus, Search,
-  Clock, User, Brain, Check, X, Eye
+  Clock, User, Brain, Check, X, Eye, ExternalLink, Globe, Shield
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -253,76 +253,157 @@ export default function DashboardPage() {
 
       <div className="container mx-auto px-6 py-8">
         {/* Welcome Section */}
-        <div className="mb-12">
-          <h2 className="text-4xl font-semibold text-foreground mb-3">
+        <div className="mb-8">
+          <h2 className="text-3xl font-semibold text-foreground mb-2">
             Bonjour {user?.isReplacement ? user.name.replace('Remplacement: ', '') : user?.name?.split(' ')[0]}
           </h2>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Voici un aperçu de vos activités importantes
           </p>
         </div>
 
-
         {/* Quick Actions */}
-        <div className="ws-card mb-12">
-          <div className="flex items-center mb-6">
-            <div className="bg-primary/10 p-3 rounded-xl mr-4">
-              <Plus className="h-6 w-6 text-primary" />
+        <div className="bg-white rounded-lg border p-6 mb-6">
+          <div className="flex items-center mb-4">
+            <div className="bg-primary/10 p-2 rounded-lg mr-3">
+              <Plus className="h-5 w-5 text-primary" />
             </div>
-            <h3 className="text-2xl font-semibold text-foreground">Actions Rapides</h3>
+            <h3 className="text-lg font-semibold text-foreground">Actions Rapides</h3>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-5 gap-3">
             <button 
               onClick={() => router.push('/reports/new')}
-              className="flex flex-col items-center p-6 rounded-xl border-2 border-accent/20 bg-accent/5 hover:bg-accent/10 hover:border-accent/40 transition-all duration-200 group"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group"
             >
-              <div className="bg-accent p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
-                <Plus className="h-6 w-6 text-white" />
+              <div className="bg-blue-500 p-2 rounded-lg mb-2">
+                <Plus className="h-4 w-4 text-white" />
               </div>
-              <span className="font-medium text-sm text-foreground">Nouveau Rapport</span>
+              <span className="font-medium text-xs text-gray-700">Nouveau Rapport</span>
             </button>
             
             <QuickObservationForm 
               trigger={
-                <button className="flex flex-col items-center p-6 rounded-xl border-2 border-success/20 bg-success/5 hover:bg-success/10 hover:border-success/40 transition-all duration-200 group w-full">
-                  <div className="bg-success p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
-                    <FileText className="h-6 w-6 text-white" />
+                <button className="flex flex-col items-center p-4 rounded-lg border-2 border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group w-full">
+                  <div className="bg-green-500 p-2 rounded-lg mb-2">
+                    <FileText className="h-4 w-4 text-white" />
                   </div>
-                  <span className="font-medium text-sm text-foreground">Nouvelle Observation</span>
+                  <span className="font-medium text-xs text-gray-700">Nouvelle Observation</span>
                 </button>
               }
             />
             
             <button 
               onClick={() => router.push('/bristol')}
-              className="flex flex-col items-center p-6 rounded-xl border-2 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 transition-all duration-200 group"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-cyan-200 bg-cyan-50 hover:bg-cyan-100 transition-all duration-200 group"
             >
-              <div className="bg-primary p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
-                <BarChart3 className="h-6 w-6 text-white" />
+              <div className="bg-cyan-500 p-2 rounded-lg mb-2">
+                <BarChart3 className="h-4 w-4 text-white" />
               </div>
-              <span className="font-medium text-sm text-foreground">Suivi Bristol</span>
+              <span className="font-medium text-xs text-gray-700">Suivi Bristol</span>
             </button>
             
             <button 
               onClick={() => router.push('/communications/new')}
-              className="flex flex-col items-center p-6 rounded-xl border-2 border-warning/20 bg-warning/5 hover:bg-warning/10 hover:border-warning/40 transition-all duration-200 group"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-yellow-200 bg-yellow-50 hover:bg-yellow-100 transition-all duration-200 group"
             >
-              <div className="bg-warning p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
-                <MessageSquare className="h-6 w-6 text-warning-foreground" />
+              <div className="bg-yellow-500 p-2 rounded-lg mb-2">
+                <MessageSquare className="h-4 w-4 text-white" />
               </div>
-              <span className="font-medium text-sm text-foreground">Envoyer Message</span>
+              <span className="font-medium text-xs text-gray-700">Envoyer Message</span>
             </button>
             
             <button 
               onClick={() => router.push('/patients')}
-              className="flex flex-col items-center p-6 rounded-xl border-2 border-accent/20 bg-accent/5 hover:bg-accent/10 hover:border-accent/40 transition-all duration-200 group"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group"
             >
-              <div className="bg-accent p-3 rounded-xl mb-3 group-hover:scale-110 transition-transform duration-200">
-                <Users className="h-6 w-6 text-white" />
+              <div className="bg-purple-500 p-2 rounded-lg mb-2">
+                <Users className="h-4 w-4 text-white" />
               </div>
-              <span className="font-medium text-sm text-foreground">Gérer Résidents</span>
+              <span className="font-medium text-xs text-gray-700">Gérer Résidents</span>
             </button>
+          </div>
+        </div>
+
+        {/* CIUSSS-CN External Tools */}
+        <div className="bg-white rounded-lg border p-6 mb-6">
+          <div className="flex items-center mb-4">
+            <div className="bg-blue-500/10 p-2 rounded-lg mr-3">
+              <Globe className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Outils CIUSSS-CN</h3>
+              <p className="text-xs text-muted-foreground">Accès rapide aux systèmes internes du réseau</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-3">
+            <a 
+              href="https://intranet.ciusss-cn.ca" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group"
+            >
+              <div className="bg-blue-500 p-2 rounded-lg mb-2">
+                <Globe className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-medium text-xs text-gray-700 text-center">Intranet CIUSSS</span>
+              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+            </a>
+            
+            <a 
+              href="https://dossierpatient.ciusss-cn.ca" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group"
+            >
+              <div className="bg-green-500 p-2 rounded-lg mb-2">
+                <FileText className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-medium text-xs text-gray-700 text-center">Dossier Patient</span>
+              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+            </a>
+            
+            <a 
+              href="https://formation.ciusss-cn.ca" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group"
+            >
+              <div className="bg-purple-500 p-2 rounded-lg mb-2">
+                <Brain className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-medium text-xs text-gray-700 text-center">Formation</span>
+              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+            </a>
+            
+            <a 
+              href="https://securite.ciusss-cn.ca" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center p-4 rounded-lg border-2 border-orange-200 bg-orange-50 hover:bg-orange-100 transition-all duration-200 group"
+            >
+              <div className="bg-orange-500 p-2 rounded-lg mb-2">
+                <Shield className="h-4 w-4 text-white" />
+              </div>
+              <span className="font-medium text-xs text-gray-700 text-center">Sécurité</span>
+              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+            </a>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-start space-x-2">
+              <div className="bg-blue-500/10 p-1 rounded flex-shrink-0">
+                <Shield className="h-3 w-3 text-blue-500" />
+              </div>
+              <div>
+                <h4 className="font-medium text-xs text-blue-700 mb-1">Accès sécurisé</h4>
+                <p className="text-xs text-blue-600">
+                  Ces liens vous dirigent vers les systèmes officiels du CIUSSS-CN. 
+                  Votre authentification réseau sera requise.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -330,60 +411,60 @@ export default function DashboardPage() {
           {/* Left Column - Communications */}
           <div className="lg:col-span-2 space-y-8">
             {/* Today's Important Messages */}
-            <div className="ws-card">
+            <div className="bg-white rounded-lg border p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
-                  <div className="bg-primary/10 p-3 rounded-xl mr-4">
-                    <MessageSquare className="h-6 w-6 text-primary" />
+                  <div className="bg-primary/10 p-2 rounded-lg mr-3">
+                    <MessageSquare className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-foreground">Communications d'aujourd'hui</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Communications d'aujourd'hui</h3>
                     <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString('fr-FR')}</p>
                   </div>
                 </div>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {recentCommunications.length > 0 ? recentCommunications.map((comm, index) => (
-                  <div key={index} className={`p-5 rounded-xl border-2 transition-all duration-200 ${
+                  <div key={index} className={`p-4 rounded-lg border transition-all duration-200 ${
                     comm.isUrgent 
-                      ? 'border-destructive/30 bg-destructive/5' 
-                      : 'border-border bg-muted/30 hover:bg-muted/50'
+                      ? 'border-red-200 bg-red-50' 
+                      : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                   }`}>
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-3">
-                        <div className="bg-primary/10 p-2 rounded-lg">
-                          <User className="h-4 w-4 text-primary" />
+                        <div className="bg-primary/10 p-1.5 rounded">
+                          <User className="h-3 w-3 text-primary" />
                         </div>
                         <div>
-                          <span className="font-medium text-foreground">{comm.authorDisplayName}</span>
+                          <span className="font-medium text-sm text-foreground">{comm.authorDisplayName}</span>
                           {comm.isUrgent && (
-                            <span className="ml-3 ws-status-error">URGENT</span>
+                            <span className="ml-2 bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">URGENT</span>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center text-muted-foreground text-sm">
-                        <Clock className="h-4 w-4 mr-1" />
+                      <div className="flex items-center text-muted-foreground text-xs">
+                        <Clock className="h-3 w-3 mr-1" />
                         {new Date(comm.creationDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
-                    <p className="text-foreground/90 leading-relaxed">{comm.content}</p>
+                    <p className="text-sm text-foreground/90 leading-relaxed">{comm.content}</p>
                   </div>
                 )) : (
-                  <div className="text-center py-12">
-                    <div className="bg-muted/30 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                      <MessageSquare className="h-8 w-8 text-muted-foreground" />
+                  <div className="text-center py-8">
+                    <div className="bg-gray-100 p-3 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                      <MessageSquare className="h-6 w-6 text-gray-400" />
                     </div>
-                    <h4 className="font-medium text-foreground mb-2">Aucune communication aujourd'hui</h4>
-                    <p className="text-sm text-muted-foreground">Les nouvelles communications apparaîtront ici</p>
+                    <h4 className="font-medium text-foreground mb-1 text-sm">Aucune communication aujourd'hui</h4>
+                    <p className="text-xs text-muted-foreground">Les nouvelles communications apparaîtront ici</p>
                   </div>
                 )}
                 
                 <button 
                   onClick={() => router.push('/communications')}
-                  className="ws-button-primary w-full !h-12 mt-6"
+                  className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-lg w-full text-sm transition-colors duration-200"
                 >
-                  <MessageSquare className="h-4 w-4 mr-2" />
+                  <MessageSquare className="h-4 w-4 mr-2 inline" />
                   Voir toutes les communications
                 </button>
               </div>

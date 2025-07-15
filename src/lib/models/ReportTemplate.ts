@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ITemplateField {
   fieldName: string;
-  fieldType: 'text' | 'textarea' | 'dropdown' | 'checkbox';
+  fieldType: 'text' | 'textarea' | 'dropdown' | 'checkbox' | 'number';
   options: string[];
 }
 
@@ -20,7 +20,7 @@ const TemplateFieldSchema: Schema = new Schema({
   },
   fieldType: {
     type: String,
-    enum: ['text', 'textarea', 'dropdown', 'checkbox'],
+    enum: ['text', 'textarea', 'dropdown', 'checkbox', 'number'],
     required: true,
   },
   options: [{

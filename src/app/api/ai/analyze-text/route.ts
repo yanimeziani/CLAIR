@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     // or make a lightweight call to the AI backend
     const aiBackendUrl = process.env.AI_BACKEND_URL || 'http://localhost:8001';
 
-    const response = await fetch(`${aiBackendUrl}/ai/analyze-text`, {
+    const response = await fetch(`${aiBackendUrl}/analyze-text`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

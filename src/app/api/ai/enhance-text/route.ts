@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         break;
     }
 
-    const response = await fetch(`${aiBackendUrl}/ai/enhance-text`, {
+    const response = await fetch(`${aiBackendUrl}/enhance-text`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
