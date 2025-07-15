@@ -291,7 +291,7 @@ export default function NewCommunicationPage() {
                         <p className="text-sm">Chargement des utilisateurs...</p>
                       </div>
                     ) : (
-                      <div className="grid gap-3 max-h-80 overflow-y-auto pr-2">
+                      <div className="grid gap-3 max-h-60 sm:max-h-80 overflow-y-auto pr-2">
                         {users.map(user => (
                           <div
                             key={user._id}
@@ -527,21 +527,21 @@ export default function NewCommunicationPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" onClick={() => router.push('/communications')}>
+            <Button variant="ghost" onClick={() => router.push('/communications')} size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Retour
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Nouveau Message</h1>
-              <p className="text-muted-foreground">Communication sécurisée de l'équipe</p>
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">Nouveau Message</h1>
+              <p className="text-sm text-muted-foreground hidden sm:block">Communication sécurisée de l'équipe</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-4xl">
         {/* Stepper */}
         <Stepper className="mb-8">
           {STEPS.map((step, index) => (
@@ -567,22 +567,24 @@ export default function NewCommunicationPage() {
                 variant="outline"
                 onClick={handlePrevious}
                 disabled={currentStep === 1}
+                size="sm"
+                className="w-full sm:w-auto"
               >
                 Précédent
               </Button>
 
-              <div className="flex space-x-2">
-                <Button variant="outline" onClick={() => router.push('/communications')}>
+              <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2 w-full sm:w-auto">
+                <Button variant="outline" onClick={() => router.push('/communications')} size="sm" className="w-full sm:w-auto">
                   <X className="h-4 w-4 mr-2" />
                   Annuler
                 </Button>
                 
                 {currentStep < STEPS.length ? (
-                  <Button onClick={handleNext}>
+                  <Button onClick={handleNext} size="sm" className="w-full sm:w-auto">
                     Suivant
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit}>
+                  <Button onClick={handleSubmit} size="sm" className="w-full sm:w-auto">
                     <Send className="h-4 w-4 mr-2" />
                     Envoyer
                   </Button>
@@ -606,23 +608,23 @@ export default function NewCommunicationPage() {
             </p>
             
             {/* User Type Selection */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <Button
                 type="button"
                 variant={!isReplacement ? "default" : "outline"}
                 onClick={() => setIsReplacement(false)}
-                className="flex flex-col items-center p-4 h-auto"
+                className="flex flex-col items-center p-3 sm:p-4 h-auto"
               >
-                <Users className="h-6 w-6 mb-2" />
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
                 <span className="text-xs">Personnel</span>
               </Button>
               <Button
                 type="button"
                 variant={isReplacement ? "default" : "outline"}
                 onClick={() => setIsReplacement(true)}
-                className="flex flex-col items-center p-4 h-auto"
+                className="flex flex-col items-center p-3 sm:p-4 h-auto"
               >
-                <User className="h-6 w-6 mb-2" />
+                <User className="h-5 w-5 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
                 <span className="text-xs">Remplacement</span>
               </Button>
             </div>
@@ -674,7 +676,7 @@ export default function NewCommunicationPage() {
               </div>
             )}
 
-            <div className="flex space-x-2 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2 pt-4">
               <Button type="button" variant="outline" onClick={() => setShowPinDialog(false)} className="flex-1">
                 Annuler
               </Button>

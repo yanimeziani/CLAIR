@@ -160,12 +160,12 @@ export default function DashboardPage() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
               {/* Notifications Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative" aria-label={`Notifications - ${notifications.length} non lues`}>
-                    <Bell className="h-5 w-5" />
+                  <Button variant="ghost" size="sm" className="relative p-2" aria-label={`Notifications - ${notifications.length} non lues`}>
+                    <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                     {notifications.length > 0 && (
                       <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                         {notifications.length}
@@ -241,10 +241,9 @@ export default function DashboardPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full sm:w-auto">
-                <LogOut className="h-4 w-4 mr-2" />
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="p-2 sm:px-3 sm:py-2">
+                <LogOut className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Déconnexion</span>
-                <span className="sm:hidden">Sortir</span>
               </Button>
             </div>
           </div>
@@ -325,82 +324,81 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* CIUSSS-CN External Tools */}
-        <div className="bg-white rounded-lg border p-4 sm:p-6 mb-6">
-          <div className="flex items-center mb-4">
-            <div className="bg-blue-500/10 p-2 rounded-lg mr-3">
-              <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+        {/* CIUSSS-CN External Tools - Compact */}
+        <div className="bg-white rounded-lg border p-3 sm:p-4 mb-6">
+          <div className="flex items-center mb-3">
+            <div className="bg-blue-500/10 p-1.5 rounded-lg mr-2">
+              <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-semibold text-foreground">Outils CIUSSS-CN</h3>
-              <p className="text-xs text-muted-foreground hidden sm:block">Accès rapide aux systèmes internes du réseau</p>
+              <h3 className="text-sm sm:text-base font-semibold text-foreground">Outils CIUSSS-CN</h3>
+              <p className="text-xs text-muted-foreground hidden sm:block">Accès rapide aux systèmes internes</p>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2">
             <a 
               href="https://intranet.ciusss-cn.ca" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 transition-all duration-200 group"
             >
-              <div className="bg-blue-500 p-2 rounded-lg mb-2">
-                <Globe className="h-4 w-4 text-white" />
+              <div className="bg-blue-500 p-1.5 rounded-lg mb-1">
+                <Globe className="h-3 w-3 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center">Intranet CIUSSS</span>
-              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Intranet CIUSSS</span>
+              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
             </a>
             
             <a 
               href="https://dossierpatient.ciusss-cn.ca" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-green-200 bg-green-50 hover:bg-green-100 transition-all duration-200 group"
             >
-              <div className="bg-green-500 p-2 rounded-lg mb-2">
-                <FileText className="h-4 w-4 text-white" />
+              <div className="bg-green-500 p-1.5 rounded-lg mb-1">
+                <FileText className="h-3 w-3 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center">Dossier Patient</span>
-              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Dossier Patient</span>
+              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
             </a>
             
             <a 
               href="https://formation.ciusss-cn.ca" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-purple-200 bg-purple-50 hover:bg-purple-100 transition-all duration-200 group"
             >
-              <div className="bg-purple-500 p-2 rounded-lg mb-2">
-                <Brain className="h-4 w-4 text-white" />
+              <div className="bg-purple-500 p-1.5 rounded-lg mb-1">
+                <Brain className="h-3 w-3 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center">Formation</span>
-              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Formation</span>
+              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
             </a>
             
             <a 
               href="https://securite.ciusss-cn.ca" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex flex-col items-center p-4 rounded-lg border-2 border-orange-200 bg-orange-50 hover:bg-orange-100 transition-all duration-200 group"
+              className="flex flex-col items-center p-2 sm:p-3 rounded-lg border border-orange-200 bg-orange-50 hover:bg-orange-100 transition-all duration-200 group"
             >
-              <div className="bg-orange-500 p-2 rounded-lg mb-2">
-                <Shield className="h-4 w-4 text-white" />
+              <div className="bg-orange-500 p-1.5 rounded-lg mb-1">
+                <Shield className="h-3 w-3 text-white" />
               </div>
-              <span className="font-medium text-xs text-gray-700 text-center">Sécurité</span>
-              <ExternalLink className="h-3 w-3 text-gray-400 mt-1" />
+              <span className="font-medium text-xs text-gray-700 text-center leading-tight">Sécurité</span>
+              <ExternalLink className="h-2 w-2 text-gray-400 mt-0.5" />
             </a>
           </div>
           
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
             <div className="flex items-start space-x-2">
               <div className="bg-blue-500/10 p-1 rounded flex-shrink-0">
-                <Shield className="h-3 w-3 text-blue-500" />
+                <Shield className="h-2 w-2 text-blue-500" />
               </div>
               <div>
-                <h4 className="font-medium text-xs text-blue-700 mb-1">Accès sécurisé</h4>
-                <p className="text-xs text-blue-600">
-                  Ces liens vous dirigent vers les systèmes officiels du CIUSSS-CN. 
-                  Votre authentification réseau sera requise.
+                <h4 className="font-medium text-xs text-blue-700 mb-0.5">Accès sécurisé</h4>
+                <p className="text-xs text-blue-600 leading-tight">
+                  Liens vers les systèmes officiels CIUSSS-CN. Authentification réseau requise.
                 </p>
               </div>
             </div>
@@ -499,28 +497,12 @@ export default function DashboardPage() {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  {[
-                    { name: "Marie Lavoie", status: "Nouvelle", color: "blue" },
-                    { name: "Pierre Gagnon", status: "Suivi médical", color: "yellow" },
-                    { name: "Julie Bouchard", status: "Stable", color: "green" }
-                  ].map((resident, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-gray-600">{resident.name[0]}</span>
-                        </div>
-                        <span className="font-medium text-sm text-foreground">{resident.name}</span>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        resident.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                        resident.color === 'yellow' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
-                      }`}>
-                        {resident.status}
-                      </span>
-                    </div>
-                  ))}
+                <div className="text-center py-8">
+                  <div className="bg-gray-100 p-3 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <h4 className="font-medium text-foreground mb-1 text-sm">Accès aux résidents</h4>
+                  <p className="text-xs text-muted-foreground mb-3">Cliquez sur "Voir tout" pour gérer les résidents</p>
                 </div>
               </div>
             </div>

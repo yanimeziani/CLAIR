@@ -684,7 +684,7 @@ export default function ReportsPage() {
                   </div>
                 </div>
 
-                {Object.keys(selectedReport.customFields).length > 0 && (
+                {selectedReport.customFields && Object.keys(selectedReport.customFields).length > 0 && (
                   <div>
                     <Label className="text-muted-foreground">Champs personnalisés</Label>
                     <div className="space-y-2 mt-1">

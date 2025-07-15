@@ -154,31 +154,31 @@ export default function CommunicationsPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => router.push('/dashboard')}>
+        <div className="container mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center space-x-4 min-w-0 flex-1">
+              <Button variant="ghost" onClick={() => router.push('/dashboard')} size="sm" className="shrink-0">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Centre de Communications</h1>
-                <p className="text-muted-foreground">Messages sécurisés de l'équipe</p>
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">Centre de Communications</h1>
+                <p className="text-sm text-muted-foreground hidden sm:block">Messages sécurisés de l'équipe</p>
               </div>
             </div>
-            <Button onClick={() => router.push('/communications/new')} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+            <Button onClick={() => router.push('/communications/new')} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 transition-all duration-300 hover:scale-105 hover:shadow-lg w-full sm:w-auto shrink-0" size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Nouveau Message
+              <span className="sm:inline">Nouveau Message</span>
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
         {/* Filters */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -227,63 +227,66 @@ export default function CommunicationsPage() {
                 comm.isUrgent ? 'border-red-500/50 bg-red-500/5' : ''
               } ${!isRead ? 'border-l-4 border-l-primary' : ''}`}>
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <div className="flex items-center space-x-2">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{comm.authorDisplayName}</span>
-                        </div>
-                        
-                        {comm.isUrgent && (
-                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded flex items-center">
-                            <AlertTriangle className="h-3 w-3 mr-1" />
-                            URGENT
-                          </span>
-                        )}
-                        
-                        {!isRead && (
-                          <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
-                            Non lu
-                          </span>
-                        )}
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center space-x-2 min-w-0 flex-1">
+                        <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <span className="font-medium truncate">{comm.authorDisplayName}</span>
                       </div>
                       
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {formatDate(comm.creationDate)} à {formatTime(comm.creationDate)}
-                        </div>
-                        
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {comm.destinationDates.map(date => formatDate(date)).join(', ')}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
                       {!isRead && (
                         <Button 
                           size="sm" 
                           variant="outline"
                           onClick={() => markAsRead(comm._id)}
+                          className="shrink-0 text-xs px-2 py-1"
                         >
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Marquer lu
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          <span className="hidden sm:inline">Marquer lu</span>
+                          <span className="sm:hidden">Lu</span>
                         </Button>
                       )}
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center gap-2">
+                      {comm.isUrgent && (
+                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded flex items-center shrink-0">
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          URGENT
+                        </span>
+                      )}
+                      
+                      {!isRead && (
+                        <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded shrink-0">
+                          Non lu
+                        </span>
+                      )}
+                    </div>
+                      
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1 shrink-0" />
+                        <span className="truncate">{formatDate(comm.creationDate)} à {formatTime(comm.creationDate)}</span>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1 shrink-0" />
+                        <span className="truncate">{comm.destinationDates.map(date => formatDate(date)).join(', ')}</span>
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
                 
                 <CardContent>
-                  <p className="text-foreground mb-4 whitespace-pre-wrap">{comm.content}</p>
+                  <div 
+                    className="text-foreground mb-4 prose prose-sm max-w-none dark:prose-invert prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-ul:text-foreground prose-ol:text-foreground prose-li:text-foreground [&_.highlight]:bg-yellow-200 [&_.highlight]:px-1 [&_.highlight]:rounded" 
+                    dangerouslySetInnerHTML={{ __html: comm.content }}
+                  />
                   
-                  <div className="flex items-center justify-between pt-3 border-t border-border">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-3 border-t border-border">
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <Users className="h-4 w-4 mr-1" />
-                      Destinataires: {comm.recipientIds.length} personne(s)
+                      <Users className="h-4 w-4 mr-1 shrink-0" />
+                      <span className="truncate">Destinataires: {comm.recipientIds.length} personne(s)</span>
                     </div>
                     
                     <div className="text-xs text-muted-foreground">

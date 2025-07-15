@@ -455,7 +455,7 @@ export default function NewReportPage() {
                     </div>
                   </div>
 
-                  {template && template.fields.length > 0 && Object.keys(formData.customFields).length > 0 && (
+                  {template && template.fields.length > 0 && formData.customFields && Object.keys(formData.customFields).length > 0 && (
                     <>
                       <Separator />
                       <div>

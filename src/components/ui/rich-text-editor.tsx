@@ -12,6 +12,10 @@ import { TableCell } from '@tiptap/extension-table-cell';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
+import Underline from '@tiptap/extension-underline';
+import { ListItem } from '@tiptap/extension-list-item';
+import { BulletList } from '@tiptap/extension-bullet-list';
+import { OrderedList } from '@tiptap/extension-ordered-list';
 import { 
   Bold, 
   Italic, 
@@ -68,9 +72,30 @@ export function RichTextEditor({
   } = useAIAssistance(aiOptions);
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        // Configure StarterKit to exclude BulletList and OrderedList so we can add them separately
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
+      }),
       TextStyle,
       Color,
+      Underline,
+      BulletList.configure({
+        HTMLAttributes: {
+          class: 'list-disc list-inside space-y-2',
+        },
+      }),
+      OrderedList.configure({
+        HTMLAttributes: {
+          class: 'list-decimal list-inside space-y-2',
+        },
+      }),
+      ListItem.configure({
+        HTMLAttributes: {
+          class: 'ml-4',
+        },
+      }),
       Highlight.configure({
         multicolor: true,
         HTMLAttributes: {
@@ -251,14 +276,28 @@ export function RichTextEditor({
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            disabled={!editor.can().chain().focus().toggleUnderline().run()}
+            className={cn(
+              'h-8 w-8 p-0',
+              editor.isActive('underline') && 'bg-accent'
+            )}
+          >
+            <Underline className="h-4 w-4" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => editor.chain().focus().toggleStrike().run()}
             disabled={!editor.can().chain().focus().toggleStrike().run()}
             className={cn(
               'h-8 w-8 p-0',
               editor.isActive('strike') && 'bg-accent'
             )}
+            title="Barré"
           >
-            <Underline className="h-4 w-4" />
+            <span className="text-sm line-through">S</span>
           </Button>
 
           <div className="w-px h-6 bg-border mx-1" />
@@ -396,7 +435,12 @@ export function RichTextEditor({
           'prose-table:text-foreground prose-th:border-border prose-td:border-border',
           'prose-li:text-foreground prose-ul:text-foreground prose-ol:text-foreground',
           '[&_.ProseMirror]:min-h-[200px] [&_.ProseMirror]:outline-none [&_.ProseMirror]:p-4',
-          '[&_.ProseMirror]:whitespace-pre-wrap [&_.ProseMirror]:break-words'
+          '[&_.ProseMirror]:whitespace-pre-wrap [&_.ProseMirror]:break-words',
+          '[&_.ProseMirror_ul]:list-disc [&_.ProseMirror_ul]:list-inside [&_.ProseMirror_ul]:space-y-2',
+          '[&_.ProseMirror_ol]:list-decimal [&_.ProseMirror_ol]:list-inside [&_.ProseMirror_ol]:space-y-2',
+          '[&_.ProseMirror_li]:ml-4',
+          '[&_.highlight]:bg-yellow-200 [&_.highlight]:px-1 [&_.highlight]:rounded',
+          'dark:[&_.highlight]:bg-yellow-500/30'
         )}
       />
       
