@@ -472,19 +472,19 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Column - Residents & Admin */}
-          <div className="space-y-8">
+          <div className="space-y-6">
             {/* Residents Quick View */}
-            <div className="ws-card">
-              <div className="flex items-center justify-between mb-6">
+            <div className="bg-white rounded-lg border p-6">
+              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
-                  <div className="bg-success/10 p-3 rounded-xl mr-4">
-                    <Users className="h-6 w-6 text-success" />
+                  <div className="bg-success/10 p-2 rounded-lg mr-3">
+                    <Users className="h-5 w-5 text-success" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground">Résidents</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Résidents</h3>
                 </div>
                 <button 
                   onClick={() => router.push('/patients')}
-                  className="ws-button-outline !px-3 !py-1.5 text-sm"
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                 >
                   Voir tout
                 </button>
@@ -492,103 +492,79 @@ export default function DashboardPage() {
               
               <div className="space-y-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <input 
                     placeholder="Rechercher un résident..." 
-                    className="ws-input !pl-10"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {[
-                    { name: "Marie Lavoie", status: "Nouvelle" },
-                    { name: "Pierre Gagnon", status: "Suivi médical" },
-                    { name: "Julie Bouchard", status: "Stable" }
+                    { name: "Marie Lavoie", status: "Nouvelle", color: "blue" },
+                    { name: "Pierre Gagnon", status: "Suivi médical", color: "yellow" },
+                    { name: "Julie Bouchard", status: "Stable", color: "green" }
                   ].map((resident, index) => (
-                    <div key={index} className="ws-patient-card !p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="bg-primary/10 p-2 rounded-lg">
-                            <User className="h-4 w-4 text-primary" />
-                          </div>
-                          <span className="font-medium text-foreground">{resident.name}</span>
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-gray-600">{resident.name[0]}</span>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          resident.status === 'Nouvelle' ? 'bg-accent/10 text-accent border border-accent/20' :
-                          resident.status === 'Suivi médical' ? 'bg-warning/10 text-warning border border-warning/20' :
-                          'bg-success/10 text-success border border-success/20'
-                        }`}>
-                          {resident.status}
-                        </span>
+                        <span className="font-medium text-sm text-foreground">{resident.name}</span>
                       </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        resident.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                        resident.color === 'yellow' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-green-100 text-green-700'
+                      }`}>
+                        {resident.status}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Recent Observations (only for admins) */}
+            {/* Admin Panel (only for admins) - Simplified */}
             {user?.role === 'admin' && (
-              <RecentObservationsView 
-                limit={5} 
-                className="bg-card/50 backdrop-blur-sm border-primary/20" 
-              />
-            )}
-
-            {/* Admin Panel (only for admins) */}
-            {user?.role === 'admin' && (
-              <Card className="bg-gradient-to-br from-card/80 to-card/50 backdrop-blur-sm border-orange-200/50 shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 rounded-t-lg">
-                  <CardTitle className="flex items-center text-lg">
-                    <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-2 rounded-lg mr-3">
-                      <Settings className="h-5 w-5 text-white" />
-                    </div>
-                    Administration
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 p-6">
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start h-12 bg-gradient-to-r from-blue-500/10 to-blue-600/5 hover:from-blue-500/20 hover:to-blue-600/10 border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+              <div className="bg-white rounded-lg border p-6">
+                <div className="flex items-center mb-4">
+                  <div className="bg-orange-500/10 p-2 rounded-lg mr-3">
+                    <Settings className="h-5 w-5 text-orange-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">Administration</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
                     onClick={() => router.push('/admin/users')}
+                    className="flex items-center justify-center p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
                   >
-                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-1.5 rounded mr-3">
-                      <Users className="h-4 w-4 text-white" />
-                    </div>
-                    Gestion Utilisateurs
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start h-12 bg-gradient-to-r from-green-500/10 to-green-600/5 hover:from-green-500/20 hover:to-green-600/10 border-green-500/20 hover:border-green-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+                    <Users className="h-4 w-4 text-blue-600 mr-2" />
+                    <span className="text-sm font-medium text-blue-700">Utilisateurs</span>
+                  </button>
+                  <button 
                     onClick={() => router.push('/admin/templates')}
+                    className="flex items-center justify-center p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
                   >
-                    <div className="bg-gradient-to-r from-green-500 to-green-600 p-1.5 rounded mr-3">
-                      <FileText className="h-4 w-4 text-white" />
-                    </div>
-                    Modèles de Rapports
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start h-12 bg-gradient-to-r from-purple-500/10 to-purple-600/5 hover:from-purple-500/20 hover:to-purple-600/10 border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+                    <FileText className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm font-medium text-green-700">Modèles</span>
+                  </button>
+                  <button 
                     onClick={() => router.push('/admin/exports')}
+                    className="flex items-center justify-center p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
                   >
-                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-1.5 rounded mr-3">
-                      <BarChart3 className="h-4 w-4 text-white" />
-                    </div>
-                    Statistiques & Exports
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-start h-12 bg-gradient-to-r from-amber-500/10 to-amber-600/5 hover:from-amber-500/20 hover:to-amber-600/10 border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-md" 
+                    <BarChart3 className="h-4 w-4 text-purple-600 mr-2" />
+                    <span className="text-sm font-medium text-purple-700">Statistiques</span>
+                  </button>
+                  <button 
                     onClick={() => router.push('/admin/settings')}
+                    className="flex items-center justify-center p-3 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
                   >
-                    <div className="bg-gradient-to-r from-amber-500 to-amber-600 p-1.5 rounded mr-3">
-                      <Settings className="h-4 w-4 text-white" />
-                    </div>
-                    Paramètres Système
-                  </Button>
-                </CardContent>
-              </Card>
+                    <Settings className="h-4 w-4 text-amber-600 mr-2" />
+                    <span className="text-sm font-medium text-amber-700">Paramètres</span>
+                  </button>
+                </div>
+              </div>
             )}
 
           </div>
