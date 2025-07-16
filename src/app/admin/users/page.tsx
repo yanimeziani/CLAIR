@@ -41,8 +41,11 @@ export default function UsersManagementPage() {
   const router = useRouter();
 
   useEffect(() => {
-    checkSession();
-    fetchUsers();
+    const initPage = async () => {
+      await checkSession();
+      await fetchUsers();
+    };
+    initPage();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkSession = async () => {

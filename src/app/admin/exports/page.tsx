@@ -43,11 +43,6 @@ export default function AdminExportsPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    checkSession();
-    fetchData();
-  }, [checkSession, fetchData]);
-
   const checkSession = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/session');
@@ -94,6 +89,11 @@ export default function AdminExportsPage() {
       console.error('Error fetching data:', error);
     }
   }, []);
+
+  useEffect(() => {
+    checkSession();
+    fetchData();
+  }, [checkSession, fetchData]);
 
   const handleExport = async (type: 'patients' | 'reports' | 'bristol', format: 'csv' = 'csv') => {
     try {

@@ -92,6 +92,13 @@ export async function POST(request: NextRequest) {
 
     // Validation
     if (!patientId || !content || !authorName || typeof isPositive !== 'boolean') {
+      console.error('Validation failed:', {
+        patientId: !!patientId,
+        content: !!content,
+        authorName: !!authorName,
+        isPositive: typeof isPositive,
+        receivedData: body
+      });
       return NextResponse.json(
         { success: false, error: 'Données manquantes ou invalides' },
         { status: 400 }

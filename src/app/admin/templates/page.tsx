@@ -57,13 +57,7 @@ export default function TemplatesPage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    checkSession();
-    fetchTemplates();
-    fetchPatients();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/session');
       const data = await response.json();
@@ -77,9 +71,9 @@ export default function TemplatesPage() {
     } catch (error) {
       router.push('/login');
     }
-  };
+  }, [router]);
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/templates');
       if (response.ok) {
@@ -92,9 +86,9 @@ export default function TemplatesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     try {
       const response = await fetch('/api/patients');
       if (response.ok) {
@@ -104,7 +98,13 @@ export default function TemplatesPage() {
     } catch (error) {
       console.error('Error fetching patients:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkSession();
+    fetchTemplates();
+    fetchPatients();
+  }, [checkSession, fetchTemplates, fetchPatients]);
 
   const openCreateDialog = () => {
     setEditingTemplate(null);

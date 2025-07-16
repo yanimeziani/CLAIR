@@ -89,8 +89,11 @@ export default function NewCommunicationPage() {
   const router = useRouter();
 
   useEffect(() => {
-    checkSession();
-    fetchData();
+    const initPage = async () => {
+      await checkSession();
+      await fetchData();
+    };
+    initPage();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkSession = async () => {

@@ -53,8 +53,11 @@ export function ObservationNotesList({ patientId, refreshTrigger }: ObservationN
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    checkSession();
-    fetchNotes();
+    const initNotes = async () => {
+      await checkSession();
+      await fetchNotes();
+    };
+    initNotes();
   }, [patientId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {

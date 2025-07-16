@@ -29,9 +29,11 @@ services:
     networks:
       - irielle-network
 
-  # Ollama AI Service
+  # Ollama AI Service with Model Management
   ollama:
-    image: ollama/ollama:latest
+    build:
+      context: ./docker
+      dockerfile: ollama-models.dockerfile
     container_name: irielle-ollama
     restart: unless-stopped
     ports:
@@ -40,6 +42,15 @@ services:
       - ollama_data:/root/.ollama
     networks:
       - irielle-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    environment:
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_HOST=0.0.0.0
 
   # Python FastAPI Backend for AI
   ai-backend:

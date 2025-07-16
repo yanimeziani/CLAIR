@@ -90,19 +90,33 @@ export function QuickObservationForm({
       return;
     }
 
+    if (!currentUser) {
+      toast.error('Session expirée. Veuillez vous reconnecter.');
+      return;
+    }
+
     setSaving(true);
     try {
+      const payload = {
+        patientId: formData.patientId,
+        content: formData.content,
+        isPositive: formData.isPositive,
+        isSignificant: formData.isSignificant,
+        authorName: currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`,
+        authorEmployeeNumber: currentUser.employeeNumber || currentUser.userId,
+        signature: {
+          userAgent: navigator.userAgent
+        }
+      };
+
+      console.log('Sending payload:', payload);
+
       const response = await fetch('/api/observations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          patientId: formData.patientId,
-          content: formData.content,
-          isPositive: formData.isPositive,
-          isSignificant: formData.isSignificant,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
