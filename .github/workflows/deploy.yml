@@ -59,10 +59,13 @@ jobs:
         NEXTAUTH_URL=http://89.116.170.202:3000
         EOF
     
-    - name: Stop existing services and reset database (DEV ONLY)
+    - name: Stop existing services and preserve SSL certificates
       run: |
         echo "🛑 Stopping existing services..."
-        docker-compose down --volumes --remove-orphans || true
+        docker-compose down --remove-orphans || true
+        
+        echo "🔒 Preserving SSL certificates and selected volumes..."
+        # Keep certbot_data and certbot_www volumes for SSL persistence
         
         echo "⚠️  Removing database volumes for fresh reset (DEV SERVER)..."
         docker volume rm irielle-platform_mongodb_data 2>/dev/null || true
@@ -107,6 +110,29 @@ jobs:
         docker exec irielle-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
         echo "✅ Database seeded successfully with reset credentials"
     
+    - name: Check SSL certificates and configure Nginx
+      run: |
+        # Make scripts executable
+        chmod +x scripts/*.sh 2>/dev/null || true
+        
+        # Check if SSL certificates exist
+        if docker volume inspect irielle_certbot_data >/dev/null 2>&1; then
+          if docker run --rm -v irielle_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
+            echo "🔒 SSL certificates found, using HTTPS configuration"
+            cp nginx/conf.d/irielle-ssl.conf nginx/conf.d/default.conf
+            SSL_EXISTS=true
+          else
+            echo "🌐 No SSL certificates, using HTTP configuration"
+            cp nginx/conf.d/irielle.conf nginx/conf.d/default.conf
+            SSL_EXISTS=false
+          fi
+        else
+          echo "🌐 No SSL volume, using HTTP configuration"
+          cp nginx/conf.d/irielle.conf nginx/conf.d/default.conf
+          SSL_EXISTS=false
+        fi
+        echo "SSL_EXISTS=$SSL_EXISTS" >> $GITHUB_ENV
+        
     - name: Start all other services
       run: |
         echo "🚀 Starting core services first..."
@@ -121,6 +147,16 @@ jobs:
         
         echo "⏳ Waiting for final services..."
         sleep 10
+        
+    - name: Initialize SSL certificates if needed
+      if: env.SSL_EXISTS == 'false'
+      run: |
+        echo "🔐 Initializing SSL certificates..."
+        if [ -f "scripts/init-ssl.sh" ]; then
+          ./scripts/init-ssl.sh
+        else
+          echo "⚠️  SSL initialization script not found, continuing with HTTP"
+        fi
         
     - name: Initialize Ollama model
       run: |
