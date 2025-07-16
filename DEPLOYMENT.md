@@ -92,6 +92,15 @@ docker volume prune -f
 npm run deploy:dev
 ```
 
+### Si le seeding échoue
+```bash
+# Vérifier que MongoDB est prêt
+docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')"
+
+# Relancer le seeding manuellement
+docker exec irielle-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
+```
+
 ### Si l'application ne répond pas
 ```bash
 docker-compose logs -f

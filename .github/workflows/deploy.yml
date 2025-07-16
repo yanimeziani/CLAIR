@@ -87,7 +87,7 @@ jobs:
         # Verify MongoDB is responding with timeout
         timeout=60
         while [ $timeout -gt 0 ]; do
-          if docker exec irielle-platform-mongodb-1 mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+          if docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
             echo "✅ MongoDB is ready"
             break
           fi
@@ -104,7 +104,7 @@ jobs:
         
         # Seed the database with fresh data
         echo "🌱 Seeding database with fresh demo data..."
-        docker exec irielle-platform-mongodb-1 mongosh --quiet /docker-entrypoint-initdb.d/seed-data.js
+        docker exec irielle-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
         echo "✅ Database seeded successfully with reset credentials"
     
     - name: Start all other services
@@ -119,7 +119,7 @@ jobs:
       run: |
         echo "🤖 Initializing Ollama AI model..."
         sleep 10
-        docker exec irielle-platform-ollama-1 ollama pull gemma3:4b || echo "Model pull failed, will retry later"
+        docker exec irielle-ollama ollama pull gemma3:4b || echo "Model pull failed, will retry later"
         
     - name: Verify deployment and show status
       run: |
@@ -135,7 +135,7 @@ jobs:
         echo "=== 📋 Service Health Check ==="
         
         # Test MongoDB
-        if docker exec irielle-platform-mongodb-1 mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+        if docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
           echo "✅ MongoDB: Running"
         else
           echo "❌ MongoDB: Failed"

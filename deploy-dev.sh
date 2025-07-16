@@ -55,7 +55,7 @@ print_step "Waiting for MongoDB to be ready..."
 sleep 10
 
 # Check if MongoDB is responding
-while ! docker exec irielle-platform-mongodb-1 mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
+while ! docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
     echo "Waiting for MongoDB to be ready..."
     sleep 2
 done
@@ -63,7 +63,7 @@ print_success "MongoDB is ready"
 
 # Step 5: Seed the database
 print_step "Seeding database with fresh data..."
-docker exec irielle-platform-mongodb-1 mongosh --quiet /docker-entrypoint-initdb.d/seed-data.js
+docker exec irielle-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
 print_success "Database seeded successfully"
 
 # Step 6: Start all other services
