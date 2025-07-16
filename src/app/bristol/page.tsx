@@ -391,13 +391,13 @@ export default function BristolPage() {
               </CardHeader>
               <CardContent>
                 {/* Mobile scroll hint */}
-                <div className="block md:hidden text-xs text-muted-foreground mb-2 text-center">
-                  ← Faites défiler horizontalement →
+                <div className="block md:hidden text-xs text-muted-foreground mb-3 text-center bg-blue-50 p-2 rounded-lg border border-blue-200">
+                  📱 Faites glisser horizontalement pour naviguer
                 </div>
                 
                 {/* Calendar container with horizontal scroll on mobile */}
-                <div className="overflow-x-auto md:overflow-visible">
-                  <div className="min-w-[800px] md:min-w-0">
+                <div className="overflow-x-auto md:overflow-visible scroll-smooth">
+                  <div className="min-w-[320px] md:min-w-0" style={{minWidth: 'max(320px, 100vw - 2rem)'}}>
                     {/* Days of week header */}
                     <div className="grid grid-cols-7 gap-1 mb-2">
                       {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (

@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy:dev": "./deploy-dev.sh",
+    "db:reset": "docker exec irielle-platform-mongodb-1 mongosh --quiet /docker-entrypoint-initdb.d/seed-data.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

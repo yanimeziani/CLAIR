@@ -246,7 +246,8 @@ export function RichTextEditor({
       )}
       
       {editable && (
-        <div className="border-b border-border p-2 flex flex-wrap gap-1 bg-muted/30">
+        <div className="border-b border-border p-2 bg-muted/30">
+          <div className="flex flex-wrap gap-1 sm:gap-1 max-w-full overflow-x-auto">
           <Button
             variant="ghost"
             size="sm"
@@ -419,6 +420,7 @@ export function RichTextEditor({
           >
             <Redo className="h-4 w-4" />
           </Button>
+          </div>
         </div>
       )}
       

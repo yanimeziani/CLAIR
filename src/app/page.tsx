@@ -62,37 +62,37 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Floating Header */}
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-white/50 shadow-lg shadow-blue-100/50">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Heart className="h-6 w-6 text-white" />
+            <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+              <div className="relative flex-shrink-0">
+                <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Heart className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 h-3 w-3 sm:h-4 sm:w-4 bg-green-400 rounded-full animate-pulse"></div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   CLAIR
                 </h1>
-                <p className="text-sm text-gray-600">Centre Logiciel d'Aide aux Interventions</p>
+                <p className="text-xs sm:text-sm text-gray-600 truncate">Centre Logiciel d'Aide aux Interventions</p>
               </div>
             </div>
             
             <button 
               onClick={handleLogin}
               disabled={isLoading}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl hover:scale-105"
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex items-center space-x-1 sm:space-x-2 shadow-lg hover:shadow-xl hover:scale-105 flex-shrink-0 min-h-[40px] sm:min-h-[44px]"
             >
               {isLoading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span className="hidden sm:inline">Connexion...</span>
+                  <span className="text-xs sm:text-sm">Connexion...</span>
                 </>
               ) : (
                 <>
-                  <Lock className="h-4 w-4" />
-                  <span className="hidden sm:inline">Se connecter</span>
+                  <Lock className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm whitespace-nowrap">Se connecter</span>
                 </>
               )}
             </button>
