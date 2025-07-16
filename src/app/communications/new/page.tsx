@@ -91,7 +91,7 @@ export default function NewCommunicationPage() {
   useEffect(() => {
     checkSession();
     fetchData();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkSession = async () => {
     try {

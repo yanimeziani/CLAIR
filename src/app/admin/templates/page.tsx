@@ -61,7 +61,7 @@ export default function TemplatesPage() {
     checkSession();
     fetchTemplates();
     fetchPatients();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkSession = async () => {
     try {

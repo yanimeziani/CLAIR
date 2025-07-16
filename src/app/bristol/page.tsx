@@ -246,12 +246,12 @@ export default function BristolPage() {
     }
   };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
+  const navigateDay = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
     if (direction === 'prev') {
-      newDate.setMonth(newDate.getMonth() - 1);
+      newDate.setDate(newDate.getDate() - 1);
     } else {
-      newDate.setMonth(newDate.getMonth() + 1);
+      newDate.setDate(newDate.getDate() + 1);
     }
     setCurrentDate(newDate);
   };
@@ -354,35 +354,38 @@ export default function BristolPage() {
 
         {selectedPatient && (
           <>
-            {/* Calendar Navigation */}
+            {/* Day Navigation */}
             <Card className="mb-6">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <Button variant="outline" onClick={() => navigateMonth('prev')}>
+                  <Button variant="outline" onClick={() => navigateDay('prev')}>
                     <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline ml-2">Jour précédent</span>
                   </Button>
                   
                   <div className="text-center">
-                    <h2 className="text-xl font-semibold">
-                      {currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      Résident: {selectedPatient.firstName} {selectedPatient.lastName}
-                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentDate(new Date())}
+                      className="text-sm"
+                    >
+                      Aujourd'hui
+                    </Button>
                   </div>
                   
-                  <Button variant="outline" onClick={() => navigateMonth('next')}>
+                  <Button variant="outline" onClick={() => navigateDay('next')}>
+                    <span className="hidden sm:inline mr-2">Jour suivant</span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Calendar Grid */}
+            {/* Current Day View */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                  <span>Calendrier du suivi</span>
+                  <span>Suivi du jour</span>
                   <div className="flex items-center space-x-4 text-sm">
                     <div className="flex items-center space-x-2">
                       <Activity className="h-4 w-4 text-amber-500" />
@@ -393,137 +396,86 @@ export default function BristolPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Mobile scroll hint */}
-                <div className="block md:hidden text-xs text-muted-foreground mb-3 text-center bg-blue-50 p-2 rounded-lg border border-blue-200">
-                  📱 Faites glisser horizontalement pour naviguer
+                {/* Current date display */}
+                <div className="text-center mb-6">
+                  <div className="text-2xl font-bold text-foreground mb-2">
+                    {currentDate.toLocaleDateString('fr-FR', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Suivi Bristol pour {selectedPatient.firstName} {selectedPatient.lastName}
+                  </div>
                 </div>
                 
-                {/* Calendar container with horizontal scroll on mobile */}
-                <div className="overflow-x-auto md:overflow-visible scroll-smooth">
-                  <div className="min-w-[320px] md:min-w-0" style={{minWidth: 'max(320px, 100vw - 2rem)'}}>
-                    {/* Days of week header */}
-                    <div className="grid grid-cols-7 gap-1 mb-2">
-                      {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
-                        <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
-                          {day}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Calendar days - Enhanced day-to-day view */}
-                    <div className="grid grid-cols-7 gap-2">
-                      {getDaysInMonth(currentDate).map((date, index) => {
-                        const dateStr = date.toISOString().split('T')[0];
-                        const dayEntries = getEntriesForDay(date);
-                        const isToday = date.toDateString() === new Date().toDateString();
-                        const isPastDate = date < new Date();
-                        const dayName = date.toLocaleDateString('fr-FR', { weekday: 'short' });
-                        
-                        return (
-                          <div 
-                            key={index} 
-                            className={`relative border-2 rounded-xl p-3 min-h-[160px] md:min-h-[180px] transition-all duration-300 hover:shadow-lg ${
-                              isToday 
-                                ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-300 shadow-md' 
-                                : isPastDate 
-                                  ? 'bg-gray-50/80 border-gray-200' 
-                                  : 'bg-white border-gray-200 hover:border-gray-300'
-                            }`}
-                          >
-                            {/* Day header */}
-                            <div className="text-center mb-3">
-                              <div className={`text-xs font-medium text-gray-500 ${isToday ? 'text-blue-600' : ''}`}>
-                                {dayName}
+                {/* Shifts Grid - Mobile First */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  {SHIFTS.map(shift => {
+                    const dateStr = currentDate.toISOString().split('T')[0];
+                    const bowelEntry = getEntryForDayAndShift(currentDate, shift.value);
+                    const hasEntry = bowelEntry !== undefined;
+                    
+                    return (
+                      <Card 
+                        key={shift.value}
+                        className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 ${
+                          hasEntry 
+                            ? 'border-green-200 bg-green-50/80 hover:bg-green-100/80' 
+                            : 'border-gray-200 bg-gray-50/50 hover:bg-gray-100/80'
+                        }`}
+                        onClick={() => openEntryDialog(dateStr, shift.value)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-3">
+                              <div className={`p-2 rounded-lg ${shift.lightBg}`}>
+                                <shift.icon className={`h-5 w-5 ${shift.color}`} />
                               </div>
-                              <div className={`text-lg font-bold ${
-                                isToday 
-                                  ? 'text-blue-700' 
-                                  : isPastDate 
-                                    ? 'text-gray-600' 
-                                    : 'text-gray-800'
-                              }`}>
-                                {date.getDate()}
-                              </div>
-                              {isToday && (
-                                <div className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                              )}
-                            </div>
-                            
-                            {/* Shifts with improved styling */}
-                            <div className="space-y-2">
-                              {SHIFTS.map(shift => {
-                                const bowelEntry = getEntryForDayAndShift(date, shift.value);
-                                const hasEntry = bowelEntry !== undefined;
-                                
-                                return (
-                                  <div 
-                                    key={shift.value}
-                                    className={`relative border rounded-lg p-2 cursor-pointer transition-all duration-200 hover:scale-102 ${
-                                      hasEntry 
-                                        ? 'border-green-200 bg-green-50/80 hover:bg-green-100/80' 
-                                        : 'border-gray-200 bg-gray-50/50 hover:bg-gray-100/80'
-                                    }`}
-                                    onClick={() => openEntryDialog(dateStr, shift.value)}
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      {/* Shift label */}
-                                      <div className={`text-xs font-medium px-2 py-1 rounded-full text-white ${shift.bgColor}`}>
-                                        {shift.label.split(' ')[0]}
-                                      </div>
-                                      
-                                      {/* Entry indicator */}
-                                      <div className="flex items-center space-x-1">
-                                        {hasEntry ? (
-                                          <>
-                                            <div className={`w-4 h-4 rounded-full border-2 border-white shadow-sm ${getBristolInfo(bowelEntry.value)?.color || 'bg-gray-400'}`} />
-                                            {bowelEntry.size && (
-                                              <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full text-white shadow-sm ${getSizeInfo(bowelEntry.size)?.color || 'bg-gray-500'}`}>
-                                                {bowelEntry.size}
-                                              </span>
-                                            )}
-                                            <CheckCircle className="h-3 w-3 text-green-600" />
-                                          </>
-                                        ) : (
-                                          <>
-                                            <div className="w-4 h-4 rounded-full bg-gray-300 border-2 border-white shadow-sm" />
-                                            <Plus className="h-3 w-3 text-gray-400" />
-                                          </>
-                                        )}
-                                      </div>
-                                    </div>
-                                    
-                                    {/* Quick preview of Bristol type */}
-                                    {hasEntry && (
-                                      <div className="mt-1 text-xs text-gray-600 truncate">
-                                        Type {bowelEntry.value} - {getBristolInfo(bowelEntry.value)?.label.split(' - ')[1]}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                            
-                            {/* Day completion indicator */}
-                            <div className="absolute bottom-2 left-2 right-2">
-                              <div className="flex justify-center space-x-1">
-                                {SHIFTS.map(shift => {
-                                  const hasEntry = getEntryForDayAndShift(date, shift.value) !== undefined;
-                                  return (
-                                    <div 
-                                      key={shift.value}
-                                      className={`w-1.5 h-1.5 rounded-full ${
-                                        hasEntry ? 'bg-green-500' : 'bg-gray-300'
-                                      }`}
-                                    />
-                                  );
-                                })}
+                              <div>
+                                <div className="font-medium text-foreground">{shift.label}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {shift.value === 'night' ? 'Premier quart' : 
+                                   shift.value === 'day' ? 'Deuxième quart' : 'Troisième quart'}
+                                </div>
                               </div>
                             </div>
+                            {hasEntry ? (
+                              <CheckCircle className="h-6 w-6 text-green-600" />
+                            ) : (
+                              <Plus className="h-6 w-6 text-gray-400" />
+                            )}
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                          
+                          {hasEntry ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-3">
+                                <div className="text-sm font-medium text-muted-foreground">Taille:</div>
+                                <span className={`text-sm font-bold px-2 py-1 rounded-full text-white ${getSizeInfo(bowelEntry.size)?.color || 'bg-gray-500'}`}>
+                                  {bowelEntry.size} - {getSizeInfo(bowelEntry.size)?.label}
+                                </span>
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <div className="text-sm font-medium text-muted-foreground">Type:</div>
+                                <div className="flex items-center space-x-2">
+                                  <div className={`w-4 h-4 rounded-full ${getBristolInfo(bowelEntry.value)?.color || 'bg-gray-400'}`} />
+                                  <span className="text-sm font-medium">
+                                    {getBristolInfo(bowelEntry.value)?.label}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-sm text-muted-foreground">
+                              Cliquez pour ajouter une entrée
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -592,13 +544,13 @@ export default function BristolPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Valeur Bristol</Label>
-              <Select value={entryValue} onValueChange={setEntryValue}>
+              <Label>Taille *</Label>
+              <Select value={entrySize} onValueChange={(value: 'G' | 'M' | 'P') => setEntrySize(value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner le type de selles" />
+                  <SelectValue placeholder="Sélectionner la taille" />
                 </SelectTrigger>
                 <SelectContent>
-                  {BRISTOL_SCALE.map(option => (
+                  {SIZE_OPTIONS.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       <div className="flex items-center space-x-2">
                         <div className={`w-3 h-3 rounded-full ${option.color}`} />
@@ -611,13 +563,13 @@ export default function BristolPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Taille *</Label>
-              <Select value={entrySize} onValueChange={(value: 'G' | 'M' | 'P') => setEntrySize(value)}>
+              <Label>Valeur Bristol</Label>
+              <Select value={entryValue} onValueChange={setEntryValue}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner la taille" />
+                  <SelectValue placeholder="Sélectionner le type de selles" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SIZE_OPTIONS.map(option => (
+                  {BRISTOL_SCALE.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       <div className="flex items-center space-x-2">
                         <div className={`w-3 h-3 rounded-full ${option.color}`} />

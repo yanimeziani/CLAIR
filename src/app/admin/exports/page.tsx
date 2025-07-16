@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Download, ArrowLeft, Calendar, Users, FileText, Activity,
@@ -46,9 +46,9 @@ export default function AdminExportsPage() {
   useEffect(() => {
     checkSession();
     fetchData();
-  }, []);
+  }, [checkSession, fetchData]);
 
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/session');
       const data = await response.json();
@@ -71,9 +71,9 @@ export default function AdminExportsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [patientsRes, reportsRes] = await Promise.all([
         fetch('/api/patients'),
@@ -93,7 +93,7 @@ export default function AdminExportsPage() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  };
+  }, []);
 
   const handleExport = async (type: 'patients' | 'reports' | 'bristol', format: 'csv' = 'csv') => {
     try {

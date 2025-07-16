@@ -69,7 +69,7 @@ export default function ReportsPage() {
   // Form state
   const [formData, setFormData] = useState({
     patientId: '',
-    shift: 'day' as 'day' | 'evening' | 'night',
+    shift: 'night' as 'day' | 'evening' | 'night',
     reportDate: new Date().toISOString().split('T')[0],
     summary: '',
     customFields: {} as Record<string, any>
@@ -199,7 +199,7 @@ export default function ReportsPage() {
     setIsViewMode(false);
     setFormData({
       patientId: '',
-      shift: 'day',
+      shift: 'night',
       reportDate: new Date().toISOString().split('T')[0],
       summary: '',
       customFields: {}

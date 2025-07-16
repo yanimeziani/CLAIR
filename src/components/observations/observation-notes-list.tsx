@@ -55,13 +55,13 @@ export function ObservationNotesList({ patientId, refreshTrigger }: ObservationN
   useEffect(() => {
     checkSession();
     fetchNotes();
-  }, [patientId]);
+  }, [patientId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (refreshTrigger) {
       fetchNotes();
     }
-  }, [refreshTrigger]);
+  }, [refreshTrigger]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkSession = async () => {
     try {

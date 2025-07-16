@@ -224,13 +224,31 @@ export default function DashboardPage() {
                   
                   <DropdownMenuItem className="p-0">
                     <a 
-                      href="https://intranet.ciusss-cn.ca" 
+                      href="https://teams.microsoft.com" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="w-full p-3 hover:bg-blue-50/50 transition-colors flex items-center space-x-3"
                     >
                       <div className="bg-blue-100 p-2 rounded-lg">
-                        <Globe className="h-4 w-4 text-blue-600" />
+                        <MessageSquare className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-medium text-gray-900 block">Microsoft Teams</span>
+                        <span className="text-xs text-gray-500">Collaboration en ligne</span>
+                      </div>
+                      <ExternalLink className="h-3 w-3 text-gray-400" />
+                    </a>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem className="p-0">
+                    <a 
+                      href="https://intranet.ciusss-cn.ca" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="w-full p-3 hover:bg-green-50/50 transition-colors flex items-center space-x-3"
+                    >
+                      <div className="bg-green-100 p-2 rounded-lg">
+                        <Globe className="h-4 w-4 text-green-600" />
                       </div>
                       <div className="flex-1">
                         <span className="font-medium text-gray-900 block">Intranet CIUSSS</span>
@@ -242,17 +260,17 @@ export default function DashboardPage() {
                   
                   <DropdownMenuItem className="p-0">
                     <a 
-                      href="https://dossierpatient.ciusss-cn.ca" 
+                      href="https://ah-223.ciusss-cn.ca/incident" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="w-full p-3 hover:bg-green-50/50 transition-colors flex items-center space-x-3"
+                      className="w-full p-3 hover:bg-red-50/50 transition-colors flex items-center space-x-3"
                     >
-                      <div className="bg-green-100 p-2 rounded-lg">
-                        <FileText className="h-4 w-4 text-green-600" />
+                      <div className="bg-red-100 p-2 rounded-lg">
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
                       </div>
                       <div className="flex-1">
-                        <span className="font-medium text-gray-900 block">Dossier Patient</span>
-                        <span className="text-xs text-gray-500">Système de dossiers</span>
+                        <span className="font-medium text-gray-900 block">AH-223</span>
+                        <span className="text-xs text-gray-500">Déclaration incident/accident</span>
                       </div>
                       <ExternalLink className="h-3 w-3 text-gray-400" />
                     </a>
@@ -260,35 +278,17 @@ export default function DashboardPage() {
                   
                   <DropdownMenuItem className="p-0">
                     <a 
-                      href="https://formation.ciusss-cn.ca" 
+                      href="https://registre.ciusss-cn.ca/mesures-controle" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="w-full p-3 hover:bg-purple-50/50 transition-colors flex items-center space-x-3"
                     >
                       <div className="bg-purple-100 p-2 rounded-lg">
-                        <Brain className="h-4 w-4 text-purple-600" />
+                        <Clipboard className="h-4 w-4 text-purple-600" />
                       </div>
                       <div className="flex-1">
-                        <span className="font-medium text-gray-900 block">Formation</span>
-                        <span className="text-xs text-gray-500">Plateforme d'apprentissage</span>
-                      </div>
-                      <ExternalLink className="h-3 w-3 text-gray-400" />
-                    </a>
-                  </DropdownMenuItem>
-                  
-                  <DropdownMenuItem className="p-0">
-                    <a 
-                      href="https://securite.ciusss-cn.ca" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="w-full p-3 hover:bg-orange-50/50 transition-colors flex items-center space-x-3"
-                    >
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <Shield className="h-4 w-4 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <span className="font-medium text-gray-900 block">Sécurité</span>
-                        <span className="text-xs text-gray-500">Portail sécurité</span>
+                        <span className="font-medium text-gray-900 block">Registre Mesures</span>
+                        <span className="text-xs text-gray-500">Mesures de contrôle</span>
                       </div>
                       <ExternalLink className="h-3 w-3 text-gray-400" />
                     </a>
@@ -456,7 +456,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               <button 
                 onClick={() => router.push('/reports/new')}
-                className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 min-h-[120px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10 flex flex-col items-center space-y-3">
@@ -469,9 +469,9 @@ export default function DashboardPage() {
               
               <QuickObservationForm 
                 trigger={
-                  <button className="group relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 w-full">
+                  <button className="group relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 w-full h-full min-h-[120px] flex">
                     <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="relative z-10 flex flex-col items-center space-y-3">
+                    <div className="relative z-10 flex flex-col items-center justify-center space-y-3 flex-1">
                       <div className="bg-green-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
                         <Stethoscope className="h-6 w-6 text-white" />
                       </div>
@@ -483,7 +483,7 @@ export default function DashboardPage() {
               
               <button 
                 onClick={() => router.push('/bristol')}
-                className="group relative overflow-hidden bg-gradient-to-br from-cyan-50 to-cyan-100 hover:from-cyan-100 hover:to-cyan-200 border-2 border-cyan-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                className="group relative overflow-hidden bg-gradient-to-br from-cyan-50 to-cyan-100 hover:from-cyan-100 hover:to-cyan-200 border-2 border-cyan-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 min-h-[120px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10 flex flex-col items-center space-y-3">
@@ -496,7 +496,7 @@ export default function DashboardPage() {
               
               <button 
                 onClick={() => router.push('/communications/new')}
-                className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-2 border-purple-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 min-h-[120px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10 flex flex-col items-center space-y-3">
@@ -509,7 +509,7 @@ export default function DashboardPage() {
               
               <button 
                 onClick={() => router.push('/patients')}
-                className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 border-2 border-amber-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                className="group relative overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 border-2 border-amber-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 min-h-[120px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10 flex flex-col items-center space-y-3">
@@ -522,7 +522,7 @@ export default function DashboardPage() {
 
               <button 
                 onClick={() => router.push('/communications')}
-                className="group relative overflow-hidden bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 border-2 border-indigo-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                className="group relative overflow-hidden bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 border-2 border-indigo-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 min-h-[120px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10 flex flex-col items-center space-y-3">

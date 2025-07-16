@@ -29,7 +29,7 @@ export function RecentObservationsView({ limit = 5, className }: RecentObservati
 
   useEffect(() => {
     fetchRecentObservations();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchRecentObservations = async () => {
     try {

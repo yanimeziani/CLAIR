@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, Settings, Shield, Database, Bell, 
@@ -47,9 +47,9 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     checkSession();
-  }, []);
+  }, [checkSession]);
 
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/session');
       const data = await response.json();
@@ -65,7 +65,7 @@ export default function AdminSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   const handleSaveSettings = async () => {
     try {

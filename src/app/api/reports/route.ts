@@ -125,15 +125,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if report already exists for this patient and date (one report per patient per day)
+    // Check if report already exists for this patient, date, and shift (one report per patient per shift per day)
     const existingReport = await DailyReport.findOne({
       patientId,
+      shift,
       reportDate: reportDate || new Date().toISOString().split('T')[0]
     });
 
     if (existingReport) {
       return NextResponse.json(
-        { success: false, error: 'Un rapport existe déjà pour ce résident à cette date' },
+        { success: false, error: 'Un rapport existe déjà pour ce résident à cette date et ce quart de travail' },
         { status: 400 }
       );
     }
