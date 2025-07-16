@@ -30,6 +30,7 @@ interface ObservationNote {
   isPositive: boolean;
   isSignificant: boolean;
   authorName: string;
+  authorEmployeeNumber?: string;
   createdAt: string;
   signature: {
     signedAt: string;
