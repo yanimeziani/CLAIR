@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IObservationNote extends Document {
   _id: string;
   patientId: string;
-  authorId: string;
+  authorId?: string;
   authorName: string;
   authorEmployeeNumber?: string;
   content: string;
@@ -41,7 +41,7 @@ const ObservationNoteSchema: Schema = new Schema({
   authorId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    required: false,
   },
   authorName: {
     type: String,

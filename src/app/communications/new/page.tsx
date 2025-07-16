@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  MessageSquare, ArrowLeft, Send, X, User, AlertTriangle, Users, KeyRound, Calendar
+  MessageSquare, ArrowLeft, Send, X, User, AlertTriangle, Users, Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { 
   Stepper, 
@@ -79,12 +78,7 @@ export default function NewCommunicationPage() {
     sendToAll: false
   });
 
-  // PIN Authentication state
-  const [showPinDialog, setShowPinDialog] = useState(false);
-  const [pin, setPin] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState('');
-  const [replacementName, setReplacementName] = useState('');
-  const [isReplacement, setIsReplacement] = useState(false);
+  // Remove PIN authentication state - no longer needed since user is already authenticated
 
   const router = useRouter();
 
@@ -207,13 +201,14 @@ export default function NewCommunicationPage() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateCurrentStep()) {
-      setShowPinDialog(true);
+      setSending(true);
+      await sendMessage();
     }
   };
 
-  const handlePinAuthentication = async () => {
+  const sendMessage = async () => {
     try {
       const payload = {
         content: formData.content,
@@ -221,9 +216,7 @@ export default function NewCommunicationPage() {
         isUrgent: formData.isUrgent,
         destinationDates: formData.destinationDates,
         patientId: formData.patientId === "none" ? null : formData.patientId || null,
-        authorDisplayName: isReplacement ? replacementName : 
-          users.find(u => u._id === selectedUserId)?.firstName + ' ' + 
-          users.find(u => u._id === selectedUserId)?.lastName
+        authorDisplayName: currentUser?.name || `${currentUser?.firstName} ${currentUser?.lastName}`
       };
 
       const response = await fetch('/api/communications', {
@@ -244,10 +237,7 @@ export default function NewCommunicationPage() {
       console.error('Error sending message:', error);
       toast.error('Erreur lors de l\'envoi du message');
     } finally {
-      setShowPinDialog(false);
-      setPin('');
-      setSelectedUserId('');
-      setReplacementName('');
+      setSending(false);
     }
   };
 
@@ -587,9 +577,9 @@ export default function NewCommunicationPage() {
                     Suivant
                   </Button>
                 ) : (
-                  <Button onClick={handleSubmit} size="sm" className="w-full sm:w-auto">
+                  <Button onClick={handleSubmit} size="sm" className="w-full sm:w-auto" disabled={sending}>
                     <Send className="h-4 w-4 mr-2" />
-                    Envoyer
+                    {sending ? 'Envoi...' : 'Envoyer'}
                   </Button>
                 )}
               </div>
@@ -598,106 +588,7 @@ export default function NewCommunicationPage() {
         </Card>
       </div>
 
-      {/* PIN Authentication Dialog */}
-      <Dialog open={showPinDialog} onOpenChange={setShowPinDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Authentification requise</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Pour envoyer un message, veuillez vous authentifier
-            </p>
-            
-            {/* User Type Selection */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              <Button
-                type="button"
-                variant={!isReplacement ? "default" : "outline"}
-                onClick={() => setIsReplacement(false)}
-                className="flex flex-col items-center p-3 sm:p-4 h-auto"
-              >
-                <Users className="h-5 w-5 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
-                <span className="text-xs">Personnel</span>
-              </Button>
-              <Button
-                type="button"
-                variant={isReplacement ? "default" : "outline"}
-                onClick={() => setIsReplacement(true)}
-                className="flex flex-col items-center p-3 sm:p-4 h-auto"
-              >
-                <User className="h-5 w-5 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
-                <span className="text-xs">Remplacement</span>
-              </Button>
-            </div>
-
-            <Separator />
-
-            {!isReplacement ? (
-              <>
-                <div className="space-y-2">
-                  <Label>Sélectionner votre nom</Label>
-                  <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choisir un utilisateur" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {users.map((user) => (
-                        <SelectItem key={user._id} value={user._id}>
-                          {user.firstName} {user.lastName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>PIN à 4 chiffres</Label>
-                  <div className="relative">
-                    <Input
-                      type="password"
-                      placeholder="••••"
-                      value={pin}
-                      onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                      maxLength={4}
-                      className="text-center text-lg tracking-widest"
-                    />
-                    <KeyRound className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="space-y-2">
-                <Label>Nom du remplaçant</Label>
-                <Input
-                  type="text"
-                  placeholder="Entrez votre nom complet"
-                  value={replacementName}
-                  onChange={(e) => setReplacementName(e.target.value)}
-                />
-              </div>
-            )}
-
-            <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setShowPinDialog(false)} className="flex-1">
-                Annuler
-              </Button>
-              <Button 
-                onClick={handlePinAuthentication} 
-                className="flex-1" 
-                disabled={
-                  (!isReplacement && (!pin || pin.length !== 4 || !selectedUserId)) ||
-                  (isReplacement && !replacementName.trim())
-                }
-              >
-                <Send className="h-4 w-4 mr-2" />
-                Envoyer
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* PIN Authentication Dialog removed - user is already authenticated via session */}
     </div>
   );
 }

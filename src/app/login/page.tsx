@@ -97,41 +97,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
-      {/* Background Video */}
-      <video 
-        autoPlay 
-        loop 
-        muted 
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover blur-md scale-105"
-        style={{ filter: 'blur(8px) brightness(0.7)' }}
-      >
-        <source src="/loop-bg.mp4" type="video/mp4" />
-        {/* Fallback background */}
-        <div className="absolute inset-0 ws-gradient-main ws-page-pattern"></div>
-      </video>
-      
-      {/* Multi-layer overlay for optimal contrast */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-slate-900/30"></div>
-      <div className="absolute inset-0 backdrop-blur-sm bg-white/5"></div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-40 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
       
       <div className="w-full max-w-lg relative z-10">
         {/* Back Button */}
         <button 
           onClick={goBack}
-          className="ws-button-ghost mb-8 !px-4 !py-2"
+          className="mb-8 bg-white/80 backdrop-blur-xl border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-white/90 transition-all duration-300 hover:scale-105 shadow-lg flex items-center"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour à l'accueil
         </button>
 
         {/* Main Login Card */}
-        <div className="bg-white/98 backdrop-blur-md rounded-2xl shadow-2xl shadow-black/20 border border-white/30 overflow-hidden max-w-sm mx-auto">
+        <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl shadow-blue-500/20 border border-white/50 overflow-hidden max-w-sm mx-auto">
           {/* Header Section */}
-          <div className="bg-gradient-to-br from-blue-500 to-cyan-500 px-6 py-8 text-center">
-            <div className="h-16 w-16 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-              <span className="text-3xl font-bold text-white">C</span>
+          <div className="bg-gradient-to-br from-blue-500 to-purple-600 px-6 py-8 text-center">
+            <div className="h-16 w-16 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
+              <Heart className="h-8 w-8 text-white" />
             </div>
             <h1 className="text-xl font-semibold text-white mb-1">
               Bienvenue sur CLAIR
@@ -154,7 +143,7 @@ export default function LoginPage() {
                       setIsReplacement(false);
                       setCurrentStep(2);
                     }}
-                    className="flex flex-col items-center p-3 rounded-lg border-2 border-gray-200 bg-gray-50 text-gray-500 hover:border-cyan-200 hover:bg-cyan-50 transition-all duration-200"
+                    className="flex flex-col items-center p-3 rounded-lg border-2 border-gray-200 bg-gray-50 text-gray-500 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md"
                   >
                     <Users className="h-5 w-5 mb-1" />
                     <span className="font-medium text-xs">Personnel</span>
@@ -166,7 +155,7 @@ export default function LoginPage() {
                       setIsReplacement(true);
                       setCurrentStep(3);
                     }}
-                    className="flex flex-col items-center p-3 rounded-lg border-2 border-gray-200 bg-gray-50 text-gray-500 hover:border-cyan-200 hover:bg-cyan-50 transition-all duration-200"
+                    className="flex flex-col items-center p-3 rounded-lg border-2 border-gray-200 bg-gray-50 text-gray-500 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md"
                   >
                     <Shield className="h-5 w-5 mb-1" />
                     <span className="font-medium text-xs">Remplacement</span>
@@ -196,7 +185,7 @@ export default function LoginPage() {
                     setCurrentStep(4);
                   }}
                 >
-                  <SelectTrigger className="w-full h-10 border-gray-200 rounded-lg bg-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400">
+                  <SelectTrigger className="w-full h-10 border-gray-200 rounded-lg bg-white focus:border-blue-400 focus:ring-1 focus:ring-blue-400 shadow-sm">
                     <SelectValue placeholder={loadingUsers ? "Chargement..." : "Choisir un utilisateur"} />
                   </SelectTrigger>
                   <SelectContent>
@@ -231,7 +220,7 @@ export default function LoginPage() {
                   placeholder="Entrez votre nom complet"
                   value={replacementName}
                   onChange={(e) => setReplacementName(e.target.value)}
-                  className="w-full h-10 border-gray-200 rounded-lg bg-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 px-3 text-sm"
+                  className="w-full h-10 border-gray-200 rounded-lg bg-white focus:border-blue-400 focus:ring-1 focus:ring-blue-400 px-3 text-sm shadow-sm"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter' && replacementName.trim()) {
                       setCurrentStep(5);
@@ -242,7 +231,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setCurrentStep(5)}
-                    className="w-full h-10 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-medium rounded-lg transition-all duration-200 text-sm"
+                    className="w-full h-10 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 text-sm shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     Continuer
                   </button>
@@ -267,18 +256,20 @@ export default function LoginPage() {
                   <div className="relative">
                     <input
                       type="password"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="Entrez votre PIN"
                       value={pin}
                       onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                       maxLength={4}
-                      className="w-full h-10 border-gray-200 rounded-lg bg-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 px-3 text-sm"
+                      className="w-full h-10 border-gray-200 rounded-lg bg-white focus:border-blue-400 focus:ring-1 focus:ring-blue-400 px-3 text-sm shadow-sm text-center text-lg font-mono tracking-widest"
                       autoFocus
                     />
                     <KeyRound className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   </div>
                   <button
                     type="submit"
-                    className="w-full h-10 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 text-sm"
+                    className="w-full h-10 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 text-sm shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100"
                     disabled={isLoading || pin.length !== 4}
                   >
                     {isLoading ? (
@@ -319,7 +310,7 @@ export default function LoginPage() {
                 <form onSubmit={handleLogin}>
                   <button
                     type="submit"
-                    className="w-full h-10 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 text-sm"
+                    className="w-full h-10 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 text-sm shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -351,13 +342,13 @@ export default function LoginPage() {
         </div>
 
         {/* Demo Credentials */}
-        <div className="mt-4 bg-white/95 backdrop-blur-md rounded-lg p-3 border border-white/40 shadow-lg shadow-black/5">
+        <div className="mt-6 bg-white/95 backdrop-blur-xl rounded-xl p-4 border border-white/50 shadow-xl shadow-blue-500/10">
           <div className="flex items-start space-x-3">
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <Heart className="h-4 w-4 text-blue-600" />
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-2 rounded-lg shadow-lg">
+              <Heart className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h4 className="font-medium text-gray-700 text-sm mb-1">Mode Démonstration</h4>
+              <h4 className="font-semibold text-gray-700 text-sm mb-1">Mode Démonstration</h4>
               <div className="text-xs text-gray-600 space-y-1">
                 <p><strong>Utilisateur:</strong> Admin Principal</p>
                 <p><strong>PIN:</strong> 1234</p>
