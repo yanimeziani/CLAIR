@@ -242,6 +242,8 @@ export function RichTextEditor({
           hasContent={!!content.trim()}
           errorCount={realtimeErrors?.length || 0}
           variant="compact"
+          showSummary={false}
+          showEnhance={false}
         />
       )}
       

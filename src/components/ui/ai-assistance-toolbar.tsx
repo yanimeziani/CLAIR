@@ -28,6 +28,8 @@ interface AIAssistanceToolbarProps {
   errorCount: number;
   className?: string;
   variant?: 'compact' | 'full';
+  showSummary?: boolean;
+  showEnhance?: boolean;
 }
 
 export function AIAssistanceToolbar({
@@ -38,7 +40,9 @@ export function AIAssistanceToolbar({
   hasContent,
   errorCount,
   className,
-  variant = 'full'
+  variant = 'full',
+  showSummary = true,
+  showEnhance = true
 }: AIAssistanceToolbarProps) {
   const isCompact = variant === 'compact';
 
@@ -67,23 +71,29 @@ export function AIAssistanceToolbar({
               <Sparkles className="h-4 w-4 mr-2 text-blue-500" />
               Corriger le texte
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onSummarize} disabled={isProcessing || !hasContent}>
-              <FileText className="h-4 w-4 mr-2 text-green-500" />
-              Générer un résumé
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onEnhance('professional')} disabled={isProcessing || !hasContent}>
-              <Wand2 className="h-4 w-4 mr-2 text-purple-500" />
-              Style professionnel
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEnhance('concise')} disabled={isProcessing || !hasContent}>
-              <Wand2 className="h-4 w-4 mr-2 text-orange-500" />
-              Rendre plus concis
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEnhance('detailed')} disabled={isProcessing || !hasContent}>
-              <Wand2 className="h-4 w-4 mr-2 text-indigo-500" />
-              Ajouter des détails
-            </DropdownMenuItem>
+            {showSummary && (
+              <DropdownMenuItem onClick={onSummarize} disabled={isProcessing || !hasContent}>
+                <FileText className="h-4 w-4 mr-2 text-green-500" />
+                Générer un résumé
+              </DropdownMenuItem>
+            )}
+            {showEnhance && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onEnhance('professional')} disabled={isProcessing || !hasContent}>
+                  <Wand2 className="h-4 w-4 mr-2 text-purple-500" />
+                  Style professionnel
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEnhance('concise')} disabled={isProcessing || !hasContent}>
+                  <Wand2 className="h-4 w-4 mr-2 text-orange-500" />
+                  Rendre plus concis
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEnhance('detailed')} disabled={isProcessing || !hasContent}>
+                  <Wand2 className="h-4 w-4 mr-2 text-indigo-500" />
+                  Ajouter des détails
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -133,79 +143,83 @@ export function AIAssistanceToolbar({
       </Button>
 
       {/* Summary Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onSummarize}
-        disabled={isProcessing || !hasContent}
-        className={cn(
-          "h-8 px-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-sm transition-all",
-          isProcessing && "opacity-75"
-        )}
-        title="📝 Générer un résumé automatique"
-      >
-        <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          <span className="text-xs font-medium">Résumé IA</span>
-        </div>
-      </Button>
+      {showSummary && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onSummarize}
+          disabled={isProcessing || !hasContent}
+          className={cn(
+            "h-8 px-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-sm transition-all",
+            isProcessing && "opacity-75"
+          )}
+          title="📝 Générer un résumé automatique"
+        >
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            <span className="text-xs font-medium">Résumé IA</span>
+          </div>
+        </Button>
+      )}
 
       {/* Enhancement Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={isProcessing || !hasContent}
-            className={cn(
-              "h-8 px-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-sm transition-all",
-              isProcessing && "opacity-75"
-            )}
-            title="🎯 Améliorer le style du texte"
-          >
-            <div className="flex items-center gap-2">
-              <Wand2 className="h-4 w-4" />
-              <span className="text-xs font-medium">Améliorer</span>
-              <ChevronDown className="h-3 w-3" />
-            </div>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-52">
-          <DropdownMenuItem 
-            onClick={() => onEnhance('professional')} 
-            disabled={isProcessing || !hasContent}
-            className="flex items-center gap-2"
-          >
-            <div className="h-2 w-2 rounded-full bg-purple-500" />
-            <div>
-              <div className="font-medium">Style professionnel</div>
-              <div className="text-xs text-muted-foreground">Ton formel et médical</div>
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => onEnhance('concise')} 
-            disabled={isProcessing || !hasContent}
-            className="flex items-center gap-2"
-          >
-            <div className="h-2 w-2 rounded-full bg-orange-500" />
-            <div>
-              <div className="font-medium">Rendre plus concis</div>
-              <div className="text-xs text-muted-foreground">Réduire la longueur</div>
-            </div>
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            onClick={() => onEnhance('detailed')} 
-            disabled={isProcessing || !hasContent}
-            className="flex items-center gap-2"
-          >
-            <div className="h-2 w-2 rounded-full bg-indigo-500" />
-            <div>
-              <div className="font-medium">Ajouter des détails</div>
-              <div className="text-xs text-muted-foreground">Enrichir le contenu</div>
-            </div>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {showEnhance && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={isProcessing || !hasContent}
+              className={cn(
+                "h-8 px-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-sm transition-all",
+                isProcessing && "opacity-75"
+              )}
+              title="🎯 Améliorer le style du texte"
+            >
+              <div className="flex items-center gap-2">
+                <Wand2 className="h-4 w-4" />
+                <span className="text-xs font-medium">Améliorer</span>
+                <ChevronDown className="h-3 w-3" />
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-52">
+            <DropdownMenuItem 
+              onClick={() => onEnhance('professional')} 
+              disabled={isProcessing || !hasContent}
+              className="flex items-center gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-purple-500" />
+              <div>
+                <div className="font-medium">Style professionnel</div>
+                <div className="text-xs text-muted-foreground">Ton formel et médical</div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onEnhance('concise')} 
+              disabled={isProcessing || !hasContent}
+              className="flex items-center gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-orange-500" />
+              <div>
+                <div className="font-medium">Rendre plus concis</div>
+                <div className="text-xs text-muted-foreground">Réduire la longueur</div>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => onEnhance('detailed')} 
+              disabled={isProcessing || !hasContent}
+              className="flex items-center gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-indigo-500" />
+              <div>
+                <div className="font-medium">Ajouter des détails</div>
+                <div className="text-xs text-muted-foreground">Enrichir le contenu</div>
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Error indicator */}
       {errorCount > 0 && (

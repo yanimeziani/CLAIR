@@ -453,8 +453,8 @@ export default function BristolPage() {
                             <div className="space-y-2">
                               <div className="flex items-center space-x-3">
                                 <div className="text-sm font-medium text-muted-foreground">Taille:</div>
-                                <span className={`text-sm font-bold px-2 py-1 rounded-full text-white ${getSizeInfo(bowelEntry.size)?.color || 'bg-gray-500'}`}>
-                                  {bowelEntry.size} - {getSizeInfo(bowelEntry.size)?.label}
+                                <span className={`text-sm font-bold px-2 py-1 rounded-full text-white ${getSizeInfo(bowelEntry.size || '')?.color || 'bg-gray-500'}`}>
+                                  {bowelEntry.size} - {getSizeInfo(bowelEntry.size || '')?.label}
                                 </span>
                               </div>
                               <div className="flex items-center space-x-3">

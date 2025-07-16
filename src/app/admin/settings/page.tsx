@@ -45,10 +45,6 @@ export default function AdminSettingsPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    checkSession();
-  }, [checkSession]);
-
   const checkSession = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/session');
@@ -66,6 +62,10 @@ export default function AdminSettingsPage() {
       setLoading(false);
     }
   }, [router]);
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
 
   const handleSaveSettings = async () => {
     try {
