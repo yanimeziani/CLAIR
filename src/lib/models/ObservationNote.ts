@@ -5,6 +5,7 @@ export interface IObservationNote extends Document {
   patientId: string;
   authorId: string;
   authorName: string;
+  authorEmployeeNumber?: string;
   content: string;
   isPositive: boolean;
   isSignificant: boolean;
@@ -45,6 +46,10 @@ const ObservationNoteSchema: Schema = new Schema({
   authorName: {
     type: String,
     required: true,
+  },
+  authorEmployeeNumber: {
+    type: String,
+    required: false,
   },
   content: {
     type: String,

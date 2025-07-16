@@ -4,6 +4,7 @@ export interface IUser extends Document {
   _id: string;
   firstName: string;
   lastName: string;
+  employeeNumber?: string;
   role: 'admin' | 'standard' | 'viewer';
   pinHash: string;
   isActive: boolean;
@@ -18,6 +19,14 @@ const UserSchema: Schema = new Schema({
   lastName: {
     type: String,
     required: true,
+  },
+  employeeNumber: {
+    type: String,
+    required: false, // Made optional for backward compatibility
+    unique: true,
+    sparse: true, // Allow multiple null values
+    minlength: 6,
+    maxlength: 6,
   },
   role: {
     type: String,

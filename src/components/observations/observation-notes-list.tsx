@@ -376,6 +376,11 @@ export function ObservationNotesList({ patientId, refreshTrigger }: ObservationN
                         <Label className="text-blue-700 dark:text-blue-300">Signé par</Label>
                         <p className="font-medium text-blue-900 dark:text-blue-100">
                           {selectedNote.authorName}
+                          {selectedNote.authorEmployeeNumber && (
+                            <span className="text-sm font-normal text-blue-700 dark:text-blue-300">
+                              {' '}(#{selectedNote.authorEmployeeNumber})
+                            </span>
+                          )}
                         </p>
                       </div>
                       <div>

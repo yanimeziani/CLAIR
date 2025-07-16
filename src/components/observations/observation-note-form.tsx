@@ -82,6 +82,7 @@ export function ObservationNoteForm({
         isPositive: formData.isPositive,
         isSignificant: formData.isSignificant,
         authorName: `${currentUser.firstName} ${currentUser.lastName}`,
+        authorEmployeeNumber: currentUser.employeeNumber || '',
         signature: {
           signedAt: new Date().toISOString(),
           ipAddress: '', // Will be filled by server
@@ -230,7 +231,8 @@ export function ObservationNoteForm({
                     <div>
                       <h4 className="font-medium text-blue-900 dark:text-blue-100">Signature électronique</h4>
                       <p className="text-sm text-blue-700 dark:text-blue-300">
-                        Cette observation sera signée par <strong>{currentUser.firstName} {currentUser.lastName}</strong> 
+                        Cette observation sera signée par <strong>{currentUser.firstName} {currentUser.lastName}</strong>
+                        {currentUser.employeeNumber && <span> (#{currentUser.employeeNumber})</span>}
                         {' '}le {new Date().toLocaleDateString('fr-FR')} à {new Date().toLocaleTimeString('fr-FR')}
                       </p>
                     </div>

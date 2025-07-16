@@ -86,6 +86,7 @@ export async function POST(request: NextRequest) {
       isPositive,
       isSignificant,
       authorName,
+      authorEmployeeNumber,
       signature
     } = body;
 
@@ -115,6 +116,7 @@ export async function POST(request: NextRequest) {
       patientId,
       authorId: null, // Will be set when we have proper user session
       authorName,
+      authorEmployeeNumber,
       content,
       isPositive,
       isSignificant: isSignificant || false,

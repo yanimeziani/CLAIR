@@ -21,6 +21,7 @@ const users = [
     _id: ObjectId(),
     firstName: "Admin",
     lastName: "Principal",
+    employeeNumber: "123456",
     role: "admin",
     pinHash: "$2b$10$Rdf9YDjwAXS12Ge7EClEr.AhNBLzxTOLHEIhnldatCrgZB5RQLHZG", // PIN: 1234
     isActive: true,
@@ -30,6 +31,7 @@ const users = [
     _id: ObjectId(),
     firstName: "Dr. Marie",
     lastName: "Dubois",
+    employeeNumber: "567890",
     role: "nurse",
     pinHash: "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // PIN: 5678
     isActive: true,
@@ -39,6 +41,7 @@ const users = [
     _id: ObjectId(),
     firstName: "Sophie",
     lastName: "Martin",
+    employeeNumber: "234567",
     role: "aide",
     pinHash: "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // PIN: 5678
     isActive: true,
@@ -48,6 +51,7 @@ const users = [
     _id: ObjectId(),
     firstName: "Jean",
     lastName: "Tremblay",
+    employeeNumber: "345678",
     role: "nurse",
     pinHash: "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // PIN: 5678
     isActive: true,
@@ -57,6 +61,7 @@ const users = [
     _id: ObjectId(),
     firstName: "Claire",
     lastName: "Bergeron",
+    employeeNumber: "456789",
     role: "aide",
     pinHash: "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", // PIN: 5678
     isActive: true,

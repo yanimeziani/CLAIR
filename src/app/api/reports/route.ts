@@ -42,15 +42,33 @@ export async function GET() {
       .sort({ reportDate: -1, createdAt: -1 })
       .limit(100); // Limit to latest 100 reports
 
-    // Populate patient and author information
+    console.log('Found reports:', reports.length);
+
+    // Populate patient and author information with error handling
     const populatedReports = await Promise.all(reports.map(async (report) => {
-      const patient = await Patient.findById(report.patientId).select('firstName lastName');
-      const author = await User.findById(report.authorId).select('firstName lastName');
+      let patient = null;
+      let author = null;
+      
+      try {
+        if (report.patientId) {
+          patient = await Patient.findById(report.patientId).select('firstName lastName');
+        }
+      } catch (error) {
+        console.error('Error finding patient:', report.patientId, error);
+      }
+      
+      try {
+        if (report.authorId) {
+          author = await User.findById(report.authorId).select('firstName lastName');
+        }
+      } catch (error) {
+        console.error('Error finding author:', report.authorId, error);
+      }
       
       return {
         ...report.toObject(),
         patient,
-        authorName: author ? `${author.firstName} ${author.lastName}` : null
+        authorName: author ? `${author.firstName} ${author.lastName}` : 'Utilisateur inconnu'
       };
     }));
     
@@ -60,6 +78,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error fetching reports:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
       { success: false, error: 'Erreur lors de la récupération des rapports' },
       { status: 500 }

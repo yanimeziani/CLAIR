@@ -64,7 +64,7 @@ export default function ReportsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [patientFilter, setPatientFilter] = useState<string>('all');
   const [shiftFilter, setShiftFilter] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('today');
+  const [dateFilter, setDateFilter] = useState<string>('all');
 
   // Form state
   const [formData, setFormData] = useState({

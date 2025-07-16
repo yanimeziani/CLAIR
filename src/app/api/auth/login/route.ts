@@ -48,6 +48,9 @@ export async function POST(request: NextRequest) {
     const sessionData = {
       userId: result.user!._id,
       role: result.user!.role,
+      firstName: result.user!.firstName,
+      lastName: result.user!.lastName,
+      employeeNumber: result.user!.employeeNumber || null,
       name: `${result.user!.firstName} ${result.user!.lastName}`,
       isReplacement: false
     };
