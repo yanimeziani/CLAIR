@@ -55,7 +55,7 @@ print_step "Waiting for MongoDB to be ready..."
 sleep 10
 
 # Check if MongoDB is responding
-while ! docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
+while ! docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
     echo "Waiting for MongoDB to be ready..."
     sleep 2
 done

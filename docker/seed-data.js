@@ -1,4 +1,9 @@
 // Comprehensive database seeding script for Irielle Platform
+// Authenticate as admin user first
+db = db.getSiblingDB('admin');
+db.auth('admin', 'securepassword');
+
+// Switch to irielle database
 db = db.getSiblingDB('irielle');
 
 // Clear existing data

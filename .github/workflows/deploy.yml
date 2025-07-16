@@ -87,7 +87,7 @@ jobs:
         # Verify MongoDB is responding with timeout
         timeout=60
         while [ $timeout -gt 0 ]; do
-          if docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+          if docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
             echo "✅ MongoDB is ready"
             break
           fi
@@ -135,7 +135,7 @@ jobs:
         echo "=== 📋 Service Health Check ==="
         
         # Test MongoDB
-        if docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+        if docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
           echo "✅ MongoDB: Running"
         else
           echo "❌ MongoDB: Failed"

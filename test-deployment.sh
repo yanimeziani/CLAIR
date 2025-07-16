@@ -20,7 +20,7 @@ fi
 
 # Test 2: Vérifier MongoDB
 echo "📋 2. Test MongoDB..."
-if docker exec irielle-mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+if docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
     echo -e "${GREEN}✅ MongoDB répond${NC}"
 else
     echo -e "${RED}❌ MongoDB ne répond pas${NC}"
@@ -29,7 +29,7 @@ fi
 
 # Test 3: Vérifier la base de données seedée
 echo "📋 3. Vérification des données admin..."
-USER_COUNT=$(docker exec irielle-mongodb mongosh --quiet --eval "db.users.countDocuments({role: 'admin'})" irielle 2>/dev/null | tail -1)
+USER_COUNT=$(docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.users.countDocuments({role: 'admin'})" irielle 2>/dev/null | tail -1)
 if [ "$USER_COUNT" = "1" ]; then
     echo -e "${GREEN}✅ Admin user présent (PIN: 1234)${NC}"
 else
@@ -47,7 +47,7 @@ fi
 
 # Test 5: Vérifier les données patients
 echo "📋 5. Vérification des données patients..."
-PATIENT_COUNT=$(docker exec irielle-mongodb mongosh --quiet --eval "db.patients.countDocuments({})" irielle 2>/dev/null | tail -1)
+PATIENT_COUNT=$(docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.patients.countDocuments({})" irielle 2>/dev/null | tail -1)
 if [ "$PATIENT_COUNT" = "5" ]; then
     echo -e "${GREEN}✅ $PATIENT_COUNT patients de démonstration présents${NC}"
 else

@@ -36,13 +36,11 @@ export async function GET() {
 
     await connectDB();
     
-    // Get reports from the last 30 days
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const reports = await DailyReport.find({
-      reportDate: { $gte: thirtyDaysAgo.toISOString().split('T')[0] }
-    }).sort({ reportDate: -1, createdAt: -1 });
+    // Get all reports (for development/demo purposes)
+    // In production, you might want to limit to recent reports
+    const reports = await DailyReport.find({})
+      .sort({ reportDate: -1, createdAt: -1 })
+      .limit(100); // Limit to latest 100 reports
 
     // Populate patient and author information
     const populatedReports = await Promise.all(reports.map(async (report) => {
