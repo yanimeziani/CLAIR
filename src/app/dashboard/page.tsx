@@ -48,13 +48,17 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    checkSession();
-    fetchDashboardData();
+    const initDashboard = async () => {
+      await checkSession();
+      await fetchDashboardData();
+    };
+    
+    initDashboard();
     
     // Update time every minute
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchDashboardData = async () => {
     try {

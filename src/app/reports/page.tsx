@@ -78,9 +78,12 @@ export default function ReportsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    checkSession();
-    fetchData();
-  }, []);
+    const initReports = async () => {
+      await checkSession();
+      await fetchData();
+    };
+    initReports();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExport = async (format: 'csv' = 'csv') => {
     try {

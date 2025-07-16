@@ -59,9 +59,12 @@ export default function PatientsPage() {
   const router = useRouter();
 
   useEffect(() => {
-    checkSession();
-    fetchPatients();
-  }, []);
+    const initPatients = async () => {
+      await checkSession();
+      await fetchPatients();
+    };
+    initPatients();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkSession = async () => {
     try {

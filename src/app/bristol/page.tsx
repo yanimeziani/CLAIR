@@ -69,15 +69,18 @@ export default function BristolPage() {
   const router = useRouter();
 
   useEffect(() => {
-    checkSession();
-    fetchPatients();
-  }, []);
+    const initBristol = async () => {
+      await checkSession();
+      await fetchPatients();
+    };
+    initBristol();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selectedPatient) {
       fetchEntries();
     }
-  }, [selectedPatient, currentDate]);
+  }, [selectedPatient, currentDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExport = async (format: 'csv' = 'csv') => {
     try {

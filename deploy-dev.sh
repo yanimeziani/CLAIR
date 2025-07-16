@@ -66,12 +66,18 @@ print_step "Seeding database with fresh data..."
 docker exec irielle-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
 print_success "Database seeded successfully"
 
-# Step 6: Start all other services
-print_step "Starting all services..."
-docker-compose up -d
-print_success "All services started"
+# Step 6: Start core services first
+print_step "Starting core services..."
+docker-compose up -d frontend ai-backend chromadb ollama
+print_success "Core services started"
 
-# Step 7: Wait for application to be ready
+# Step 7: Start Nginx after other services are ready
+print_step "Starting Nginx..."
+sleep 10
+docker-compose up -d nginx
+print_success "Nginx started"
+
+# Step 8: Wait for application to be ready
 print_step "Waiting for application to be ready..."
 sleep 15
 

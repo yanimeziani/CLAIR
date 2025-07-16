@@ -109,11 +109,18 @@ jobs:
     
     - name: Start all other services
       run: |
-        echo "🚀 Starting all services..."
-        docker-compose up -d --build
+        echo "🚀 Starting core services first..."
+        docker-compose up -d --build frontend ai-backend chromadb ollama
         
-        echo "⏳ Waiting for all services to be ready..."
-        sleep 30
+        echo "⏳ Waiting for core services to be ready..."
+        sleep 20
+        
+        # Start nginx after other services are ready
+        echo "🌐 Starting Nginx..."
+        docker-compose up -d nginx
+        
+        echo "⏳ Waiting for final services..."
+        sleep 10
         
     - name: Initialize Ollama model
       run: |
@@ -156,8 +163,15 @@ jobs:
         if [ $timeout -le 0 ]; then
           echo "❌ Application failed to respond in time"
           echo "=== Application Logs ==="
-          docker-compose logs --tail=50 app
+          docker-compose logs --tail=50 frontend
           exit 1
+        fi
+        
+        # Check and fix Nginx if needed
+        if ! docker ps | grep irielle-nginx | grep -q "Up"; then
+          echo "⚠️  Nginx not running properly, attempting restart..."
+          docker-compose restart nginx
+          sleep 5
         fi
         
         # Test AI Backend
