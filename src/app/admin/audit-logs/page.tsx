@@ -196,8 +196,7 @@ export default function AuditLogsPage() {
     try {
       setExporting(true);
       
-      const exportFilters = { ...filters };
-      delete exportFilters.search; // Remove search from export filters
+      const { search, ...exportFilters } = filters; // Remove search from export filters
       
       const response = await fetch('/api/admin/audit-logs/export', {
         method: 'POST',

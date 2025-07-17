@@ -256,7 +256,7 @@ export class AuditLogger {
         .skip(filters.skip || 0)
         .lean();
 
-      return { logs: logs as IAuditLog[], total };
+      return { logs: logs as unknown as IAuditLog[], total };
     } catch (error) {
       console.error('Failed to retrieve audit logs:', error);
       return { logs: [], total: 0 };
