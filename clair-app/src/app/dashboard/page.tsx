@@ -50,7 +50,6 @@ export default function DashboardPage() {
   useEffect(() => {
     const initDashboard = async () => {
       await checkSession();
-      await fetchDashboardData();
     };
     
     initDashboard();
@@ -60,8 +59,21 @@ export default function DashboardPage() {
     return () => clearInterval(timer);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Fetch dashboard data when user is available
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]); // Fetch data when user state changes
+
   const fetchDashboardData = async () => {
     try {
+      // Ensure we have a user before fetching notifications
+      if (!user?.userId) {
+        console.warn('No user ID available for filtering notifications');
+        return;
+      }
+
       const communicationsRes = await fetch('/api/communications');
       const patientsRes = await fetch('/api/patients');
 
@@ -77,9 +89,15 @@ export default function DashboardPage() {
         setRecentCommunications(todayCommunications);
 
         // Get unread notifications (all unread communications)
-        const unreadNotifications = communications.filter((c: any) => 
-          !c.readBy?.some((r: any) => r.userId === user?.userId)
-        ).slice(0, 5);
+        // Make sure to use the current user's ID
+        const currentUserId = user.userId;
+        const unreadNotifications = communications.filter((c: any) => {
+          // Check if this communication has been read by the current user
+          const isReadByCurrentUser = c.readBy?.some((r: any) => 
+            r.userId === currentUserId || r.userId?.toString() === currentUserId?.toString()
+          );
+          return !isReadByCurrentUser;
+        }).slice(0, 5);
         setNotifications(unreadNotifications);
 
         // Calculate stats

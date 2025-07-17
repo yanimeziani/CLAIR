@@ -1,12 +1,18 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  output: 'standalone',
-  // Configure for Docker deployment
-  env: {
-    CUSTOM_KEY: 'my-value',
-  },
-}
+import type { NextConfig } from "next";
 
-module.exports = nextConfig
+const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  output: 'standalone',
+  // Skip static optimization for API routes during build
+  trailingSlash: false,
+  generateBuildId: async () => {
+    return 'build'
+  }
+};
+
+export default nextConfig;

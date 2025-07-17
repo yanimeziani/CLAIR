@@ -1,9 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Activity, Users, MousePointer, Eye, BarChart3, Globe, TrendingUp, Clock, MapPin } from 'lucide-react';
+import { Activity, Users, MousePointer, Eye, BarChart3, Globe, TrendingUp, Clock, MapPin, PieChart } from 'lucide-react';
 import HeatmapCanvas from '@/components/HeatmapCanvas';
 import LiveVisitorTracker from '@/components/LiveVisitorTracker';
+import { 
+  AnalyticsPieChart, 
+  AnalyticsBarChart, 
+  AnalyticsLineChart, 
+  AnalyticsAreaChart,
+  HeatmapIntensityChart 
+} from '@/components/charts';
 import { AnalyticsEvent, HeatmapPoint, LiveVisitor } from '@/types/analytics';
 
 export default function AnalyticsDashboard() {
@@ -324,6 +331,83 @@ export default function AnalyticsDashboard() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Analytics Charts Section */}
+          <div className="space-y-8">
+            <div className="flex items-center mb-6">
+              <PieChart className="h-6 w-6 text-[rgb(var(--analytics-primary))] mr-3" />
+              <h2 className="text-2xl font-bold text-[rgb(var(--ws-gray-900))]">
+                Analyses Avancées
+              </h2>
+            </div>
+
+            {/* First row of charts */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <AnalyticsAreaChart
+                data={[
+                  { date: 'Lun', visitors: 120, pageViews: 340, clicks: 89 },
+                  { date: 'Mar', visitors: 98, pageViews: 280, clicks: 67 },
+                  { date: 'Mer', visitors: 165, pageViews: 420, clicks: 134 },
+                  { date: 'Jeu', visitors: 145, pageViews: 380, clicks: 98 },
+                  { date: 'Ven', visitors: 178, pageViews: 450, clicks: 156 },
+                  { date: 'Sam', visitors: 89, pageViews: 200, clicks: 45 },
+                  { date: 'Dim', visitors: 67, pageViews: 180, clicks: 34 }
+                ]}
+                title="Tendance Hebdomadaire des Visiteurs"
+              />
+              
+              <AnalyticsPieChart
+                data={[
+                  { name: 'Desktop', value: 1247, color: 'rgb(var(--analytics-primary))' },
+                  { name: 'Mobile', value: 890, color: 'rgb(var(--analytics-secondary))' },
+                  { name: 'Tablet', value: 456, color: 'rgb(var(--ws-green))' },
+                  { name: 'Autre', value: 123, color: 'rgb(var(--ws-yellow))' }
+                ]}
+                title="Répartition par Appareil"
+              />
+            </div>
+
+            {/* Second row of charts */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <AnalyticsBarChart
+                data={[
+                  { name: 'Accueil', value: 2340, color: 'rgb(var(--analytics-primary))' },
+                  { name: 'Patients', value: 1890, color: 'rgb(var(--analytics-secondary))' },
+                  { name: 'Rapports', value: 1456, color: 'rgb(var(--ws-green))' },
+                  { name: 'Communications', value: 987, color: 'rgb(var(--ws-blue))' },
+                  { name: 'Bristol', value: 567, color: 'rgb(var(--ws-yellow))' }
+                ]}
+                title="Pages les Plus Visitées"
+              />
+
+              <HeatmapIntensityChart
+                data={[
+                  { name: 'Navigation', value: 85, color: 'rgb(var(--heatmap-hot))' },
+                  { name: 'Boutons', value: 68, color: 'rgb(var(--heatmap-warm))' },
+                  { name: 'Formulaires', value: 45, color: 'rgb(var(--heatmap-cold))' },
+                  { name: 'Liens', value: 32, color: 'rgb(var(--heatmap-cold))' }
+                ]}
+                title="Zones d'Interaction Intense"
+              />
+            </div>
+
+            {/* Third row - Full width timeline */}
+            <AnalyticsLineChart
+              data={[
+                { date: '01/07', visitors: 234, pageViews: 567, clicks: 123 },
+                { date: '02/07', visitors: 198, pageViews: 489, clicks: 98 },
+                { date: '03/07', visitors: 267, pageViews: 634, clicks: 156 },
+                { date: '04/07', visitors: 245, pageViews: 598, clicks: 134 },
+                { date: '05/07', visitors: 289, pageViews: 712, clicks: 178 },
+                { date: '06/07', visitors: 156, pageViews: 389, clicks: 87 },
+                { date: '07/07', visitors: 134, pageViews: 334, clicks: 67 },
+                { date: '08/07', visitors: 298, pageViews: 756, clicks: 189 },
+                { date: '09/07', visitors: 267, pageViews: 645, clicks: 145 },
+                { date: '10/07', visitors: 223, pageViews: 534, clicks: 112 }
+              ]}
+              title="Évolution Temporelle des Métriques"
+            />
           </div>
 
           {/* Integration Instructions */}
