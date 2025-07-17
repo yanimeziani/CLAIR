@@ -12,8 +12,8 @@ services:
       MONGO_INITDB_DATABASE: irielle
     volumes:
       - mongodb_data:/data/db
-      - ./clair-app/docker/mongo-init.js:/docker-entrypoint-initdb.d/01-mongo-init.js:ro
-      - ./clair-app/docker/seed-data.js:/docker-entrypoint-initdb.d/02-seed-data.js:ro
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/01-mongo-init.js:ro
+      - ./docker/seed-data.js:/docker-entrypoint-initdb.d/02-seed-data.js:ro
     networks:
       - irielle-network
 
@@ -32,7 +32,7 @@ services:
   # Ollama AI Service with Model Management
   ollama:
     build:
-      context: ./clair-app/docker
+      context: ./docker
       dockerfile: ollama-models.dockerfile
     container_name: irielle-ollama
     restart: unless-stopped
@@ -55,7 +55,7 @@ services:
   # Python FastAPI Backend for AI
   ai-backend:
     build:
-      context: ./clair-app/ai-backend
+      context: ./ai-backend
       dockerfile: Dockerfile
     container_name: irielle-ai-backend
     restart: unless-stopped
@@ -72,12 +72,12 @@ services:
     networks:
       - irielle-network
 
-  # CLAIR Next.js Frontend Application
-  clair-frontend:
+  # Next.js Frontend Application
+  frontend:
     build:
-      context: ./clair-app
+      context: .
       dockerfile: Dockerfile
-    container_name: irielle-clair-frontend
+    container_name: irielle-frontend
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -86,20 +86,6 @@ services:
     depends_on:
       - mongodb
       - ai-backend
-    networks:
-      - irielle-network
-
-  # LUCIDE Analytics Next.js Application
-  lucide-analytics:
-    build:
-      context: ./lucide-analytics
-      dockerfile: Dockerfile
-    container_name: irielle-lucide-analytics
-    restart: unless-stopped
-    ports:
-      - "3001:3000"
-    depends_on:
-      - mongodb
     networks:
       - irielle-network
 
@@ -117,8 +103,7 @@ services:
       - certbot_data:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
-      - clair-frontend
-      - lucide-analytics
+      - frontend
     networks:
       - irielle-network
 
@@ -135,7 +120,7 @@ services:
   # SSL Setup Service
   ssl-setup:
     build:
-      context: ./clair-app/scripts
+      context: ./scripts
       dockerfile: Dockerfile.ssl-setup
     container_name: irielle-ssl-setup
     volumes:

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
   Calendar, ArrowLeft, Plus, Filter, User, Clock, 
   Droplets, Activity, ChevronLeft, ChevronRight, Search,
@@ -36,13 +37,13 @@ interface BristolEntry {
 }
 
 const BRISTOL_SCALE = [
-  { value: '1', label: 'Type 1 - Très dur', description: 'Morceaux durs séparés, difficiles à évacuer', color: 'bg-red-600' },
-  { value: '2', label: 'Type 2 - Dur', description: 'En forme de saucisse, grumeleux', color: 'bg-orange-600' },
-  { value: '3', label: 'Type 3 - Normal dur', description: 'En forme de saucisse, surface craquelée', color: 'bg-yellow-600' },
-  { value: '4', label: 'Type 4 - Normal', description: 'En forme de saucisse, surface lisse', color: 'bg-green-600' },
-  { value: '5', label: 'Type 5 - Normal mou', description: 'Masses molles aux bords nets', color: 'bg-blue-600' },
-  { value: '6', label: 'Type 6 - Mou', description: 'Morceaux mous, bords déchiquetés', color: 'bg-indigo-600' },
-  { value: '7', label: 'Type 7 - Liquide', description: 'Entièrement liquide', color: 'bg-purple-600' }
+  { value: '1', label: 'Type 1 - Très dur', description: 'Morceaux durs séparés, difficiles à évacuer', color: 'bg-red-600', image: '/bristol1.png' },
+  { value: '2', label: 'Type 2 - Dur', description: 'En forme de saucisse, grumeleux', color: 'bg-orange-600', image: '/bristol2.png' },
+  { value: '3', label: 'Type 3 - Normal dur', description: 'En forme de saucisse, surface craquelée', color: 'bg-yellow-600', image: '/bristol3.png' },
+  { value: '4', label: 'Type 4 - Normal', description: 'En forme de saucisse, surface lisse', color: 'bg-green-600', image: '/bristol4.png' },
+  { value: '5', label: 'Type 5 - Normal mou', description: 'Masses molles aux bords nets', color: 'bg-blue-600', image: '/bristol5.png' },
+  { value: '6', label: 'Type 6 - Mou', description: 'Morceaux mous, bords déchiquetés', color: 'bg-indigo-600', image: '/bristol6.png' },
+  { value: '7', label: 'Type 7 - Liquide', description: 'Entièrement liquide', color: 'bg-purple-600', image: '/bristol7.png' }
 ];
 
 const SIZE_OPTIONS = [
@@ -487,12 +488,23 @@ export default function BristolPage() {
                   <CardHeader>
                     <CardTitle className="text-lg">Échelle de Bristol</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-4">
                     {BRISTOL_SCALE.map(scale => (
-                      <div key={scale.value} className="flex items-center space-x-3">
-                        <div className={`w-4 h-4 rounded-full ${scale.color}`} />
-                        <div>
-                          <p className="font-medium text-sm">{scale.label}</p>
+                      <div key={scale.value} className="flex items-center space-x-4 p-3 bg-gray-50/50 rounded-lg hover:bg-gray-100/50 transition-colors">
+                        <div className="flex-shrink-0">
+                          <Image
+                            src={scale.image}
+                            alt={scale.label}
+                            width={60}
+                            height={40}
+                            className="rounded-md border border-gray-200"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <div className={`w-3 h-3 rounded-full ${scale.color}`} />
+                            <p className="font-medium text-sm">{scale.label}</p>
+                          </div>
                           <p className="text-xs text-muted-foreground">{scale.description}</p>
                         </div>
                       </div>
@@ -571,7 +583,14 @@ export default function BristolPage() {
                 <SelectContent>
                   {BRISTOL_SCALE.map(option => (
                     <SelectItem key={option.value} value={option.value}>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-3">
+                        <Image
+                          src={option.image}
+                          alt={option.label}
+                          width={30}
+                          height={20}
+                          className="rounded border"
+                        />
                         <div className={`w-3 h-3 rounded-full ${option.color}`} />
                         <span>{option.label}</span>
                       </div>
