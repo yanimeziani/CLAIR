@@ -64,36 +64,50 @@ jobs:
         echo "🚧 Enabling maintenance mode..."
         echo "MAINTENANCE_MODE=true" >> .env.production
         
-    - name: Stop existing services and preserve SSL certificates
+        # Create maintenance marker file for nginx
+        touch ./nginx/maintenance.html
+        
+        # Apply maintenance mode to running containers first
+        if docker ps --format "table {{.Names}}" | grep -q "irielle-frontend"; then
+          echo "🔄 Applying maintenance mode to running frontend..."
+          docker-compose restart frontend
+          sleep 5
+        fi
+        
+    - name: Graceful service shutdown with SSL preservation
       run: |
-        echo "🛑 Stopping existing services..."
-        docker-compose down --remove-orphans || true
+        echo "🛑 Gracefully stopping services..."
         
-        echo "🧹 Removing any remaining containers..."
-        docker container rm -f irielle-frontend irielle-mongodb irielle-ai-backend irielle-ollama irielle-chromadb irielle-nginx 2>/dev/null || true
+        # Stop application services but keep nginx and ollama
+        docker-compose stop frontend ai-backend || true
         
-        echo "🔒 Preserving SSL certificates and selected volumes..."
-        # Keep certbot_data and certbot_www volumes for SSL persistence
+        echo "🔒 Preserving SSL certificates, nginx, and ollama..."
+        # Keep nginx running to show maintenance mode
+        # Keep ollama running to preserve models
+        
+        echo "🗄️ Stopping database services for reset..."
+        docker-compose stop mongodb chromadb || true
         
         echo "⚠️  Removing database volumes for fresh reset (DEV SERVER)..."
         docker volume rm irielle-platform_mongodb_data 2>/dev/null || true
         docker volume rm irielle-platform_chromadb_data 2>/dev/null || true
         
-        echo "🧹 Cleaning Docker system..."
+        echo "🧹 Cleaning unused Docker resources..."
         docker system prune -f || true
-        
-        echo "🔧 Removing any leftover networks..."
-        docker network rm irielle-platform_irielle-network 2>/dev/null || true
-        docker network rm clair_irielle-network 2>/dev/null || true
     
-    - name: Build and start MongoDB first
+    - name: Build and start database services
       run: |
         echo "🔨 Building fresh Docker images..."
         docker-compose build --no-cache
         
-        echo "🗄️  Starting MongoDB service..."
-        # Force recreate to avoid conflicts
-        docker-compose up -d --force-recreate mongodb
+        echo "🗄️  Starting database services..."
+        docker-compose up -d mongodb chromadb
+        
+        echo "🤖 Ensuring ollama is running..."
+        # Start ollama if not already running (preserve existing models)
+        if ! docker ps --format "table {{.Names}}" | grep -q "irielle-ollama"; then
+          docker-compose up -d ollama
+        fi
         
     - name: Wait for MongoDB and seed database
       run: |
@@ -146,17 +160,17 @@ jobs:
         fi
         echo "SSL_EXISTS=$SSL_EXISTS" >> $GITHUB_ENV
         
-    - name: Start all other services
+    - name: Start application services
       run: |
-        echo "🚀 Starting core services first..."
-        docker-compose up -d --build --force-recreate frontend ai-backend chromadb ollama
+        echo "🚀 Starting application services..."
+        docker-compose up -d --build frontend ai-backend
         
-        echo "⏳ Waiting for core services to be ready..."
+        echo "⏳ Waiting for application services to be ready..."
         sleep 20
         
-        # Start nginx after other services are ready
-        echo "🌐 Starting Nginx..."
-        docker-compose up -d --force-recreate nginx
+        # Restart nginx to pick up new services (preserves SSL)
+        echo "🌐 Restarting Nginx to connect to new services..."
+        docker-compose restart nginx
         
         echo "⏳ Waiting for final services..."
         sleep 10
@@ -173,9 +187,15 @@ jobs:
         
     - name: Initialize Ollama model
       run: |
-        echo "🤖 Initializing Ollama AI model..."
+        echo "🤖 Checking Ollama AI model..."
         sleep 10
-        docker exec irielle-ollama ollama pull gemma3:4b || echo "Model pull failed, will retry later"
+        # Check if model already exists, only pull if missing
+        if ! docker exec irielle-ollama ollama list | grep -q "gemma3:4b"; then
+          echo "Model not found, pulling gemma3:4b..."
+          docker exec irielle-ollama ollama pull gemma3:4b || echo "Model pull failed, will retry later"
+        else
+          echo "Model gemma3:4b already exists, skipping pull"
+        fi
         
     - name: Verify deployment and show status
       run: |
@@ -258,5 +278,8 @@ jobs:
         echo "✅ Disabling maintenance mode..."
         sed -i 's/MAINTENANCE_MODE=true/MAINTENANCE_MODE=false/' .env.production
         
-        # Restart container to apply new environment
-        docker-compose restart frontend
+        # Remove maintenance marker file
+        rm -f ./nginx/maintenance.html
+        
+        # Restart containers to apply new environment
+        docker-compose restart frontend nginx
