@@ -239,7 +239,7 @@ jobs:
         if [ "$SSL_EXISTS" == "false" ]; then
           echo "🚀 Generating SSL certificates..."
           
-          # Generate certificate
+          # Generate certificate for both main domain and subdomain
           docker-compose run --rm certbot certonly \
             --webroot \
             --webroot-path=/var/www/certbot \
@@ -247,7 +247,7 @@ jobs:
             --agree-tos \
             --no-eff-email \
             --force-renewal \
-            --domains dev.meziani.org
+            --domains dev.meziani.org,lucide.dev.meziani.org
           
           if [ $? -eq 0 ]; then
             echo "✅ SSL certificates generated successfully"
@@ -396,14 +396,14 @@ jobs:
         echo "🌐 ACCESS URLS:"
         if [ "$SSL_WORKING" == "true" ]; then
           echo "   🏥 CLAIR Healthcare: https://dev.meziani.org (SSL ENABLED ✅)"
-          echo "   📊 LUCIDE Analytics: https://dev.meziani.org/analytics (SSL ENABLED ✅)"
+          echo "   📊 LUCIDE Analytics: https://lucide.dev.meziani.org (SSL ENABLED ✅)"
           echo "   🔗 Fallback CLAIR: http://89.116.170.202:3000"
-          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3000/analytics"
+          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3001"
         else
           echo "   ❌ CLAIR Healthcare: https://dev.meziani.org (SSL FAILED)"
-          echo "   ❌ LUCIDE Analytics: https://dev.meziani.org/analytics (SSL FAILED)"
+          echo "   ❌ LUCIDE Analytics: https://lucide.dev.meziani.org (SSL FAILED)"
           echo "   🔗 Fallback CLAIR: http://89.116.170.202:3000"
-          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3000/analytics"
+          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3001"
         fi
         echo "   🏠 Local CLAIR: http://localhost:3000"
         echo "   🏠 Local LUCIDE: http://localhost:3001"
