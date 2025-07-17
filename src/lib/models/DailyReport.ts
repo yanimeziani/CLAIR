@@ -32,12 +32,6 @@ export interface IDailyReport extends Document {
   
   createdAt: Date;
   updatedAt: Date;
-
-  // Champs dépréciés pour compatibilité arrière
-  patientId?: string;
-  authorId?: string;
-  summary?: string;
-  customFields?: Record<string, any>;
 }
 
 const ReplacementEmployeeSchema: Schema = new Schema({
@@ -121,23 +115,6 @@ const DailyReportSchema: Schema = new Schema({
     default: [],
   },
   
-  // Champs dépréciés pour compatibilité
-  patientId: {
-    type: String,
-    required: false,
-  },
-  authorId: {
-    type: String,
-    required: false,
-  },
-  summary: {
-    type: String,
-    required: false,
-  },
-  customFields: {
-    type: Schema.Types.Mixed,
-    default: {},
-  },
 }, {
   timestamps: true,
 });
