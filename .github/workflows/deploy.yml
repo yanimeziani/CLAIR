@@ -80,21 +80,34 @@ jobs:
     
     - name: Graceful service shutdown with SSL preservation
       run: |
-        echo "🛑 Gracefully stopping services..."
+        echo "🛑 Gracefully stopping and removing services..."
         
-        # Stop application services but keep nginx and ollama
+        # Stop and remove application services but keep nginx and ollama
         docker-compose stop clair-frontend lucide-analytics ai-backend || true
+        docker-compose rm -f clair-frontend lucide-analytics ai-backend || true
         
         echo "🔒 Preserving SSL certificates, nginx, and ollama..."
         # Keep nginx running to show maintenance mode
         # Keep ollama running to preserve models
         
-        echo "🗄️ Stopping database services for reset..."
+        echo "🗄️ Stopping and removing database services for reset..."
         docker-compose stop mongodb chromadb || true
+        docker-compose rm -f mongodb chromadb || true
         
         echo "⚠️  Removing database volumes for fresh reset (DEV SERVER)..."
         docker volume rm clair_mongodb_data 2>/dev/null || true
         docker volume rm clair_chromadb_data 2>/dev/null || true
+        
+        echo "🧹 Force cleanup any containers using ports 3000, 3001, 8001..."
+        # Kill any processes using these ports
+        sudo lsof -ti:3000 | xargs -r sudo kill -9 || true
+        sudo lsof -ti:3001 | xargs -r sudo kill -9 || true
+        sudo lsof -ti:8001 | xargs -r sudo kill -9 || true
+        
+        # Remove any containers that might be using these ports
+        docker ps -a --filter "expose=3000" --format "{{.ID}}" | xargs -r docker rm -f || true
+        docker ps -a --filter "expose=3001" --format "{{.ID}}" | xargs -r docker rm -f || true
+        docker ps -a --filter "expose=8001" --format "{{.ID}}" | xargs -r docker rm -f || true
         
         echo "🧹 Cleaning unused Docker resources..."
         docker system prune -f || true
@@ -175,11 +188,28 @@ jobs:
         
     - name: Start application services
       run: |
+        echo "🔍 Final port check before starting services..."
+        netstat -tulpn | grep ":300[01]" || echo "Ports 3000/3001 are free"
+        
         echo "🚀 Starting application services..."
-        docker-compose up -d --build clair-frontend lucide-analytics ai-backend
+        # Force remove any existing containers with same names
+        docker rm -f irielle-clair-frontend irielle-lucide-analytics irielle-ai-backend 2>/dev/null || true
+        
+        # Start services individually to catch any port conflicts
+        echo "Starting CLAIR frontend..."
+        docker-compose up -d --build clair-frontend
+        sleep 10
+        
+        echo "Starting LUCIDE analytics..."
+        docker-compose up -d --build lucide-analytics
+        sleep 10
+        
+        echo "Starting AI backend..."
+        docker-compose up -d --build ai-backend
+        sleep 10
         
         echo "⏳ Waiting for application services to be ready..."
-        sleep 30
+        sleep 20
         
         # Restart nginx to pick up new services (preserves SSL)
         echo "🌐 Restarting Nginx to connect to new services..."
