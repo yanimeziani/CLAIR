@@ -69,6 +69,9 @@ jobs:
         echo "🛑 Stopping existing services..."
         docker-compose down --remove-orphans || true
         
+        echo "🧹 Removing any remaining containers..."
+        docker container rm -f irielle-frontend irielle-mongodb irielle-ai-backend irielle-ollama irielle-chromadb irielle-nginx 2>/dev/null || true
+        
         echo "🔒 Preserving SSL certificates and selected volumes..."
         # Keep certbot_data and certbot_www volumes for SSL persistence
         
@@ -78,6 +81,10 @@ jobs:
         
         echo "🧹 Cleaning Docker system..."
         docker system prune -f || true
+        
+        echo "🔧 Removing any leftover networks..."
+        docker network rm irielle-platform_irielle-network 2>/dev/null || true
+        docker network rm clair_irielle-network 2>/dev/null || true
     
     - name: Build and start MongoDB first
       run: |
@@ -85,7 +92,8 @@ jobs:
         docker-compose build --no-cache
         
         echo "🗄️  Starting MongoDB service..."
-        docker-compose up -d mongodb
+        # Force recreate to avoid conflicts
+        docker-compose up -d --force-recreate mongodb
         
     - name: Wait for MongoDB and seed database
       run: |
@@ -141,14 +149,14 @@ jobs:
     - name: Start all other services
       run: |
         echo "🚀 Starting core services first..."
-        docker-compose up -d --build frontend ai-backend chromadb ollama
+        docker-compose up -d --build --force-recreate frontend ai-backend chromadb ollama
         
         echo "⏳ Waiting for core services to be ready..."
         sleep 20
         
         # Start nginx after other services are ready
         echo "🌐 Starting Nginx..."
-        docker-compose up -d nginx
+        docker-compose up -d --force-recreate nginx
         
         echo "⏳ Waiting for final services..."
         sleep 10
