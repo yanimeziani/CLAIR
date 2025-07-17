@@ -1,0 +1,81 @@
+name: Test Build
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: |
+          clair-app/package-lock.json
+          lucide-analytics/package-lock.json
+    
+    - name: Install CLAIR dependencies
+      working-directory: ./clair-app
+      run: npm ci
+    
+    - name: Install LUCIDE dependencies
+      working-directory: ./lucide-analytics
+      run: npm ci
+    
+    - name: Run CLAIR linter
+      working-directory: ./clair-app
+      run: npm run lint
+    
+    - name: Run LUCIDE linter
+      working-directory: ./lucide-analytics
+      run: npm run lint
+    
+    - name: Run CLAIR typecheck
+      working-directory: ./clair-app
+      run: npm run typecheck || true
+    
+    - name: Run LUCIDE typecheck
+      working-directory: ./lucide-analytics
+      run: npm run typecheck || true
+    
+    - name: Build CLAIR application
+      working-directory: ./clair-app
+      env:
+        MONGODB_URI: mongodb://localhost:27017/test
+        AI_BACKEND_URL: http://localhost:8001
+        SKIP_ENV_VALIDATION: true
+      run: npm run build
+    
+    - name: Build LUCIDE application
+      working-directory: ./lucide-analytics
+      env:
+        SKIP_ENV_VALIDATION: true
+      run: npm run build
+    
+    - name: Test Docker builds
+      run: |
+        echo "🐳 Testing Docker builds..."
+        
+        # Test CLAIR Docker build
+        echo "Building CLAIR Docker image..."
+        docker build -t clair-test ./clair-app
+        
+        # Test LUCIDE Docker build
+        echo "Building LUCIDE Docker image..."
+        docker build -t lucide-test ./lucide-analytics
+        
+        # Test docker-compose config
+        echo "Testing docker-compose configuration..."
+        docker-compose config > /dev/null
+        
+        echo "✅ All Docker builds completed successfully!"

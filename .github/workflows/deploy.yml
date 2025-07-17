@@ -1,4 +1,4 @@
-name: Deploy to Dev Server with DB Reset
+name: Deploy CLAIR Healthcare System with LUCIDE Analytics
 
 on:
   push:
@@ -19,17 +19,35 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
+        cache-dependency-path: |
+          clair-app/package-lock.json
+          lucide-analytics/package-lock.json
     
-    - name: Install dependencies
+    - name: Install CLAIR dependencies
+      working-directory: ./clair-app
       run: npm ci
     
-    - name: Run linter
+    - name: Install LUCIDE dependencies
+      working-directory: ./lucide-analytics
+      run: npm ci
+    
+    - name: Run CLAIR linter
+      working-directory: ./clair-app
       run: npm run lint || true
     
-    - name: Build application
+    - name: Run LUCIDE linter
+      working-directory: ./lucide-analytics
+      run: npm run lint || true
+    
+    - name: Build CLAIR application
+      working-directory: ./clair-app
       env:
         MONGODB_URI: mongodb://localhost:27017/test
         AI_BACKEND_URL: http://localhost:8001
+      run: npm run build
+    
+    - name: Build LUCIDE application
+      working-directory: ./lucide-analytics
       run: npm run build
 
   deploy:
@@ -60,13 +78,12 @@ jobs:
         NEXT_PUBLIC_APP_URL=https://dev.meziani.org
         EOF
     
-        
     - name: Graceful service shutdown with SSL preservation
       run: |
         echo "🛑 Gracefully stopping services..."
         
         # Stop application services but keep nginx and ollama
-        docker-compose stop frontend ai-backend || true
+        docker-compose stop clair-frontend lucide-analytics ai-backend || true
         
         echo "🔒 Preserving SSL certificates, nginx, and ollama..."
         # Keep nginx running to show maintenance mode
@@ -76,8 +93,8 @@ jobs:
         docker-compose stop mongodb chromadb || true
         
         echo "⚠️  Removing database volumes for fresh reset (DEV SERVER)..."
-        docker volume rm irielle-platform_mongodb_data 2>/dev/null || true
-        docker volume rm irielle-platform_chromadb_data 2>/dev/null || true
+        docker volume rm clair_mongodb_data 2>/dev/null || true
+        docker volume rm clair_chromadb_data 2>/dev/null || true
         
         echo "🧹 Cleaning unused Docker resources..."
         docker system prune -f || true
@@ -129,11 +146,11 @@ jobs:
         echo "🔐 Configuring SSL certificates..."
         
         # Make scripts executable
-        chmod +x scripts/*.sh 2>/dev/null || true
+        chmod +x clair-app/scripts/*.sh 2>/dev/null || true
         
         # Ensure certbot volumes exist
-        docker volume create irielle-platform_certbot_data 2>/dev/null || true
-        docker volume create irielle-platform_certbot_www 2>/dev/null || true
+        docker volume create clair_certbot_data 2>/dev/null || true
+        docker volume create clair_certbot_www 2>/dev/null || true
         
         # Start with HTTP-only configuration, then switch to SSL
         echo "🌐 Starting with HTTP-only configuration for certificate generation"
@@ -147,7 +164,7 @@ jobs:
         fi
         
         # Check if SSL certificates exist
-        if docker run --rm -v irielle-platform_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
+        if docker run --rm -v clair_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
           echo "🔒 SSL certificates found"
           SSL_EXISTS=true
         else
@@ -159,10 +176,10 @@ jobs:
     - name: Start application services
       run: |
         echo "🚀 Starting application services..."
-        docker-compose up -d --build frontend ai-backend
+        docker-compose up -d --build clair-frontend lucide-analytics ai-backend
         
         echo "⏳ Waiting for application services to be ready..."
-        sleep 20
+        sleep 30
         
         # Restart nginx to pick up new services (preserves SSL)
         echo "🌐 Restarting Nginx to connect to new services..."
@@ -285,23 +302,42 @@ jobs:
           echo "❌ MongoDB: Failed"
         fi
         
-        # Test Application
+        # Test CLAIR Application
         timeout=120
         while [ $timeout -gt 0 ]; do
           if curl -f http://localhost:3000 >/dev/null 2>&1; then
-            echo "✅ Application: Running and responding"
+            echo "✅ CLAIR Application: Running and responding"
             break
           fi
-          echo "⏳ Waiting for application... ($timeout seconds remaining)"
+          echo "⏳ Waiting for CLAIR application... ($timeout seconds remaining)"
           sleep 5
           timeout=$((timeout-5))
         done
         
         if [ $timeout -le 0 ]; then
-          echo "❌ Application failed to respond in time"
-          echo "=== Application Logs ==="
-          docker-compose logs --tail=50 frontend
+          echo "❌ CLAIR Application failed to respond in time"
+          echo "=== CLAIR Application Logs ==="
+          docker-compose logs --tail=50 clair-frontend
           exit 1
+        fi
+        
+        # Test LUCIDE Analytics
+        timeout=60
+        while [ $timeout -gt 0 ]; do
+          if curl -f http://localhost:3001 >/dev/null 2>&1; then
+            echo "✅ LUCIDE Analytics: Running and responding"
+            break
+          fi
+          echo "⏳ Waiting for LUCIDE analytics... ($timeout seconds remaining)"
+          sleep 5
+          timeout=$((timeout-5))
+        done
+        
+        if [ $timeout -le 0 ]; then
+          echo "❌ LUCIDE Analytics failed to respond in time"
+          echo "=== LUCIDE Analytics Logs ==="
+          docker-compose logs --tail=50 lucide-analytics
+          # Don't exit here, analytics is not critical for main app
         fi
         
         # Check and fix Nginx if needed
@@ -329,13 +365,18 @@ jobs:
         echo ""
         echo "🌐 ACCESS URLS:"
         if [ "$SSL_WORKING" == "true" ]; then
-          echo "   🔗 Production: https://dev.meziani.org (SSL ENABLED ✅)"
-          echo "   🔗 Fallback: http://89.116.170.202:3000"
+          echo "   🏥 CLAIR Healthcare: https://dev.meziani.org (SSL ENABLED ✅)"
+          echo "   📊 LUCIDE Analytics: https://dev.meziani.org/analytics (SSL ENABLED ✅)"
+          echo "   🔗 Fallback CLAIR: http://89.116.170.202:3000"
+          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3000/analytics"
         else
-          echo "   ❌ Production: https://dev.meziani.org (SSL FAILED)"
-          echo "   🔗 Fallback: http://89.116.170.202:3000"
+          echo "   ❌ CLAIR Healthcare: https://dev.meziani.org (SSL FAILED)"
+          echo "   ❌ LUCIDE Analytics: https://dev.meziani.org/analytics (SSL FAILED)"
+          echo "   🔗 Fallback CLAIR: http://89.116.170.202:3000"
+          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3000/analytics"
         fi
-        echo "   🏠 Local: http://localhost:3000"
+        echo "   🏠 Local CLAIR: http://localhost:3000"
+        echo "   🏠 Local LUCIDE: http://localhost:3001"
         echo ""
         echo "📊 FRESH DATA AVAILABLE:"
         echo "   👤 5 Users (1 admin, 4 staff)"
@@ -343,6 +384,7 @@ jobs:
         echo "   📋 3 Daily reports"
         echo "   💬 4 Team communications"
         echo "   📈 Bristol tracking entries"
+        echo "   📊 Analytics dashboard with visitor tracking"
         echo ""
         echo "⚠️  Database reset completed - all data is fresh for demo!"
         echo "============================================="
@@ -350,4 +392,4 @@ jobs:
     - name: Final restart
       run: |
         echo "🔄 Final restart to ensure everything is running smoothly..."
-        docker-compose restart frontend nginx
+        docker-compose restart clair-frontend lucide-analytics nginx
