@@ -96,66 +96,148 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { 
-      patientId, shift, reportDate, summary, customFields
-    } = await request.json();
+    const requestBody = await request.json();
+    console.log('Received request body:', requestBody);
     
-    if (!patientId || !shift || !summary?.trim()) {
-      return NextResponse.json(
-        { success: false, error: 'Usager, équipe et résumé sont requis' },
-        { status: 400 }
-      );
-    }
+    // Check if this is a new-style complete shift report or old-style single patient report
+    if (requestBody.patientReports && Array.isArray(requestBody.patientReports)) {
+      // New-style complete shift report
+      const { 
+        shift, reportDate, shiftSummary, incidents, 
+        regularEmployees, replacementEmployees, patientReports
+      } = requestBody;
+      
+      if (!shift || !shiftSummary?.trim() || !patientReports?.length) {
+        return NextResponse.json(
+          { success: false, error: 'Quart de travail, résumé général et rapports d\'usagers sont requis' },
+          { status: 400 }
+        );
+      }
 
-    if (!['day', 'evening', 'night'].includes(shift)) {
-      return NextResponse.json(
-        { success: false, error: 'Équipe invalide' },
-        { status: 400 }
-      );
-    }
+      await connectDB();
+      
+      // Check if report already exists for this shift and date
+      const existingShiftReport = await DailyReport.findOne({
+        shift,
+        reportDate: reportDate || new Date().toISOString().split('T')[0]
+      });
 
-    await connectDB();
-    
-    // Check if patient exists
-    const patient = await Patient.findById(patientId);
-    if (!patient) {
-      return NextResponse.json(
-        { success: false, error: 'Usager non trouvé' },
-        { status: 404 }
-      );
-    }
+      if (existingShiftReport) {
+        return NextResponse.json(
+          { success: false, error: 'Un rapport existe déjà pour ce quart de travail à cette date' },
+          { status: 400 }
+        );
+      }
+      
+      // Validate all patients exist
+      const patientIds = patientReports.map((report: any) => report.patientId);
+      const patients = await Patient.find({ _id: { $in: patientIds } });
+      
+      if (patients.length !== patientIds.length) {
+        return NextResponse.json(
+          { success: false, error: 'Un ou plusieurs usagers sont introuvables' },
+          { status: 404 }
+        );
+      }
+      
+      const newShiftReport = new DailyReport({
+        shift,
+        reportDate: reportDate || new Date().toISOString().split('T')[0],
+        shiftSupervisor: auth.user.userId,
+        regularEmployees: regularEmployees || [],
+        replacementEmployees: replacementEmployees || [],
+        patientReports,
+        shiftSummary: shiftSummary.trim(),
+        incidents: incidents || []
+      });
+      
+      await newShiftReport.save();
+      
+      return NextResponse.json({ 
+        success: true, 
+        report: newShiftReport
+      });
+      
+    } else {
+      // Old-style single patient report (backward compatibility)
+      const { 
+        patientId, shift, reportDate, summary, customFields
+      } = requestBody;
+      
+      if (!patientId || !shift || !summary?.trim()) {
+        return NextResponse.json(
+          { success: false, error: 'Usager, équipe et résumé sont requis' },
+          { status: 400 }
+        );
+      }
 
-    // Check if report already exists for this patient, date, and shift (one report per patient per shift per day)
-    const existingReport = await DailyReport.findOne({
-      patientId,
-      shift,
-      reportDate: reportDate || new Date().toISOString().split('T')[0]
-    });
+      if (!['day', 'evening', 'night'].includes(shift)) {
+        return NextResponse.json(
+          { success: false, error: 'Équipe invalide' },
+          { status: 400 }
+        );
+      }
 
-    if (existingReport) {
-      return NextResponse.json(
-        { success: false, error: 'Un rapport existe déjà pour cet usager à cette date et ce quart de travail' },
-        { status: 400 }
-      );
+      await connectDB();
+      
+      // Check if patient exists
+      const patient = await Patient.findById(patientId);
+      if (!patient) {
+        return NextResponse.json(
+          { success: false, error: 'Usager non trouvé' },
+          { status: 404 }
+        );
+      }
+
+      // Check if report already exists for this patient, date, and shift
+      const existingReport = await DailyReport.findOne({
+        patientId,
+        shift,
+        reportDate: reportDate || new Date().toISOString().split('T')[0]
+      });
+
+      if (existingReport) {
+        return NextResponse.json(
+          { success: false, error: 'Un rapport existe déjà pour cet usager à cette date et ce quart de travail' },
+          { status: 400 }
+        );
+      }
+      
+      // Create old-style report with backward compatibility fields
+      const newReport = new DailyReport({
+        // New fields
+        shift,
+        reportDate: reportDate || new Date().toISOString().split('T')[0],
+        shiftSupervisor: auth.user.userId,
+        regularEmployees: [],
+        replacementEmployees: [],
+        patientReports: [{
+          patientId,
+          summary: summary.trim(),
+          customFields: customFields || {},
+          authorId: auth.user.userId
+        }],
+        shiftSummary: summary.trim(),
+        incidents: [],
+        
+        // Old fields for backward compatibility
+        patientId,
+        authorId: auth.user.userId,
+        summary: summary.trim(),
+        customFields: customFields || {}
+      });
+      
+      await newReport.save();
+      
+      return NextResponse.json({ 
+        success: true, 
+        report: newReport
+      });
     }
-    
-    const newReport = new DailyReport({
-      patientId,
-      authorId: auth.user.userId,
-      shift,
-      reportDate: reportDate || new Date().toISOString().split('T')[0],
-      summary: summary.trim(),
-      customFields: customFields || {}
-    });
-    
-    await newReport.save();
-    
-    return NextResponse.json({ 
-      success: true, 
-      report: newReport
-    });
   } catch (error) {
     console.error('Error creating report:', error);
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
       { success: false, error: 'Erreur lors de la création du rapport' },
       { status: 500 }

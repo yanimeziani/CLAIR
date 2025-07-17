@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FileText, Plus, Save, X, ThumbsUp, ThumbsDown, AlertTriangle, Users } from 'lucide-react';
+import { FileText, Plus, Save, X, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
@@ -26,8 +25,6 @@ interface QuickObservationFormProps {
 interface FormData {
   patientId: string;
   content: string;
-  isPositive: boolean;
-  isSignificant: boolean;
 }
 
 export function QuickObservationForm({ 
@@ -42,8 +39,6 @@ export function QuickObservationForm({
   const [formData, setFormData] = useState<FormData>({
     patientId: '',
     content: '',
-    isPositive: true,
-    isSignificant: false,
   });
 
   useEffect(() => {
@@ -100,8 +95,6 @@ export function QuickObservationForm({
       const payload = {
         patientId: formData.patientId,
         content: formData.content,
-        isPositive: formData.isPositive,
-        isSignificant: formData.isSignificant,
         authorName: currentUser.name || `${currentUser.firstName} ${currentUser.lastName}`,
         authorEmployeeNumber: currentUser.employeeNumber || currentUser.userId,
         signature: {
@@ -141,8 +134,6 @@ export function QuickObservationForm({
     setFormData({
       patientId: '',
       content: '',
-      isPositive: true,
-      isSignificant: false,
     });
   };
 
@@ -217,36 +208,6 @@ export function QuickObservationForm({
               />
             </div>
 
-            {/* Flags */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="flex items-center space-x-3 p-4 border rounded-lg">
-                <div className="flex items-center space-x-2">
-                  {formData.isPositive ? (
-                    <ThumbsUp className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <ThumbsDown className="h-5 w-5 text-red-600" />
-                  )}
-                  <Label htmlFor="isPositive">Observation positive</Label>
-                </div>
-                <Switch
-                  id="isPositive"
-                  checked={formData.isPositive}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isPositive: checked })}
-                />
-              </div>
-
-              <div className="flex items-center space-x-3 p-4 border rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <AlertTriangle className={`h-5 w-5 ${formData.isSignificant ? 'text-orange-600' : 'text-gray-400'}`} />
-                  <Label htmlFor="isSignificant">Observation significative</Label>
-                </div>
-                <Switch
-                  id="isSignificant"
-                  checked={formData.isSignificant}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isSignificant: checked })}
-                />
-              </div>
-            </div>
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 pt-6 border-t">

@@ -7,8 +7,6 @@ export interface IObservationNote extends Document {
   authorName: string;
   authorEmployeeNumber?: string;
   content: string;
-  isPositive: boolean;
-  isSignificant: boolean;
   createdAt: Date;
   updatedAt: Date;
   signature: {
@@ -54,15 +52,6 @@ const ObservationNoteSchema: Schema = new Schema({
   content: {
     type: String,
     required: true,
-  },
-  isPositive: {
-    type: Boolean,
-    required: true,
-  },
-  isSignificant: {
-    type: Boolean,
-    required: true,
-    default: false,
   },
   signature: {
     type: SignatureSchema,

@@ -59,6 +59,11 @@ jobs:
         NEXTAUTH_URL=http://89.116.170.202:3000
         EOF
     
+    - name: Enable maintenance mode
+      run: |
+        echo "🚧 Enabling maintenance mode..."
+        echo "MAINTENANCE_MODE=true" >> .env.production
+        
     - name: Stop existing services and preserve SSL certificates
       run: |
         echo "🛑 Stopping existing services..."
@@ -239,3 +244,11 @@ jobs:
         echo ""
         echo "⚠️  Database reset completed - all data is fresh for demo!"
         echo "============================================="
+        
+    - name: Disable maintenance mode
+      run: |
+        echo "✅ Disabling maintenance mode..."
+        sed -i 's/MAINTENANCE_MODE=true/MAINTENANCE_MODE=false/' .env.production
+        
+        # Restart container to apply new environment
+        docker-compose restart frontend

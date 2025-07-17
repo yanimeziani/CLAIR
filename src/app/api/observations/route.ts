@@ -83,20 +83,17 @@ export async function POST(request: NextRequest) {
     const {
       patientId,
       content,
-      isPositive,
-      isSignificant,
       authorName,
       authorEmployeeNumber,
       signature
     } = body;
 
     // Validation
-    if (!patientId || !content || !authorName || typeof isPositive !== 'boolean') {
+    if (!patientId || !content || !authorName) {
       console.error('Validation failed:', {
         patientId: !!patientId,
         content: !!content,
         authorName: !!authorName,
-        isPositive: typeof isPositive,
         receivedData: body
       });
       return NextResponse.json(
@@ -125,8 +122,6 @@ export async function POST(request: NextRequest) {
       authorName,
       authorEmployeeNumber,
       content,
-      isPositive,
-      isSignificant: isSignificant || false,
       signature: {
         signedAt: new Date(),
         ipAddress: ip,
@@ -141,8 +136,6 @@ export async function POST(request: NextRequest) {
       observationNote: {
         _id: observationNote._id,
         content: observationNote.content,
-        isPositive: observationNote.isPositive,
-        isSignificant: observationNote.isSignificant,
         authorName: observationNote.authorName,
         createdAt: observationNote.createdAt,
         signature: observationNote.signature
