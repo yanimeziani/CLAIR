@@ -137,25 +137,37 @@ jobs:
         docker exec irielle-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
         echo "✅ Database seeded successfully with reset credentials"
     
-    - name: Check SSL certificates and configure Nginx
+    - name: Configure SSL certificates automatically
       run: |
+        echo "🔐 Configuring SSL certificates..."
+        
         # Make scripts executable
         chmod +x scripts/*.sh 2>/dev/null || true
         
+        # Ensure certbot volumes exist
+        docker volume create irielle-platform_certbot_data 2>/dev/null || true
+        docker volume create irielle-platform_certbot_www 2>/dev/null || true
+        
         # Check if SSL certificates exist
-        if docker volume inspect irielle_certbot_data >/dev/null 2>&1; then
-          if docker run --rm -v irielle_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
-            echo "🔒 SSL certificates found, using HTTPS configuration"
-            cp nginx/conf.d/irielle-ssl.conf nginx/conf.d/default.conf
-            SSL_EXISTS=true
-          else
-            echo "🌐 No SSL certificates, using HTTP configuration"
-            cp nginx/conf.d/irielle.conf nginx/conf.d/default.conf
-            SSL_EXISTS=false
+        if docker run --rm -v irielle-platform_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
+          echo "🔒 SSL certificates found, using HTTPS configuration"
+          # Ensure SSL config is active
+          if [ -f "nginx/conf.d/irielle-http-only.conf" ]; then
+            mv nginx/conf.d/irielle-http-only.conf nginx/conf.d/irielle-http-only.conf.disabled
           fi
+          if [ -f "nginx/conf.d/irielle-ssl.conf.disabled" ]; then
+            mv nginx/conf.d/irielle-ssl.conf.disabled nginx/conf.d/irielle-ssl.conf
+          fi
+          SSL_EXISTS=true
         else
-          echo "🌐 No SSL volume, using HTTP configuration"
-          cp nginx/conf.d/irielle.conf nginx/conf.d/default.conf
+          echo "🌐 No SSL certificates found, will generate them"
+          # Ensure HTTP-only config is active
+          if [ -f "nginx/conf.d/irielle-ssl.conf" ]; then
+            mv nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle-ssl.conf.disabled
+          fi
+          if [ -f "nginx/conf.d/irielle-http-only.conf.disabled" ]; then
+            mv nginx/conf.d/irielle-http-only.conf.disabled nginx/conf.d/irielle-http-only.conf
+          fi
           SSL_EXISTS=false
         fi
         echo "SSL_EXISTS=$SSL_EXISTS" >> $GITHUB_ENV
@@ -175,14 +187,62 @@ jobs:
         echo "⏳ Waiting for final services..."
         sleep 10
         
-    - name: Initialize SSL certificates if needed
+    - name: Generate SSL certificates automatically
       if: env.SSL_EXISTS == 'false'
       run: |
-        echo "🔐 Initializing SSL certificates..."
-        if [ -f "scripts/init-ssl.sh" ]; then
-          ./scripts/init-ssl.sh
+        echo "🔐 Generating SSL certificates automatically..."
+        
+        # Wait for nginx to be ready
+        echo "⏳ Waiting for nginx to be ready..."
+        sleep 15
+        
+        # Check if nginx is serving HTTP correctly
+        if ! curl -f http://localhost/.well-known/acme-challenge/test 2>/dev/null; then
+          echo "⚠️  Testing nginx accessibility..."
+          docker-compose logs nginx
+        fi
+        
+        # Generate certificates using certbot
+        echo "🚀 Requesting SSL certificate from Let's Encrypt..."
+        docker-compose run --rm certbot certonly \
+          --webroot \
+          --webroot-path=/var/www/certbot \
+          --email support@meziani.org \
+          --agree-tos \
+          --no-eff-email \
+          --keep-until-expiring \
+          --domains dev.meziani.org || {
+          echo "❌ SSL certificate generation failed"
+          echo "Continuing with HTTP-only mode"
+          exit 0
+        }
+        
+        # If certificates were generated successfully, switch to SSL
+        if docker run --rm -v irielle-platform_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
+          echo "✅ SSL certificates generated successfully!"
+          
+          # Switch to SSL configuration
+          if [ -f "nginx/conf.d/irielle-http-only.conf" ]; then
+            mv nginx/conf.d/irielle-http-only.conf nginx/conf.d/irielle-http-only.conf.disabled
+          fi
+          if [ -f "nginx/conf.d/irielle-ssl.conf.disabled" ]; then
+            mv nginx/conf.d/irielle-ssl.conf.disabled nginx/conf.d/irielle-ssl.conf
+          fi
+          
+          # Restart nginx with SSL
+          echo "🔄 Restarting nginx with SSL configuration..."
+          docker-compose restart nginx
+          sleep 10
+          
+          # Test SSL
+          echo "🔍 Testing SSL configuration..."
+          if curl -f -k https://dev.meziani.org >/dev/null 2>&1; then
+            echo "✅ SSL is working correctly!"
+          else
+            echo "⚠️  SSL test failed, but certificates exist"
+          fi
         else
-          echo "⚠️  SSL initialization script not found, continuing with HTTP"
+          echo "⚠️  Certificate generation completed but files not found"
         fi
         
     - name: Initialize Ollama model
@@ -260,7 +320,14 @@ jobs:
         echo "   👥 Staff PIN: 5678"
         echo ""
         echo "🌐 ACCESS URLS:"
-        echo "   🔗 Production: http://89.116.170.202:3000"
+        # Check if SSL is working
+        if curl -f -k https://dev.meziani.org >/dev/null 2>&1; then
+          echo "   🔗 Production: https://dev.meziani.org (SSL enabled)"
+          echo "   🔗 Fallback: http://89.116.170.202:3000"
+        else
+          echo "   🔗 Production: http://89.116.170.202:3000"
+          echo "   ⚠️  SSL: Not configured (HTTP only)"
+        fi
         echo "   🏠 Local: http://localhost:3000"
         echo ""
         echo "📊 FRESH DATA AVAILABLE:"

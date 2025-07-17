@@ -115,9 +115,27 @@ services:
     volumes:
       - certbot_data:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email support@meziani.org --agree-tos --no-eff-email --domains dev.meziani.org
     depends_on:
       - nginx
+
+  # SSL Setup Service
+  ssl-setup:
+    build:
+      context: ./scripts
+      dockerfile: Dockerfile.ssl-setup
+    container_name: irielle-ssl-setup
+    volumes:
+      - ./nginx/conf.d:/nginx/conf.d
+      - certbot_data:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOMAIN=dev.meziani.org
+      - EMAIL=support@meziani.org
+    depends_on:
+      - nginx
+    profiles:
+      - ssl-setup
 
 volumes:
   mongodb_data:
