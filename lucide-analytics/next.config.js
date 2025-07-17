@@ -2,10 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    appDir: true,
-  },
   output: 'standalone',
+  // Configure for Docker deployment
+  env: {
+    CUSTOM_KEY: 'my-value',
+  },
 }
 
 module.exports = nextConfig
