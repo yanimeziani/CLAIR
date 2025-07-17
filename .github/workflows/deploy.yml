@@ -56,7 +56,8 @@ jobs:
         MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
         AI_BACKEND_URL=http://ai-backend:8000
         NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
-        NEXTAUTH_URL=http://89.116.170.202:3000
+        NEXTAUTH_URL=https://dev.meziani.org
+        NEXT_PUBLIC_APP_URL=https://dev.meziani.org
         EOF
     
         
@@ -134,26 +135,23 @@ jobs:
         docker volume create irielle-platform_certbot_data 2>/dev/null || true
         docker volume create irielle-platform_certbot_www 2>/dev/null || true
         
+        # Always start with HTTP-only configuration for certificate generation
+        echo "🌐 Starting with HTTP-only configuration for SSL certificate generation"
+        
+        # Ensure HTTP-only config is active initially
+        if [ -f "nginx/conf.d/irielle-ssl.conf" ]; then
+          mv nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle-ssl.conf.disabled
+        fi
+        if [ -f "nginx/conf.d/irielle-http-only.conf.disabled" ]; then
+          mv nginx/conf.d/irielle-http-only.conf.disabled nginx/conf.d/irielle-http-only.conf
+        fi
+        
         # Check if SSL certificates exist
         if docker run --rm -v irielle-platform_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
-          echo "🔒 SSL certificates found, using HTTPS configuration"
-          # Ensure SSL config is active
-          if [ -f "nginx/conf.d/irielle-http-only.conf" ]; then
-            mv nginx/conf.d/irielle-http-only.conf nginx/conf.d/irielle-http-only.conf.disabled
-          fi
-          if [ -f "nginx/conf.d/irielle-ssl.conf.disabled" ]; then
-            mv nginx/conf.d/irielle-ssl.conf.disabled nginx/conf.d/irielle-ssl.conf
-          fi
+          echo "🔒 SSL certificates found, will switch to HTTPS after services start"
           SSL_EXISTS=true
         else
-          echo "🌐 No SSL certificates found, will generate them"
-          # Ensure HTTP-only config is active
-          if [ -f "nginx/conf.d/irielle-ssl.conf" ]; then
-            mv nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle-ssl.conf.disabled
-          fi
-          if [ -f "nginx/conf.d/irielle-http-only.conf.disabled" ]; then
-            mv nginx/conf.d/irielle-http-only.conf.disabled nginx/conf.d/irielle-http-only.conf
-          fi
+          echo "🔐 No SSL certificates found, will generate them"
           SSL_EXISTS=false
         fi
         echo "SSL_EXISTS=$SSL_EXISTS" >> $GITHUB_ENV
@@ -173,10 +171,9 @@ jobs:
         echo "⏳ Waiting for final services..."
         sleep 10
         
-    - name: Generate SSL certificates automatically
-      if: env.SSL_EXISTS == 'false'
+    - name: Generate and configure SSL certificates
       run: |
-        echo "🔐 Generating SSL certificates automatically..."
+        echo "🔐 Configuring SSL certificates for dev.meziani.org..."
         
         # Wait for nginx to be ready
         echo "⏳ Waiting for nginx to be ready..."
@@ -188,24 +185,26 @@ jobs:
           docker-compose logs nginx
         fi
         
-        # Generate certificates using certbot
-        echo "🚀 Requesting SSL certificate from Let's Encrypt..."
-        docker-compose run --rm certbot certonly \
-          --webroot \
-          --webroot-path=/var/www/certbot \
-          --email support@meziani.org \
-          --agree-tos \
-          --no-eff-email \
-          --keep-until-expiring \
-          --domains dev.meziani.org || {
-          echo "❌ SSL certificate generation failed"
-          echo "Continuing with HTTP-only mode"
-          exit 0
-        }
+        # Generate certificates if they don't exist
+        if [ "$SSL_EXISTS" == "false" ]; then
+          echo "🚀 Requesting SSL certificate from Let's Encrypt..."
+          docker-compose run --rm certbot certonly \
+            --webroot \
+            --webroot-path=/var/www/certbot \
+            --email support@meziani.org \
+            --agree-tos \
+            --no-eff-email \
+            --force-renewal \
+            --domains dev.meziani.org || {
+            echo "❌ SSL certificate generation failed"
+            echo "Will continue with HTTP-only mode"
+            exit 0
+          }
+        fi
         
-        # If certificates were generated successfully, switch to SSL
+        # Switch to SSL configuration if certificates exist
         if docker run --rm -v irielle-platform_certbot_data:/etc/letsencrypt alpine ls -la /etc/letsencrypt/live/dev.meziani.org/fullchain.pem 2>/dev/null; then
-          echo "✅ SSL certificates generated successfully!"
+          echo "✅ SSL certificates available, switching to HTTPS configuration..."
           
           # Switch to SSL configuration
           if [ -f "nginx/conf.d/irielle-http-only.conf" ]; then
@@ -218,17 +217,21 @@ jobs:
           # Restart nginx with SSL
           echo "🔄 Restarting nginx with SSL configuration..."
           docker-compose restart nginx
-          sleep 10
+          sleep 15
           
           # Test SSL
           echo "🔍 Testing SSL configuration..."
           if curl -f -k https://dev.meziani.org >/dev/null 2>&1; then
             echo "✅ SSL is working correctly!"
+            echo "SSL_WORKING=true" >> $GITHUB_ENV
           else
-            echo "⚠️  SSL test failed, but certificates exist"
+            echo "⚠️  SSL test failed, checking logs..."
+            docker-compose logs nginx
+            echo "SSL_WORKING=false" >> $GITHUB_ENV
           fi
         else
-          echo "⚠️  Certificate generation completed but files not found"
+          echo "⚠️  SSL certificates not found, continuing with HTTP-only"
+          echo "SSL_WORKING=false" >> $GITHUB_ENV
         fi
         
     - name: Initialize Ollama model
@@ -306,13 +309,12 @@ jobs:
         echo "   👥 Staff PIN: 5678"
         echo ""
         echo "🌐 ACCESS URLS:"
-        # Check if SSL is working
-        if curl -f -k https://dev.meziani.org >/dev/null 2>&1; then
+        if [ "$SSL_WORKING" == "true" ]; then
           echo "   🔗 Production: https://dev.meziani.org (SSL enabled)"
           echo "   🔗 Fallback: http://89.116.170.202:3000"
         else
           echo "   🔗 Production: http://89.116.170.202:3000"
-          echo "   ⚠️  SSL: Not configured (HTTP only)"
+          echo "   ⚠️  Domain: dev.meziani.org (SSL not working)"
         fi
         echo "   🏠 Local: http://localhost:3000"
         echo ""
