@@ -115,9 +115,7 @@ services:
     volumes:
       - certbot_data:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    # Remove automatic command - we'll run this manually
-    profiles:
-      - tools
+    command: certonly --webroot --webroot-path=/var/www/certbot --email support@meziani.org --agree-tos --no-eff-email --domains dev.meziani.org
     depends_on:
       - nginx
 
