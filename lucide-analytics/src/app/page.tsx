@@ -102,21 +102,21 @@ export default function AnalyticsDashboard() {
       } else {
         // Use demo heatmap data
         setHeatmapData([
-          { x: 300, y: 150, intensity: 0.8 },
-          { x: 500, y: 200, intensity: 0.6 },
-          { x: 700, y: 300, intensity: 0.9 },
-          { x: 400, y: 450, intensity: 0.7 },
-          { x: 600, y: 350, intensity: 0.5 }
+          { x: 300, y: 150, intensity: 0.8, timestamp: Date.now() },
+          { x: 500, y: 200, intensity: 0.6, timestamp: Date.now() },
+          { x: 700, y: 300, intensity: 0.9, timestamp: Date.now() },
+          { x: 400, y: 450, intensity: 0.7, timestamp: Date.now() },
+          { x: 600, y: 350, intensity: 0.5, timestamp: Date.now() }
         ]);
       }
     } catch (error) {
       console.error('Failed to fetch heatmap data:', error);
       // Use demo heatmap data as fallback
       setHeatmapData([
-        { x: 300, y: 150, intensity: 0.8 },
-        { x: 500, y: 200, intensity: 0.6 },
-        { x: 700, y: 300, intensity: 0.9 },
-        { x: 400, y: 450, intensity: 0.7 }
+        { x: 300, y: 150, intensity: 0.8, timestamp: Date.now() },
+        { x: 500, y: 200, intensity: 0.6, timestamp: Date.now() },
+        { x: 700, y: 300, intensity: 0.9, timestamp: Date.now() },
+        { x: 400, y: 450, intensity: 0.7, timestamp: Date.now() }
       ]);
     }
   };
