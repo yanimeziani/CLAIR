@@ -120,7 +120,7 @@ export default function PatientsPage() {
       }
     } catch (error) {
       console.error('Error fetching patients:', error);
-      toast.error('Erreur lors du chargement des résidents');
+      toast.error('Erreur lors du chargement des usagers');
     } finally {
       setLoading(false);
     }
@@ -187,7 +187,7 @@ export default function PatientsPage() {
       const data = await response.json();
 
       if (data.success) {
-        toast.success(editingPatient ? 'Résident modifié' : 'Résident créé');
+        toast.success(editingPatient ? 'Usager modifié' : 'Usager créé');
         setIsDialogOpen(false);
         fetchPatients();
       } else {
@@ -210,7 +210,7 @@ export default function PatientsPage() {
       const data = await response.json();
 
       if (data.success) {
-        toast.success(isActive ? 'Résident archivé' : 'Résident réactivé');
+        toast.success(isActive ? 'Usager archivé' : 'Usager réactivé');
         fetchPatients();
       } else {
         toast.error(data.error || 'Erreur lors de la modification du statut');
@@ -255,7 +255,7 @@ export default function PatientsPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Users className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
-          <p className="text-muted-foreground">Chargement des résidents...</p>
+          <p className="text-muted-foreground">Chargement des usagers...</p>
         </div>
       </div>
     );
@@ -273,8 +273,8 @@ export default function PatientsPage() {
                 Retour
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Gestion des Résidents</h1>
-                <p className="text-muted-foreground">Profils et informations des résidents</p>
+                <h1 className="text-2xl font-bold text-foreground">Gestion des Usagers</h1>
+                <p className="text-muted-foreground">Profils et informations des usagers</p>
               </div>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -293,7 +293,7 @@ export default function PatientsPage() {
                   className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Nouveau Résident</span>
+                  <span className="hidden sm:inline">Nouvel Usager</span>
                   <span className="sm:hidden">Nouveau</span>
                 </Button>
               )}
@@ -326,9 +326,9 @@ export default function PatientsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Résidents actifs</SelectItem>
-                      <SelectItem value="inactive">Résidents archivés</SelectItem>
-                      <SelectItem value="all">Tous les résidents</SelectItem>
+                      <SelectItem value="active">Usagers actifs</SelectItem>
+                      <SelectItem value="inactive">Usagers archivés</SelectItem>
+                      <SelectItem value="all">Tous les usagers</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -341,7 +341,7 @@ export default function PatientsPage() {
               <div className="text-center">
                 <Users className="h-8 w-8 text-blue-500 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-foreground">{patients.filter(p => p.isActive).length}</p>
-                <p className="text-sm text-muted-foreground">Résidents actifs</p>
+                <p className="text-sm text-muted-foreground">Usagers actifs</p>
               </div>
             </CardContent>
           </Card>
@@ -449,19 +449,19 @@ export default function PatientsPage() {
           <Card className="text-center py-12">
             <CardContent>
               <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Aucun résident trouvé</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Aucun usager trouvé</h3>
               <p className="text-muted-foreground mb-4">
                 {searchTerm || statusFilter !== 'active' 
                   ? 'Essayez de modifier vos critères de recherche'
                   : isAdmin() 
-                    ? 'Commencez par ajouter votre premier résident'
-                    : 'Aucun résident trouvé'
+                    ? 'Commencez par ajouter votre premier usager'
+                    : 'Aucun usager trouvé'
                 }
               </p>
               {!searchTerm && statusFilter === 'active' && isAdmin() && (
                 <Button onClick={openCreateDialog} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                   <Plus className="h-4 w-4 mr-2" />
-                  Ajouter un résident
+                  Ajouter un usager
                 </Button>
               )}
             </CardContent>
@@ -474,7 +474,7 @@ export default function PatientsPage() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingPatient ? 'Modifier le résident' : 'Nouveau résident'}
+              {editingPatient ? 'Modifier l\'usager' : 'Nouvel usager'}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-6">

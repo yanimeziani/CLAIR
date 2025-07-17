@@ -101,7 +101,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen overflow-hidden flex items-center">
+      <section className="relative min-h-screen overflow-hidden flex items-center pt-16 sm:pt-20">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -110,17 +110,17 @@ export default function Home() {
         </div>
         
         {/* Floating Icons */}
-        <div className="absolute top-20 left-10 animate-float">
+        <div className="absolute top-32 left-10 animate-float hidden lg:block">
           <div className="w-16 h-16 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg flex items-center justify-center">
             <Users className="h-8 w-8 text-blue-500" />
           </div>
         </div>
-        <div className="absolute top-40 right-10 animate-float animation-delay-1000">
+        <div className="absolute top-48 right-10 animate-float animation-delay-1000 hidden lg:block">
           <div className="w-16 h-16 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg flex items-center justify-center">
             <Brain className="h-8 w-8 text-purple-500" />
           </div>
         </div>
-        <div className="absolute bottom-40 left-20 animate-float animation-delay-2000">
+        <div className="absolute bottom-40 left-20 animate-float animation-delay-2000 hidden lg:block">
           <div className="w-16 h-16 bg-white/80 backdrop-blur-xl rounded-xl shadow-lg flex items-center justify-center">
             <Activity className="h-8 w-8 text-indigo-500" />
           </div>
@@ -129,7 +129,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-6xl mx-auto text-center">
             {/* Badge */}
-            <div className="mb-8">
+            <div className="mb-10 sm:mb-12">
               <div className="inline-flex items-center space-x-3 bg-white/80 backdrop-blur-xl border border-blue-200/50 rounded-full px-6 py-3 shadow-xl shadow-blue-500/10">
                 <Star className="h-5 w-5 text-amber-500" />
                 <span className="text-sm font-semibold text-gray-700">Québec • Innovation en Santé DI-TSA</span>
@@ -138,7 +138,7 @@ export default function Home() {
             </div>
             
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-10 sm:mb-12 leading-tight">
               <span className="text-gray-800">L'avenir des soins</span>
               <br />
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
@@ -147,13 +147,13 @@ export default function Home() {
             </h1>
             
             {/* Subtitle */}
-            <p className="text-lg sm:text-xl lg:text-2xl mb-12 max-w-4xl mx-auto text-gray-600 leading-relaxed">
+            <p className="text-lg sm:text-xl lg:text-2xl mb-14 sm:mb-16 max-w-4xl mx-auto text-gray-600 leading-relaxed">
               Révolutionnez la gestion de vos résidences DI-TSA avec l'intelligence artificielle, 
               des outils intuitifs et une sécurité sans compromis.
             </p>
             
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-18 sm:mb-20">
               <button 
                 onClick={handleLogin}
                 disabled={isLoading}
@@ -182,7 +182,7 @@ export default function Home() {
             </div>
 
             {/* Enhanced Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-16 sm:mb-20">
               <Card className="border-0 bg-white/80 backdrop-blur-xl shadow-xl shadow-blue-100/50 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -215,7 +215,7 @@ export default function Home() {
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-600">
+            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 text-sm text-gray-600 pb-12 sm:pb-16">
               <div className="flex items-center space-x-3 bg-white/60 backdrop-blur-xl border border-gray-200/50 rounded-full px-4 py-2 shadow-lg">
                 <Shield className="h-4 w-4 text-blue-500" />
                 <span>Conformité HIPAA</span>

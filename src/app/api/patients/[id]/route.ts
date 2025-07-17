@@ -83,7 +83,7 @@ export async function PUT(
     
     if (!patient) {
       return NextResponse.json(
-        { success: false, error: 'Résident non trouvé' },
+        { success: false, error: 'Usager non trouvé' },
         { status: 404 }
       );
     }
@@ -95,7 +95,7 @@ export async function PUT(
   } catch (error) {
     console.error('Error updating patient:', error);
     return NextResponse.json(
-      { success: false, error: 'Erreur lors de la modification du résident' },
+      { success: false, error: 'Erreur lors de la modification de l\'usager' },
       { status: 500 }
     );
   }

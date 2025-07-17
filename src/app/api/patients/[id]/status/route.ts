@@ -55,7 +55,7 @@ export async function PATCH(
     
     if (!patient) {
       return NextResponse.json(
-        { success: false, error: 'Résident non trouvé' },
+        { success: false, error: 'Usager non trouvé' },
         { status: 404 }
       );
     }

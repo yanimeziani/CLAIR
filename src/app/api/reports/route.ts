@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     
     if (!patientId || !shift || !summary?.trim()) {
       return NextResponse.json(
-        { success: false, error: 'Résident, équipe et résumé sont requis' },
+        { success: false, error: 'Usager, équipe et résumé sont requis' },
         { status: 400 }
       );
     }
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     const patient = await Patient.findById(patientId);
     if (!patient) {
       return NextResponse.json(
-        { success: false, error: 'Résident non trouvé' },
+        { success: false, error: 'Usager non trouvé' },
         { status: 404 }
       );
     }
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
 
     if (existingReport) {
       return NextResponse.json(
-        { success: false, error: 'Un rapport existe déjà pour ce résident à cette date et ce quart de travail' },
+        { success: false, error: 'Un rapport existe déjà pour cet usager à cette date et ce quart de travail' },
         { status: 400 }
       );
     }
@@ -179,7 +179,7 @@ export async function PUT(request: NextRequest) {
     
     if (!reportId || !patientId || !shift || !summary?.trim()) {
       return NextResponse.json(
-        { success: false, error: 'ID du rapport, résident, équipe et résumé sont requis' },
+        { success: false, error: 'ID du rapport, usager, équipe et résumé sont requis' },
         { status: 400 }
       );
     }
@@ -206,7 +206,7 @@ export async function PUT(request: NextRequest) {
     const patient = await Patient.findById(patientId);
     if (!patient) {
       return NextResponse.json(
-        { success: false, error: 'Résident non trouvé' },
+        { success: false, error: 'Usager non trouvé' },
         { status: 404 }
       );
     }

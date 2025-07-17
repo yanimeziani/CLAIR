@@ -232,7 +232,7 @@ export default function ReportsPage() {
     e.preventDefault();
     
     if (!formData.patientId || !formData.summary.trim()) {
-      toast.error('Résident et résumé sont requis');
+      toast.error('Usager et résumé sont requis');
       return;
     }
 
@@ -353,7 +353,7 @@ export default function ReportsPage() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Rapports Quotidiens</h1>
-                <p className="text-muted-foreground">Suivi des équipes par résident</p>
+                <p className="text-muted-foreground">Suivi des équipes par usager</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -393,7 +393,7 @@ export default function ReportsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les résidents</SelectItem>
+                  <SelectItem value="all">Tous les usagers</SelectItem>
                   {patients.map(patient => (
                     <SelectItem key={patient._id} value={patient._id}>
                       {patient.firstName} {patient.lastName}
@@ -449,7 +449,7 @@ export default function ReportsPage() {
                           <span className="font-medium">
                             {report.patient ? 
                               `${report.patient.firstName} ${report.patient.lastName}` : 
-                              'Résident inconnu'
+                              'Usager inconnu'
                             }
                           </span>
                         </div>
@@ -542,10 +542,10 @@ export default function ReportsPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Résident *</Label>
+                <Label>Usager *</Label>
                 <Select value={formData.patientId} onValueChange={(value) => setFormData({ ...formData, patientId: value })}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un résident" />
+                    <SelectValue placeholder="Sélectionner un usager" />
                   </SelectTrigger>
                   <SelectContent>
                     {patients.map(patient => (
@@ -588,7 +588,7 @@ export default function ReportsPage() {
               <textarea
                 value={formData.summary}
                 onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                placeholder="Résumé général de l'équipe pour ce résident..."
+                placeholder="Résumé général de l'équipe pour cet usager..."
                 className="w-full p-3 border border-border rounded-md bg-background text-foreground min-h-[100px] resize-vertical"
                 required
               />
@@ -655,11 +655,11 @@ export default function ReportsPage() {
               <div className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-muted-foreground">Résident</Label>
+                    <Label className="text-muted-foreground">Usager</Label>
                     <p className="font-medium">
                       {selectedReport.patient ? 
                         `${selectedReport.patient.firstName} ${selectedReport.patient.lastName}` : 
-                        'Résident inconnu'
+                        'Usager inconnu'
                       }
                     </p>
                   </div>

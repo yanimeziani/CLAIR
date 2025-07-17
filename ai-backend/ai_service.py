@@ -105,7 +105,7 @@ class AIService:
 
 Tu dois:
 - Fournir des conseils pratiques et bienveillants
-- Respecter la confidentialité et la dignité des résidents
+- Respecter la confidentialité et la dignité des usagers
 - Donner des informations basées sur les meilleures pratiques
 - Être empathique et professionnel
 - Répondre en français
@@ -123,7 +123,7 @@ Tu NE dois PAS:
             if patient_id:
                 # Get recent patient data for context
                 patient_context = await self._get_patient_context(patient_id)
-                context_info = f"\nContexte du résident: {patient_context}"
+                context_info = f"\nContexte de l'usager: {patient_context}"
         
         full_prompt = f"{context_info}\n\nQuestion: {message}"
         
@@ -143,7 +143,7 @@ Tu NE dois PAS:
             
         except Exception as e:
             logger.error(f"Error getting patient context: {e}")
-            return "Contexte du résident non disponible"
+            return "Contexte de l'usager non disponible"
 
     async def generate_patient_summary(self, patient_id: str, date_range: int = 7) -> Dict[str, Any]:
         """Generate AI-powered patient summary."""
@@ -168,13 +168,13 @@ Tu NE dois PAS:
 
             # Generate summary using AI
             data_summary = f"""
-Résident: {patient.get('firstName', '')} {patient.get('lastName', '')}
+Usager: {patient.get('firstName', '')} {patient.get('lastName', '')}
 Période: {date_range} derniers jours
 Nombre de rapports: {len(reports)}
 Nombre d'entrées Bristol: {len(bristol_entries)}
 """
 
-            system_prompt = """Génère un résumé professionnel basé sur les données du résident. 
+            system_prompt = """Génère un résumé professionnel basé sur les données de l'usager. 
 Identifie les tendances, préoccupations potentielles, et points positifs. 
 Reste factuel et bienveillant."""
 

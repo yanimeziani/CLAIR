@@ -217,13 +217,13 @@ export default function AdminExportsPage() {
               </div>
               
               <div className="space-y-2">
-                <Label>Résident</Label>
+                <Label>Usager</Label>
                 <Select value={selectedPatient} onValueChange={setSelectedPatient}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous les résidents</SelectItem>
+                    <SelectItem value="all">Tous les usagers</SelectItem>
                     {patients.map(patient => (
                       <SelectItem key={patient._id} value={patient._id}>
                         {patient.firstName} {patient.lastName}
@@ -258,23 +258,23 @@ export default function AdminExportsPage() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Users className="h-5 w-5 mr-2 text-blue-500" />
-                Données des Résidents
+                Données des Usagers
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Export complet des profils résidents avec informations personnelles, 
+                Export complet des profils usagers avec informations personnelles, 
                 contacts d'urgence et données médicales.
               </p>
               
               <div className="space-y-2">
                 <div className="flex items-center text-sm">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-                  <span>Résidents actifs: {patients.filter(p => p.isActive).length}</span>
+                  <span>Usagers actifs: {patients.filter(p => p.isActive).length}</span>
                 </div>
                 <div className="flex items-center text-sm">
                   <div className="w-2 h-2 bg-gray-500 rounded-full mr-2" />
-                  <span>Résidents archivés: {patients.filter(p => !p.isActive).length}</span>
+                  <span>Usagers archivés: {patients.filter(p => !p.isActive).length}</span>
                 </div>
               </div>
               
@@ -310,7 +310,7 @@ export default function AdminExportsPage() {
                 {selectedPatient !== 'all' && (
                   <div className="flex items-center text-sm">
                     <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>Filtré par résident</span>
+                    <span>Filtré par usager</span>
                   </div>
                 )}
               </div>
@@ -369,7 +369,7 @@ export default function AdminExportsPage() {
             <div data-chart>
               <CustomPieChart 
                 data={patientChartData} 
-                title="Répartition des Résidents" 
+                title="Répartition des Usagers" 
                 className="border"
               />
             </div>
@@ -415,8 +415,8 @@ export default function AdminExportsPage() {
             <div>
               <h4 className="font-semibold mb-1">Filtres Disponibles</h4>
               <p className="text-muted-foreground">
-                Les filtres de date, résident et équipe s'appliquent aux rapports et données Bristol. 
-                L'export des résidents inclut toujours tous les profils.
+                Les filtres de date, usager et équipe s'appliquent aux rapports et données Bristol. 
+                L'export des usagers inclut toujours tous les profils.
               </p>
             </div>
             

@@ -82,7 +82,7 @@ export default function PatientQueryPage() {
           <div className="mb-8">
             <Select value={selectedPatient} onValueChange={setSelectedPatient}>
               <SelectTrigger className="w-full max-w-md mx-auto h-12 text-base">
-                <SelectValue placeholder="Sélectionner un patient..." />
+                <SelectValue placeholder="Sélectionner un usager..." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="patient-001">Marie Lavoie</SelectItem>
@@ -121,7 +121,7 @@ export default function PatientQueryPage() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={selectedPatient ? "Posez votre question..." : "Sélectionnez d'abord un patient"}
+                placeholder={selectedPatient ? "Posez votre question..." : "Sélectionnez d'abord un usager"}
                 className="h-14 pl-14 pr-4 text-base rounded-full border-2 border-muted focus:border-primary transition-colors"
                 disabled={!selectedPatient || isLoading}
               />

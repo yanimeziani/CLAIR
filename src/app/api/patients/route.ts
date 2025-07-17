@@ -44,7 +44,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching patients:', error);
     return NextResponse.json(
-      { success: false, error: 'Erreur lors de la récupération des résidents' },
+      { success: false, error: 'Erreur lors de la récupération des usagers' },
       { status: 500 }
     );
   }
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating patient:', error);
     return NextResponse.json(
-      { success: false, error: 'Erreur lors de la création du résident' },
+      { success: false, error: 'Erreur lors de la création de l\'usager' },
       { status: 500 }
     );
   }

@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       // Build headers dynamically - core fields + all custom fields found
       const coreHeaders = [
         'Date du rapport',
-        'Résident',
+        'Usager',
         'Équipe',
         'Auteur',
         'Résumé'
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
       };
       
       for (const report of reports) {
-        const patientName = patientMap.get(report.patientId) || 'Résident inconnu';
+        const patientName = patientMap.get(report.patientId) || 'Usager inconnu';
         const authorName = authorMap.get(report.authorId) || 'Auteur inconnu';
         
         // Build core row data
@@ -140,7 +140,7 @@ export async function GET(request: NextRequest) {
         // Create a safe object with all available fields
         const safeReport: any = {
           reportDate: r.reportDate || '',
-          patientName: patientMap.get(r.patientId) || 'Résident inconnu',
+          patientName: patientMap.get(r.patientId) || 'Usager inconnu',
           shift: r.shift || '',
           authorName: authorMap.get(r.authorId) || 'Auteur inconnu',
           summary: r.summary || '',

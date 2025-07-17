@@ -27,8 +27,8 @@ import { SHIFTS } from '@/lib/constants/shifts';
 const STEPS = [
   {
     id: 1,
-    title: "Résident & Équipe",
-    description: "Sélectionner le résident et l'équipe"
+    title: "Usager & Équipe",
+    description: "Sélectionner l'usager et l'équipe"
   },
   {
     id: 2,
@@ -147,7 +147,7 @@ export default function NewReportPage() {
     switch (currentStep) {
       case 1:
         if (!formData.patientId || !formData.shift) {
-          toast.error('Veuillez sélectionner un résident et une équipe');
+          toast.error('Veuillez sélectionner un usager et une équipe');
           return false;
         }
         return true;
@@ -272,19 +272,19 @@ export default function NewReportPage() {
         return (
           <StepperContent>
             <StepperHeader>
-              <StepperTitle>Sélection du résident et de l'équipe</StepperTitle>
+              <StepperTitle>Sélection de l'usager et de l'équipe</StepperTitle>
               <StepperDescription>
-                Choisissez le résident concerné et l'équipe qui effectue le rapport
+                Choisissez l'usager concerné et l'équipe qui effectue le rapport
               </StepperDescription>
             </StepperHeader>
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label>Résident *</Label>
+                <Label>Usager *</Label>
                 <Select value={formData.patientId} onValueChange={(value) => setFormData({ ...formData, patientId: value })}>
                   <SelectTrigger>
                     <User className="h-4 w-4 mr-2" />
-                    <SelectValue placeholder="Sélectionner un résident" />
+                    <SelectValue placeholder="Sélectionner un usager" />
                   </SelectTrigger>
                   <SelectContent>
                     {patients.map(patient => (
@@ -295,7 +295,7 @@ export default function NewReportPage() {
                   </SelectContent>
                 </Select>
                 <p className="text-sm text-muted-foreground">
-                  Sélectionnez le résident pour lequel vous créez ce rapport
+                  Sélectionnez l'usager pour lequel vous créez ce rapport
                 </p>
               </div>
               
@@ -352,7 +352,7 @@ export default function NewReportPage() {
                 <RichTextEditor
                   content={formData.summary}
                   onChange={(content) => setFormData({ ...formData, summary: content })}
-                  placeholder="Décrivez l'état général du résident, les observations importantes, les interventions effectuées..."
+                  placeholder="Décrivez l'état général de l'usager, les observations importantes, les interventions effectuées..."
                   className="min-h-[200px]"
                 />
                 <p className="text-sm text-muted-foreground">
@@ -428,11 +428,11 @@ export default function NewReportPage() {
                 <CardContent className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Résident</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">Usager</Label>
                       <p className="text-sm">
                         {selectedPatient 
                           ? `${selectedPatient.firstName} ${selectedPatient.lastName}`
-                          : 'Aucun résident sélectionné'
+                          : 'Aucun usager sélectionné'
                         }
                       </p>
                     </div>

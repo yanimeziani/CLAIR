@@ -516,7 +516,7 @@ export default function DashboardPage() {
                   <div className="bg-amber-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
                     <Users className="h-6 w-6 text-white" />
                   </div>
-                  <span className="font-semibold text-gray-800 text-center">Gérer Résidents</span>
+                  <span className="font-semibold text-gray-800 text-center">Gérer Usagers</span>
                 </div>
               </button>
 
@@ -629,7 +629,7 @@ export default function DashboardPage() {
                       <Users className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-xl font-bold text-gray-900">Résidents</CardTitle>
+                      <CardTitle className="text-xl font-bold text-gray-900">Usagers</CardTitle>
                       <p className="text-gray-600">{stats.totalPatients} actifs</p>
                     </div>
                   </div>
@@ -648,7 +648,7 @@ export default function DashboardPage() {
                 <div className="relative mb-6">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input 
-                    placeholder="Rechercher un résident..." 
+                    placeholder="Rechercher un usager..." 
                     className="pl-10 border-2 border-gray-200 rounded-xl focus:border-emerald-300 focus:ring-emerald-200"
                   />
                 </div>
@@ -657,14 +657,14 @@ export default function DashboardPage() {
                   <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Users className="h-8 w-8 text-emerald-600" />
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Gestion des résidents</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">Gestion des usagers</h4>
                   <p className="text-sm text-gray-600 mb-4">Accédez à la liste complète pour voir les profils détaillés</p>
                   <Button 
                     onClick={() => router.push('/patients')}
                     className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white border-0 shadow-lg"
                   >
                     <Users className="h-4 w-4 mr-2" />
-                    Accéder aux résidents
+                    Accéder aux usagers
                   </Button>
                 </div>
               </CardContent>

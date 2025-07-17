@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
       // Generate CSV
       const headers = [
         'Date',
-        'Résident',
+        'Usager',
         'Équipe',
         'Type',
         'Valeur',
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
       
       for (const entry of entries) {
         // Protected field access with fallbacks
-        const patientName = patientMap.get(entry.patientId) || 'Résident inconnu';
+        const patientName = patientMap.get(entry.patientId) || 'Usager inconnu';
         const entryType = entry.type || 'unknown';
         const entryValue = entry.value || '';
         const entryShift = entry.shift || '';
@@ -152,7 +152,7 @@ export async function GET(request: NextRequest) {
       success: true,
       entries: entries.map(e => ({
         entryDate: e.entryDate || '',
-        patientName: patientMap.get(e.patientId) || 'Résident inconnu',
+        patientName: patientMap.get(e.patientId) || 'Usager inconnu',
         shift: e.shift || '',
         type: e.type || '',
         value: e.value || '',

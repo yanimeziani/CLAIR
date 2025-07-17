@@ -78,7 +78,7 @@ export function QuickObservationForm({
       }
     } catch (error) {
       console.error('Error fetching patients:', error);
-      toast.error('Erreur lors du chargement des résidents');
+      toast.error('Erreur lors du chargement des usagers');
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ export function QuickObservationForm({
 
   const handleSubmit = async () => {
     if (!formData.patientId || !formData.content.trim()) {
-      toast.error('Veuillez sélectionner un résident et ajouter du contenu');
+      toast.error('Veuillez sélectionner un usager et ajouter du contenu');
       return;
     }
 
@@ -173,13 +173,13 @@ export function QuickObservationForm({
           <div className="space-y-6">
             {/* Patient Selection */}
             <div className="space-y-2">
-              <Label htmlFor="patient">Résident *</Label>
+              <Label htmlFor="patient">Usager *</Label>
               <Select
                 value={formData.patientId}
                 onValueChange={(value) => setFormData({ ...formData, patientId: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un résident">
+                  <SelectValue placeholder="Sélectionner un usager">
                     {selectedPatient && (
                       <div className="flex items-center">
                         <Users className="h-4 w-4 mr-2" />
@@ -201,7 +201,7 @@ export function QuickObservationForm({
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="none" disabled>Aucun résident actif</SelectItem>
+                    <SelectItem value="none" disabled>Aucun usager actif</SelectItem>
                   )}
                 </SelectContent>
               </Select>

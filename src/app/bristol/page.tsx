@@ -150,7 +150,7 @@ export default function BristolPage() {
       }
     } catch (error) {
       console.error('Error fetching patients:', error);
-      toast.error('Erreur lors du chargement des résidents');
+      toast.error('Erreur lors du chargement des usagers');
     } finally {
       setLoading(false);
     }
@@ -312,7 +312,7 @@ export default function BristolPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <User className="h-5 w-5 mr-2" />
-              Sélection du résident
+              Sélection de l'usager
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -321,7 +321,7 @@ export default function BristolPage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Rechercher un résident..."
+                    placeholder="Rechercher un usager..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -337,7 +337,7 @@ export default function BristolPage() {
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Choisir un résident" />
+                    <SelectValue placeholder="Choisir un usager" />
                   </SelectTrigger>
                   <SelectContent>
                     {filteredPatients.map(patient => (
@@ -532,7 +532,7 @@ export default function BristolPage() {
             <div className="text-sm text-muted-foreground">
               <p><strong>Date:</strong> {new Date(selectedDay).toLocaleDateString('fr-FR')}</p>
               <p><strong>Équipe:</strong> {getShiftInfo(selectedShift)?.label}</p>
-              <p><strong>Résident:</strong> {selectedPatient?.firstName} {selectedPatient?.lastName}</p>
+              <p><strong>Usager:</strong> {selectedPatient?.firstName} {selectedPatient?.lastName}</p>
             </div>
 
             <div className="space-y-2">

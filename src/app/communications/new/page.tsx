@@ -46,7 +46,7 @@ const STEPS = [
   {
     id: 2,
     title: "Contexte",
-    description: "Résident et dates de pertinence"
+    description: "Usager et dates de pertinence"
   },
   {
     id: 3,
@@ -347,20 +347,20 @@ export default function NewCommunicationPage() {
             <StepperHeader>
               <StepperTitle>Contexte du message</StepperTitle>
               <StepperDescription>
-                Précisez le résident concerné et les dates de pertinence (optionnel)
+                Précisez l'usager concerné et les dates de pertinence (optionnel)
               </StepperDescription>
             </StepperHeader>
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label>Résident concerné (optionnel)</Label>
+                <Label>Usager concerné (optionnel)</Label>
                 <Select value={formData.patientId} onValueChange={(value) => setFormData({ ...formData, patientId: value })}>
                   <SelectTrigger>
                     <User className="h-4 w-4 mr-2" />
-                    <SelectValue placeholder="Sélectionner un résident" />
+                    <SelectValue placeholder="Sélectionner un usager" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Aucun résident spécifique</SelectItem>
+                    <SelectItem value="none">Aucun usager spécifique</SelectItem>
                     {patients.map(patient => (
                       <SelectItem key={patient._id} value={patient._id}>
                         {patient.firstName} {patient.lastName}
@@ -459,7 +459,7 @@ export default function NewCommunicationPage() {
 
                   {formData.patientId && formData.patientId !== 'none' && (
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Résident concerné</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">Usager concerné</Label>
                       <p className="text-sm">
                         {patients.find(p => p._id === formData.patientId)?.firstName} {' '}
                         {patients.find(p => p._id === formData.patientId)?.lastName}
