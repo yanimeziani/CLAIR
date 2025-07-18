@@ -7,7 +7,6 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   output: 'standalone',
-  basePath: '/analytics',
   // Skip static optimization for API routes during build
   trailingSlash: false,
   generateBuildId: async () => {
