@@ -139,24 +139,34 @@ jobs:
         echo "🧹 Cleaning unused Docker resources..."
         docker system prune -f || true
     
+    - name: Setup Node.js for fresh builds
+      if: env.NEED_FRESH_BUILD == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: |
+          clair-app/package-lock.json
+          lucide-analytics/package-lock.json
+    
     - name: Build fresh applications if needed
       if: env.NEED_FRESH_BUILD == 'true'
       run: |
         echo "🔨 Building applications from source..."
         
-        # Setup Node.js for fresh builds
-        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-        
         # Install and build CLAIR
+        echo "📦 Installing CLAIR dependencies..."
         cd clair-app
         npm ci
+        echo "🔨 Building CLAIR..."
         npm run build
         cd ..
         
         # Install and build LUCIDE
+        echo "📦 Installing LUCIDE dependencies..."
         cd lucide-analytics
         npm ci
+        echo "🔨 Building LUCIDE..."
         npm run build
         cd ..
         
@@ -367,26 +377,49 @@ jobs:
             mv nginx/conf.d/irielle-ssl.conf.disabled nginx/conf.d/irielle-ssl.conf
           fi
           
+          # Verify SSL certificate includes subdomain
+          echo "🔍 Verifying SSL certificate includes both domains..."
+          docker run --rm -v clair_certbot_data:/etc/letsencrypt alpine \
+            openssl x509 -in /etc/letsencrypt/live/dev.meziani.org/fullchain.pem -text -noout | grep -E "DNS:" || echo "Certificate domains check failed"
+          
           # Restart nginx with SSL configuration
           echo "🔄 Restarting nginx with SSL configuration..."
           docker-compose restart nginx
           sleep 20
           
-          # Test HTTPS access
-          echo "🔍 Testing HTTPS access..."
+          # Test HTTPS access for both domains
+          echo "🔍 Testing HTTPS access for dev.meziani.org..."
+          MAIN_SSL_OK=false
           for i in {1..5}; do
             if curl -f -k https://dev.meziani.org >/dev/null 2>&1; then
-              echo "✅ HTTPS is working correctly!"
-              echo "SSL_WORKING=true" >> $GITHUB_ENV
+              echo "✅ dev.meziani.org HTTPS is working!"
+              MAIN_SSL_OK=true
               break
             else
-              echo "⏳ HTTPS test attempt $i failed, retrying..."
+              echo "⏳ dev.meziani.org HTTPS test attempt $i failed, retrying..."
               sleep 10
             fi
           done
           
-          if [ "$SSL_WORKING" != "true" ]; then
-            echo "❌ HTTPS still not working after 5 attempts"
+          echo "🔍 Testing HTTPS access for lucide.dev.meziani.org..."
+          LUCIDE_SSL_OK=false
+          for i in {1..5}; do
+            if curl -f -k https://lucide.dev.meziani.org >/dev/null 2>&1; then
+              echo "✅ lucide.dev.meziani.org HTTPS is working!"
+              LUCIDE_SSL_OK=true
+              break
+            else
+              echo "⏳ lucide.dev.meziani.org HTTPS test attempt $i failed, retrying..."
+              sleep 10
+            fi
+          done
+          
+          if [ "$MAIN_SSL_OK" == "true" ] && [ "$LUCIDE_SSL_OK" == "true" ]; then
+            echo "SSL_WORKING=true" >> $GITHUB_ENV
+          else
+            echo "❌ SSL not working for one or both domains"
+            echo "Main domain SSL: $MAIN_SSL_OK"
+            echo "Lucide subdomain SSL: $LUCIDE_SSL_OK"
             echo "Checking nginx logs..."
             docker-compose logs nginx
             echo "SSL_WORKING=false" >> $GITHUB_ENV
@@ -492,13 +525,15 @@ jobs:
         if [ "$SSL_WORKING" == "true" ]; then
           echo "   🏥 CLAIR Healthcare: https://dev.meziani.org (SSL ENABLED ✅)"
           echo "   📊 LUCIDE Analytics: https://lucide.dev.meziani.org (SSL ENABLED ✅)"
-          echo "   🔗 Fallback CLAIR: http://89.116.170.202:3000"
-          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3001"
+          echo "   🔗 Direct CLAIR: http://89.116.170.202:3000"
+          echo "   🔗 Direct LUCIDE: http://89.116.170.202:3001"
         else
           echo "   ❌ CLAIR Healthcare: https://dev.meziani.org (SSL FAILED)"
           echo "   ❌ LUCIDE Analytics: https://lucide.dev.meziani.org (SSL FAILED)"
-          echo "   🔗 Fallback CLAIR: http://89.116.170.202:3000"
-          echo "   🔗 Fallback LUCIDE: http://89.116.170.202:3001"
+          echo "   🔗 HTTP CLAIR: http://dev.meziani.org (if available)"
+          echo "   🔗 HTTP LUCIDE: http://lucide.dev.meziani.org (if available)"
+          echo "   🔗 Direct CLAIR: http://89.116.170.202:3000"
+          echo "   🔗 Direct LUCIDE: http://89.116.170.202:3001"
         fi
         echo "   🏠 Local CLAIR: http://localhost:3000"
         echo "   🏠 Local LUCIDE: http://localhost:3001"
