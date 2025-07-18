@@ -27,6 +27,18 @@ jobs:
         echo "🌐 Switching to HTTP-only configuration for certificate update..."
         cd /actions-runner/_work/CLAIR/CLAIR
         
+        # Create .env.production file if it doesn't exist
+        if [ ! -f ".env.production" ]; then
+          echo "📝 Creating .env.production file..."
+          cat > .env.production << 'EOF'
+NODE_ENV=production
+MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
+AI_BACKEND_URL=http://ai-backend:8000
+NEXTAUTH_SECRET=your-nextauth-secret-key-here
+NEXTAUTH_URL=https://dev.meziani.org
+EOF
+        fi
+        
         # Disable SSL config temporarily
         if [ -f "nginx/conf.d/irielle-ssl.conf" ]; then
           mv nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle-ssl.conf.disabled
@@ -59,9 +71,9 @@ jobs:
         
         # Generate new certificate with both domains
         echo "🚀 Generating new SSL certificate for both domains..."
-        FORCE_FLAG=""
-        if [ "${{ github.event.inputs.force_renewal }}" == "true" ]; then
-          FORCE_FLAG="--force-renewal"
+        FORCE_FLAG="--force-renewal"
+        if [ "${{ github.event.inputs.force_renewal }}" != "true" ]; then
+          FORCE_FLAG="--expand"
         fi
         
         docker-compose run --rm certbot certonly \
@@ -95,16 +107,10 @@ jobs:
         echo "🔄 Switching to SSL configuration..."
         cd /actions-runner/_work/CLAIR/CLAIR
         
-        # Create .env.production file if it doesn't exist
+        # .env.production file should already exist from earlier step
         if [ ! -f ".env.production" ]; then
-          echo "📝 Creating .env.production file..."
-          cat > .env.production << 'EOF'
-        NODE_ENV=production
-        MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
-        AI_BACKEND_URL=http://ai-backend:8000
-        NEXTAUTH_SECRET=your-nextauth-secret-key-here
-        NEXTAUTH_URL=https://dev.meziani.org
-        EOF
+          echo "⚠️ .env.production file missing, this should not happen"
+          exit 1
         fi
         
         # Disable HTTP-only config
