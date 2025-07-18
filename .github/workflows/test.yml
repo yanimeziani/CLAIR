@@ -82,6 +82,7 @@ jobs:
           clair-app/.next
           lucide-analytics/.next
         retention-days: 1
+        if-no-files-found: warn
     
     - name: Test Docker builds
       run: |
