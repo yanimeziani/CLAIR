@@ -74,6 +74,23 @@ jobs:
         restore-keys: |
           build-${{ github.sha }}
     
+    - name: Verify build artifacts exist
+      run: |
+        echo "Checking for build artifacts..."
+        if [ -d "clair-app/.next" ]; then
+          echo "✅ CLAIR build found ($(du -sh clair-app/.next | cut -f1))"
+        else
+          echo "❌ CLAIR build not found"
+          exit 1
+        fi
+        
+        if [ -d "lucide-analytics/.next" ]; then
+          echo "✅ LUCIDE build found ($(du -sh lucide-analytics/.next | cut -f1))"
+        else
+          echo "❌ LUCIDE build not found"
+          exit 1
+        fi
+    
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -82,7 +99,7 @@ jobs:
           clair-app/.next
           lucide-analytics/.next
         retention-days: 1
-        if-no-files-found: warn
+        if-no-files-found: error
     
     - name: Test Docker builds
       run: |

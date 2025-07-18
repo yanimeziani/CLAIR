@@ -83,15 +83,52 @@ jobs:
         name: nextjs-builds
         path: .
       continue-on-error: true
+      
+    - name: Verify and organize downloaded artifacts
+      run: |
+        echo "Checking downloaded artifacts..."
+        find . -name ".next" -type d | while read dir; do
+          echo "Found .next directory: $dir"
+          echo "Size: $(du -sh "$dir" | cut -f1)"
+          echo "Contents: $(ls -la "$dir" | head -5)"
+        done
+        
+        # Ensure .next directories are in correct locations
+        if [ -d ".next" ]; then
+          echo "Found .next in root, checking if it belongs to clair-app or lucide-analytics..."
+          if [ ! -d "clair-app/.next" ] && [ -f "clair-app/package.json" ]; then
+            echo "Moving .next to clair-app/"
+            mv .next clair-app/
+          fi
+        fi
     
     - name: Check if builds exist, fallback to fresh build
       run: |
-        if [ ! -d "clair-app/.next" ] || [ ! -d "lucide-analytics/.next" ]; then
-          echo "⚠️  Pre-built artifacts not found, will build from source"
-          echo "NEED_FRESH_BUILD=true" >> $GITHUB_ENV
+        echo "Checking for build artifacts..."
+        
+        CLAIR_BUILD_EXISTS=false
+        LUCIDE_BUILD_EXISTS=false
+        
+        if [ -d "clair-app/.next" ] && [ -f "clair-app/.next/BUILD_ID" ]; then
+          echo "✅ CLAIR build found ($(du -sh clair-app/.next | cut -f1))"
+          CLAIR_BUILD_EXISTS=true
         else
-          echo "✅ Pre-built artifacts found"
+          echo "❌ CLAIR build not found or incomplete"
+        fi
+        
+        if [ -d "lucide-analytics/.next" ] && [ -f "lucide-analytics/.next/BUILD_ID" ]; then
+          echo "✅ LUCIDE build found ($(du -sh lucide-analytics/.next | cut -f1))"
+          LUCIDE_BUILD_EXISTS=true
+        else
+          echo "❌ LUCIDE build not found or incomplete"
+        fi
+        
+        if [ "$CLAIR_BUILD_EXISTS" = true ] && [ "$LUCIDE_BUILD_EXISTS" = true ]; then
+          echo "✅ Both pre-built artifacts found and valid"
           echo "NEED_FRESH_BUILD=false" >> $GITHUB_ENV
+        else
+          echo "⚠️  Pre-built artifacts missing or invalid, will build from source"
+          echo "NEED_FRESH_BUILD=true" >> $GITHUB_ENV
         fi
     
     - name: Create environment file
