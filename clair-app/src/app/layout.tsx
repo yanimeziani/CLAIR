@@ -40,6 +40,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
+      <head>
+        <script src="/analytics-tracker.js" defer></script>
+      </head>
       <body
         className={`${crimsonText.variable} ${inter.variable} antialiased`}
       >

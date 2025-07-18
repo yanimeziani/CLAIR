@@ -29,27 +29,35 @@ export default function AnalyticsDashboard() {
     fetchAnalytics();
     fetchHeatmapData();
     
-    // Simulate live visitors for demo (only in browser)
-    const interval = setInterval(() => {
-      if (typeof window !== 'undefined') {
-        setLiveVisitors(prev => [
-          ...prev.slice(-10), // Keep last 10 visitors
-          {
-            id: `visitor_${Date.now()}`,
-            sessionId: `session_${Date.now()}`,
-            currentPage: '/',
-            lastActive: Date.now(),
+    // Fetch real live visitors from sessions
+    const fetchLiveVisitors = async () => {
+      try {
+        const response = await fetch('/analytics/api/analytics?type=sessions');
+        if (response.ok) {
+          const data = await response.json();
+          const activeSessions = data.sessions?.filter((session: any) => session.isActive) || [];
+          setLiveVisitors(activeSessions.map((session: any) => ({
+            id: session.sessionId,
+            sessionId: session.sessionId,
+            currentPage: session.currentPage || '/',
+            lastActive: new Date(session.lastActivity).getTime(),
             x: Math.random() * (window.innerWidth || 1920),
             y: Math.random() * (window.innerHeight || 1080),
-            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
+            userAgent: session.userAgent || 'Unknown',
             location: {
               country: 'Healthcare System',
               city: 'CLAIR'
             }
-          }
-        ]);
+          })));
+        }
+      } catch (error) {
+        console.error('Failed to fetch live visitors:', error);
+        setLiveVisitors([]);
       }
-    }, 3000);
+    };
+
+    fetchLiveVisitors();
+    const interval = setInterval(fetchLiveVisitors, 10000);
 
     return () => {
       clearTimeout(timer);
@@ -64,64 +72,52 @@ export default function AnalyticsDashboard() {
         const data = await response.json();
         setAnalytics(data);
         
-        // Log des données reçues pour le débogage
-        console.log('Données CLAIR reçues:', {
-          utilisateursActifs: data.clairMetrics?.activeUsers,
-          rapportsTotal: data.clairMetrics?.totalReports,
-          communicationsTotal: data.clairMetrics?.totalCommunications,
-          patientsActifs: data.clairMetrics?.activePatients
+        console.log('Real CLAIR data received:', {
+          totalEvents: data.totalEvents,
+          uniqueSessions: data.uniqueSessions,
+          totalHeatmapPoints: data.totalHeatmapPoints,
+          clairMetrics: data.clairMetrics
         });
       } else {
-        console.warn('Analytics API not available, using fallback data');
-        // Use fallback data with real-looking metrics
+        console.error('Analytics API not available');
         setAnalytics({
-          totalEvents: 2847,
-          uniqueSessions: 34,
-          pageViews: 5210,
-          clicks: 1293,
-          fallback: true,
+          totalEvents: 0,
+          uniqueSessions: 0,
+          totalHeatmapPoints: 0,
           clairMetrics: {
-            activeUsers: 8,
-            totalReports: 156,
-            totalCommunications: 89,
-            urgentCommunications: 12,
-            urgencyRate: "13.5",
-            activePatients: 24,
-            shiftDistribution: { day: 52, evening: 51, night: 53 },
-            averageReportsPerDay: 5,
-            averageCommunicationsPerDay: 3
+            activeUsers: 0,
+            totalReports: 0,
+            totalCommunications: 0,
+            urgentCommunications: 0,
+            urgencyRate: "0",
+            activePatients: 0,
+            shiftDistribution: { day: 0, evening: 0, night: 0 },
+            averageReportsPerDay: 0,
+            averageCommunicationsPerDay: 0
           },
-          sessions: [
-            { sessionId: 'fallback_001', events: 67, heatmapPoints: 32, timestamp: Date.now() - 300000 },
-            { sessionId: 'fallback_002', events: 45, heatmapPoints: 23, timestamp: Date.now() - 600000 },
-            { sessionId: 'fallback_003', events: 38, heatmapPoints: 19, timestamp: Date.now() - 900000 }
-          ]
+          sessions: [],
+          error: 'API not available'
         });
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
-      // Use fallback data
       setAnalytics({
-        totalEvents: 2847,
-        uniqueSessions: 34,
-        pageViews: 5210,
-        clicks: 1293,
-        fallback: true,
+        totalEvents: 0,
+        uniqueSessions: 0,
+        totalHeatmapPoints: 0,
         clairMetrics: {
-          activeUsers: 8,
-          totalReports: 156,
-          totalCommunications: 89,
-          urgentCommunications: 12,
-          urgencyRate: "13.5",
-          activePatients: 24,
-          shiftDistribution: { day: 52, evening: 51, night: 53 },
-          averageReportsPerDay: 5,
-          averageCommunicationsPerDay: 3
+          activeUsers: 0,
+          totalReports: 0,
+          totalCommunications: 0,
+          urgentCommunications: 0,
+          urgencyRate: "0",
+          activePatients: 0,
+          shiftDistribution: { day: 0, evening: 0, night: 0 },
+          averageReportsPerDay: 0,
+          averageCommunicationsPerDay: 0
         },
-        sessions: [
-          { sessionId: 'fallback_001', events: 67, heatmapPoints: 32, timestamp: Date.now() - 300000 },
-          { sessionId: 'fallback_002', events: 45, heatmapPoints: 23, timestamp: Date.now() - 600000 }
-        ]
+        sessions: [],
+        error: 'Failed to fetch data'
       });
     }
   };
@@ -132,27 +128,14 @@ export default function AnalyticsDashboard() {
       if (response.ok) {
         const data = await response.json();
         setHeatmapData(data.heatmapData || []);
-        console.log('Heatmap data from CLAIR:', data.heatmapData?.length, 'points');
+        console.log('Real heatmap data:', data.heatmapData?.length || 0, 'points');
       } else {
-        // Use realistic heatmap data based on healthcare activity patterns
-        setHeatmapData([
-          { x: 320, y: 180, intensity: 0.9, timestamp: Date.now() },
-          { x: 580, y: 220, intensity: 0.7, timestamp: Date.now() },
-          { x: 420, y: 350, intensity: 0.8, timestamp: Date.now() },
-          { x: 680, y: 280, intensity: 0.6, timestamp: Date.now() },
-          { x: 750, y: 400, intensity: 0.75, timestamp: Date.now() },
-          { x: 380, y: 480, intensity: 0.85, timestamp: Date.now() }
-        ]);
+        console.error('Heatmap API not available');
+        setHeatmapData([]);
       }
     } catch (error) {
       console.error('Failed to fetch heatmap data:', error);
-      // Use realistic fallback heatmap data
-      setHeatmapData([
-        { x: 320, y: 180, intensity: 0.9, timestamp: Date.now() },
-        { x: 580, y: 220, intensity: 0.7, timestamp: Date.now() },
-        { x: 420, y: 350, intensity: 0.8, timestamp: Date.now() },
-        { x: 680, y: 280, intensity: 0.6, timestamp: Date.now() }
-      ]);
+      setHeatmapData([]);
     }
   };
 
@@ -285,7 +268,7 @@ export default function AnalyticsDashboard() {
                     Métriques Système CLAIR en Temps Réel
                   </h2>
                   <p className="text-sm text-[rgb(var(--ws-gray-600))]">
-                    {analytics.fallback ? 'Données de démonstration' : 'Données MongoDB live'} • Dernières 30 jours
+                    {analytics.dataSource === 'real' ? 'Données MongoDB live' : 'Données non disponibles'} • Dernières 24 heures
                   </p>
                 </div>
               </div>
