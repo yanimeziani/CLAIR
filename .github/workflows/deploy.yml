@@ -11,6 +11,8 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      build-cache-key: ${{ steps.cache-key.outputs.key }}
     steps:
     - uses: actions/checkout@v4
     
@@ -23,23 +25,45 @@ jobs:
           clair-app/package-lock.json
           lucide-analytics/package-lock.json
     
+    - name: Generate cache key
+      id: cache-key
+      run: echo "key=build-${{ github.sha }}" >> $GITHUB_OUTPUT
+    
+    - name: Check for cached builds
+      id: cache-check
+      uses: actions/cache@v3
+      with:
+        path: |
+          clair-app/.next
+          lucide-analytics/.next
+          clair-app/node_modules
+          lucide-analytics/node_modules
+        key: build-${{ github.sha }}
+        restore-keys: |
+          build-${{ github.sha }}
+    
     - name: Install CLAIR dependencies
+      if: steps.cache-check.outputs.cache-hit != 'true'
       working-directory: ./clair-app
       run: npm ci
     
     - name: Install LUCIDE dependencies
+      if: steps.cache-check.outputs.cache-hit != 'true'
       working-directory: ./lucide-analytics
       run: npm ci
     
     - name: Run CLAIR linter
+      if: steps.cache-check.outputs.cache-hit != 'true'
       working-directory: ./clair-app
       run: npm run lint || true
     
     - name: Run LUCIDE linter
+      if: steps.cache-check.outputs.cache-hit != 'true'
       working-directory: ./lucide-analytics
       run: npm run lint || true
     
     - name: Build CLAIR application
+      if: steps.cache-check.outputs.cache-hit != 'true'
       working-directory: ./clair-app
       env:
         MONGODB_URI: mongodb://localhost:27017/test
@@ -47,8 +71,18 @@ jobs:
       run: npm run build
     
     - name: Build LUCIDE application
+      if: steps.cache-check.outputs.cache-hit != 'true'
       working-directory: ./lucide-analytics
       run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nextjs-builds
+        path: |
+          clair-app/.next
+          lucide-analytics/.next
+        retention-days: 1
 
   deploy:
     needs: test
@@ -66,6 +100,12 @@ jobs:
       with:
         clean: true
         fetch-depth: 1
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: nextjs-builds
+        path: .
     
     - name: Create environment file
       run: |
@@ -114,8 +154,41 @@ jobs:
     
     - name: Build and start database services
       run: |
-        echo "🔨 Building fresh Docker images..."
-        docker-compose build --no-cache
+        echo "🔨 Building Docker images with cached builds..."
+        # Verify build artifacts are available
+        if [ -d "clair-app/.next" ]; then
+          echo "✅ Using cached CLAIR build ($(du -sh clair-app/.next | cut -f1))"
+        else
+          echo "❌ CLAIR build not found, this should not happen"
+          exit 1
+        fi
+        
+        if [ -d "lucide-analytics/.next" ]; then
+          echo "✅ Using cached LUCIDE build ($(du -sh lucide-analytics/.next | cut -f1))"
+        else
+          echo "❌ LUCIDE build not found, this should not happen"
+          exit 1
+        fi
+        
+        # Build infrastructure services first (without cache for fresh deployment)
+        echo "🏗️  Building infrastructure services..."
+        docker-compose build --no-cache mongodb chromadb ai-backend nginx ollama certbot
+        
+        # Build Next.js apps with pre-built artifacts (much faster)
+        echo "⚡ Building Next.js containers with cached builds..."
+        docker-compose build clair-frontend lucide-analytics
+        
+        echo "✅ All Docker images built successfully with cached Next.js builds"
+        
+        # Show build performance summary
+        echo ""
+        echo "=== ⚡ Build Performance Summary ==="
+        echo "📊 Next.js builds reused from test phase - significantly faster deployment!"
+        echo "📊 CLAIR build size: $(du -sh clair-app/.next | cut -f1)"
+        echo "📊 LUCIDE build size: $(du -sh lucide-analytics/.next | cut -f1)"
+        echo "📊 Infrastructure services rebuilt for fresh deployment"
+        echo "================================="
+        echo ""
         
         echo "🗄️  Starting database services..."
         docker-compose up -d mongodb chromadb
@@ -191,21 +264,21 @@ jobs:
         echo "🔍 Final port check before starting services..."
         netstat -tulpn | grep ":300[01]" || echo "Ports 3000/3001 are free"
         
-        echo "🚀 Starting application services..."
+        echo "🚀 Starting application services with pre-built images..."
         # Force remove any existing containers with same names
         docker rm -f irielle-clair-frontend irielle-lucide-analytics irielle-ai-backend 2>/dev/null || true
         
-        # Start services individually to catch any port conflicts
-        echo "Starting CLAIR frontend..."
-        docker-compose up -d --build clair-frontend
+        # Start services individually to catch any port conflicts (no rebuild needed)
+        echo "Starting CLAIR frontend with cached build..."
+        docker-compose up -d clair-frontend
         sleep 10
         
-        echo "Starting LUCIDE analytics..."
-        docker-compose up -d --build lucide-analytics
+        echo "Starting LUCIDE analytics with cached build..."
+        docker-compose up -d lucide-analytics
         sleep 10
         
         echo "Starting AI backend..."
-        docker-compose up -d --build ai-backend
+        docker-compose up -d ai-backend
         sleep 10
         
         echo "⏳ Waiting for application services to be ready..."

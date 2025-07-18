@@ -17,7 +17,14 @@ COPY . .
 
 # Build the application
 ENV SKIP_ENV_VALIDATION=true
-RUN npm run build
+
+# Check if pre-built .next directory exists, if not build from source
+RUN if [ -d ".next" ]; then \
+      echo "✅ Using pre-built Next.js application"; \
+    else \
+      echo "🔨 Building Next.js application from source"; \
+      npm run build; \
+    fi
 
 # Production image, copy all the files and run next
 FROM base AS runner
