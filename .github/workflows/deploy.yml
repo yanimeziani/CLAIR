@@ -247,7 +247,8 @@ jobs:
             --agree-tos \
             --no-eff-email \
             --force-renewal \
-            --domains dev.meziani.org,lucide.dev.meziani.org
+            -d dev.meziani.org \
+            -d lucide.dev.meziani.org
           
           if [ $? -eq 0 ]; then
             echo "✅ SSL certificates generated successfully"
