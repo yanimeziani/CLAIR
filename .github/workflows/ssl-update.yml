@@ -99,12 +99,12 @@ jobs:
         if [ ! -f ".env.production" ]; then
           echo "📝 Creating .env.production file..."
           cat > .env.production << 'EOF'
-NODE_ENV=production
-MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
-AI_BACKEND_URL=http://ai-backend:8000
-NEXTAUTH_SECRET=your-nextauth-secret-key-here
-NEXTAUTH_URL=https://dev.meziani.org
-EOF
+        NODE_ENV=production
+        MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
+        AI_BACKEND_URL=http://ai-backend:8000
+        NEXTAUTH_SECRET=your-nextauth-secret-key-here
+        NEXTAUTH_URL=https://dev.meziani.org
+        EOF
         fi
         
         # Disable HTTP-only config
