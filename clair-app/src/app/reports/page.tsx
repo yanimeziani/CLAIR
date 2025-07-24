@@ -504,17 +504,20 @@ export default function ReportsPage() {
         </div>
 
         {filteredReports.length === 0 && (
-          <Card className="text-center py-12">
+          <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50 text-center py-12">
             <CardContent>
-              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Aucun rapport trouvé</h3>
-              <p className="text-muted-foreground mb-4">
+              <FileText className="h-16 w-16 text-blue-400 mx-auto mb-6" />
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Aucun rapport trouvé</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
                 {searchTerm || patientFilter !== 'all' || shiftFilter !== 'all' || dateFilter !== 'today' 
-                  ? 'Essayez de modifier vos critères de recherche'
-                  : 'Aucun rapport pour aujourd\'hui'
+                  ? 'Essayez de modifier vos critères de recherche pour voir plus de rapports'
+                  : 'Aucun rapport disponible pour la période sélectionnée'
                 }
               </p>
-              <Button onClick={openCreateDialog}>
+              <Button 
+                onClick={openCreateDialog}
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Créer le premier rapport
               </Button>
@@ -534,7 +537,7 @@ export default function ReportsPage() {
           }
         }
       }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle>{isEditMode ? 'Modifier le Rapport' : 'Nouveau Rapport Quotidien'}</DialogTitle>
           </DialogHeader>

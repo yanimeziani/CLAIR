@@ -473,15 +473,15 @@ export default function DashboardPage() {
           <CardContent className="pt-0">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               <button 
-                onClick={() => router.push('/reports/new')}
+                onClick={() => router.push('/reports')}
                 className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-2 border-blue-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 min-h-[120px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div className="relative z-10 flex flex-col items-center space-y-3">
                   <div className="bg-blue-500 p-3 rounded-xl shadow-lg group-hover:shadow-xl transition-shadow">
-                    <Plus className="h-6 w-6 text-white" />
+                    <FileText className="h-6 w-6 text-white" />
                   </div>
-                  <span className="font-semibold text-gray-800 text-center">Nouveau Rapport</span>
+                  <span className="font-semibold text-gray-800 text-center">Rapports</span>
                 </div>
               </button>
               

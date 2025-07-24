@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Deployment script for CLAIR Healthcare System with LUCIDE Analytics
-# This script handles deployment of the complete system including both applications
+# Deployment script for CLAIR Healthcare System
+# This script handles deployment of the unified healthcare management system
 
 set -e
 
-echo "🚀 Starting deployment of CLAIR Healthcare System with LUCIDE Analytics..."
+echo "🚀 Starting deployment of CLAIR Healthcare System..."
 
 # Check if we're in the correct directory
 if [ ! -f "docker-compose.yml" ]; then
@@ -25,8 +25,6 @@ deploy_system() {
     echo "🔨 Building CLAIR frontend..."
     docker-compose build clair-frontend
     
-    echo "🔨 Building LUCIDE Analytics..."
-    docker-compose build lucide-analytics
     
     echo "🔨 Building AI Backend..."
     docker-compose build ai-backend
@@ -91,13 +89,6 @@ check_services() {
         failed=1
     fi
     
-    # Check LUCIDE Analytics
-    if curl -f http://localhost:3001 > /dev/null 2>&1; then
-        echo "✅ LUCIDE Analytics is running"
-    else
-        echo "❌ LUCIDE Analytics is not responding"
-        failed=1
-    fi
     
     # Check Nginx
     if curl -f http://localhost > /dev/null 2>&1; then
@@ -113,12 +104,9 @@ check_services() {
         echo "🌐 Access your applications:"
         echo "   - CLAIR Healthcare System: http://localhost"
         echo "   - CLAIR Healthcare System: http://89.116.170.202:3000"
-        echo "   - LUCIDE Analytics: http://localhost/analytics"
-        echo "   - LUCIDE Analytics: http://89.116.170.202:3000/analytics"
         echo ""
         echo "🔧 Development access:"
         echo "   - CLAIR Frontend (direct): http://localhost:3000"
-        echo "   - LUCIDE Analytics (direct): http://localhost:3001"
         echo "   - AI Backend API: http://localhost:8001"
         echo "   - MongoDB: mongodb://localhost:27017"
         echo "   - ChromaDB: http://localhost:8000"

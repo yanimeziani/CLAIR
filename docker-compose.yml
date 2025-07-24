@@ -89,19 +89,6 @@ services:
     networks:
       - irielle-network
 
-  # LUCIDE Analytics Next.js Application
-  lucide-analytics:
-    build:
-      context: ./lucide-analytics
-      dockerfile: Dockerfile
-    container_name: irielle-lucide-analytics
-    restart: unless-stopped
-    ports:
-      - "3001:3000"
-    depends_on:
-      - mongodb
-    networks:
-      - irielle-network
 
   # Nginx Reverse Proxy with SSL
   nginx:
@@ -118,7 +105,6 @@ services:
       - certbot_www:/var/www/certbot
     depends_on:
       - clair-frontend
-      - lucide-analytics
     networks:
       - irielle-network
 
