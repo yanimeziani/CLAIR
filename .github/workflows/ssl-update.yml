@@ -1,4 +1,4 @@
-name: SSL Certificate Update - Add LUCIDE Subdomain
+name: SSL Certificate Update
 
 on:
   workflow_dispatch:
@@ -15,9 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Update SSL certificate to include both domains
+    - name: Update SSL certificate
       run: |
-        echo "🔐 Updating SSL certificate to include lucide.dev.meziani.org..."
+        echo "🔐 Updating SSL certificate for dev.meziani.org..."
         
         # Check current certificate status
         echo "📋 Current certificate status:"
@@ -53,8 +53,8 @@ EOF
         docker-compose restart nginx
         sleep 15
         
-        # Test both domains are accessible via HTTP
-        echo "🧪 Testing HTTP access for both domains..."
+        # Test domain is accessible via HTTP
+        echo "🧪 Testing HTTP access for domain..."
         if curl -f http://dev.meziani.org >/dev/null 2>&1; then
           echo "✅ dev.meziani.org is accessible via HTTP"
         else
@@ -62,15 +62,8 @@ EOF
           exit 1
         fi
         
-        if curl -f http://lucide.dev.meziani.org >/dev/null 2>&1; then
-          echo "✅ lucide.dev.meziani.org is accessible via HTTP"
-        else
-          echo "❌ lucide.dev.meziani.org is not accessible via HTTP"
-          exit 1
-        fi
-        
-        # Generate new certificate with both domains
-        echo "🚀 Generating new SSL certificate for both domains..."
+        # Generate new certificate
+        echo "🚀 Generating new SSL certificate..."
         FORCE_FLAG="--force-renewal"
         if [ "${{ github.event.inputs.force_renewal }}" != "true" ]; then
           FORCE_FLAG="--expand"
@@ -83,14 +76,13 @@ EOF
           --agree-tos \
           --no-eff-email \
           $FORCE_FLAG \
-          -d dev.meziani.org \
-          -d lucide.dev.meziani.org
+          -d dev.meziani.org
         
         if [ $? -eq 0 ]; then
-          echo "✅ SSL certificate generated successfully for both domains"
+          echo "✅ SSL certificate generated successfully"
           
-          # Verify certificate includes both domains
-          echo "🔍 Verifying certificate contains both domains..."
+          # Verify certificate
+          echo "🔍 Verifying certificate..."
           docker run --rm -v clair_certbot_data:/etc/letsencrypt alpine \
             openssl x509 -in /etc/letsencrypt/live/dev.meziani.org/fullchain.pem -text -noout | grep -E "DNS:" || echo "Certificate info check failed"
           
@@ -145,7 +137,7 @@ EOF
         
     - name: Test SSL functionality
       run: |
-        echo "🔍 Testing SSL functionality for both domains..."
+        echo "🔍 Testing SSL functionality..."
         
         # Test HTTPS for main domain
         echo "🧪 Testing HTTPS for dev.meziani.org..."
@@ -160,31 +152,12 @@ EOF
           fi
         done
         
-        # Test HTTPS for subdomain
-        echo "🧪 Testing HTTPS for lucide.dev.meziani.org..."
-        for i in {1..5}; do
-          if curl -f -k https://lucide.dev.meziani.org >/dev/null 2>&1; then
-            echo "✅ lucide.dev.meziani.org HTTPS is working!"
-            SUBDOMAIN_SSL_OK=true
-            break
-          else
-            echo "⏳ HTTPS test for lucide.dev.meziani.org attempt $i failed, retrying..."
-            sleep 10
-          fi
-        done
-        
         # Test HTTP redirects
         echo "🧪 Testing HTTP to HTTPS redirects..."
         if curl -s -o /dev/null -w "%{http_code}" http://dev.meziani.org | grep -q "30[12]"; then
           echo "✅ HTTP redirect working for dev.meziani.org"
         else
           echo "⚠️ HTTP redirect might not be working for dev.meziani.org"
-        fi
-        
-        if curl -s -o /dev/null -w "%{http_code}" http://lucide.dev.meziani.org | grep -q "30[12]"; then
-          echo "✅ HTTP redirect working for lucide.dev.meziani.org"
-        else
-          echo "⚠️ HTTP redirect might not be working for lucide.dev.meziani.org"
         fi
         
         # Final status report
@@ -200,19 +173,13 @@ EOF
           echo "   ❌ https://dev.meziani.org - SSL Failed"
         fi
         
-        if [ "$SUBDOMAIN_SSL_OK" == "true" ]; then
-          echo "   ✅ https://lucide.dev.meziani.org - SSL Working"
-        else
-          echo "   ❌ https://lucide.dev.meziani.org - SSL Failed"
-        fi
-        
         echo ""
-        echo "🔒 Certificate covers both domains:"
+        echo "🔒 Certificate information:"
         docker run --rm -v clair_certbot_data:/etc/letsencrypt certbot/certbot certificates
         echo "============================================="
         
-        # Exit with error if either domain failed
-        if [ "$MAIN_SSL_OK" != "true" ] || [ "$SUBDOMAIN_SSL_OK" != "true" ]; then
-          echo "❌ SSL setup failed for one or more domains"
+        # Exit with error if domain failed
+        if [ "$MAIN_SSL_OK" != "true" ]; then
+          echo "❌ SSL setup failed"
           exit 1
         fi

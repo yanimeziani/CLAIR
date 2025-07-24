@@ -1,19 +1,19 @@
 # GitHub Actions Configuration
 
-This directory contains the GitHub Actions workflows for the CLAIR Healthcare System with LUCIDE Analytics.
+This directory contains the GitHub Actions workflows for the CLAIR Healthcare System.
 
 ## 🚀 Workflows
 
 ### 1. Deploy (`deploy.yml`)
 **Triggers:** Push to `main` branch, manual dispatch
 
-**Purpose:** Complete deployment of both CLAIR and LUCIDE applications to the production server.
+**Purpose:** Complete deployment of the CLAIR application to the production server.
 
 **Steps:**
 - **Test Phase:**
-  - Install dependencies for both `clair-app` and `lucide-analytics`
-  - Run linting for both applications
-  - Build both applications with test environment
+  - Install dependencies for `clair-app`
+  - Run linting for the application
+  - Build the application with test environment
   
 - **Deploy Phase:**
   - Clean workspace and checkout fresh code
@@ -26,7 +26,6 @@ This directory contains the GitHub Actions workflows for the CLAIR Healthcare Sy
 
 **Services Deployed:**
 - `clair-frontend` (Port 3000)
-- `lucide-analytics` (Port 3001)
 - `ai-backend` (Port 8001)
 - `mongodb` (Port 27017)
 - `chromadb` (Port 8000)
@@ -39,9 +38,9 @@ This directory contains the GitHub Actions workflows for the CLAIR Healthcare Sy
 **Purpose:** Validate code quality and build success without deployment.
 
 **Steps:**
-- Install dependencies for both applications
+- Install dependencies for the application
 - Run linting and type checking
-- Build both applications
+- Build the application
 - Test Docker builds
 - Validate docker-compose configuration
 
@@ -62,10 +61,6 @@ The workflows are designed to work with the new directory structure:
 ```
 CLAIR/
 ├── clair-app/              # CLAIR healthcare application
-│   ├── package.json
-│   ├── package-lock.json
-│   └── ...
-├── lucide-analytics/       # LUCIDE analytics application
 │   ├── package.json
 │   ├── package-lock.json
 │   └── ...
@@ -98,15 +93,12 @@ The deployment workflow requires a self-hosted runner with:
 
 ### Production URLs:
 - **CLAIR Healthcare:** `https://dev.meziani.org`
-- **LUCIDE Analytics:** `https://dev.meziani.org/analytics`
 
 ### Fallback URLs:
 - **CLAIR Healthcare:** `http://89.116.170.202:3000`
-- **LUCIDE Analytics:** `http://89.116.170.202:3000/analytics`
 
 ### Development URLs:
-- **CLAIR (direct):** `http://localhost:3000`
-- **LUCIDE (direct):** `http://localhost:3001`
+- **CLAIR:** `http://localhost:3000`
 
 ## 📋 Default Credentials
 
@@ -121,7 +113,7 @@ After deployment, the system includes fresh demo data:
 ### Common Issues:
 
 1. **Dependencies not found:**
-   - Ensure `package-lock.json` exists in both `clair-app/` and `lucide-analytics/`
+   - Ensure `package-lock.json` exists in `clair-app/`
    - Clear npm cache: `npm cache clean --force`
 
 2. **Docker build failures:**

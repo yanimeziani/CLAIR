@@ -22,7 +22,7 @@ jobs:
           docker run --rm -v clair_certbot_data:/etc/letsencrypt certbot/certbot certificates
           
           # Attempt renewal (certbot only renews if needed)
-          echo "🔄 Attempting certificate renewal for dev.meziani.org and lucide.dev.meziani.org..."
+          echo "🔄 Attempting certificate renewal for dev.meziani.org..."
           docker run --rm -v clair_certbot_data:/etc/letsencrypt -v clair_certbot_www:/var/www/certbot certbot/certbot renew --webroot --webroot-path=/var/www/certbot --quiet
           
           # Check if renewal was successful
@@ -38,6 +38,6 @@ jobs:
             echo "⚠️  Certificate renewal failed or not needed"
           fi
         else
-          echo "⚠️  No SSL certificates found for dev.meziani.org and lucide.dev.meziani.org"
+          echo "⚠️  No SSL certificates found for dev.meziani.org"
           echo "Use the main deployment workflow to generate initial certificates"
         fi
