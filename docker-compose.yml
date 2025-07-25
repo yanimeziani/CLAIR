@@ -99,8 +99,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./clair-app/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./clair-app/nginx/conf.d:/etc/nginx/conf.d:ro
       - certbot_data:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     depends_on:
@@ -125,7 +125,7 @@ services:
       dockerfile: Dockerfile.ssl-setup
     container_name: irielle-ssl-setup
     volumes:
-      - ./nginx/conf.d:/nginx/conf.d
+      - ./clair-app/nginx/conf.d:/nginx/conf.d
       - certbot_data:/etc/letsencrypt
       - certbot_www:/var/www/certbot
       - /var/run/docker.sock:/var/run/docker.sock
