@@ -13,12 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Clean up permission-locked directories
-      run: |
-        sudo find . -name "nginx" -type d -exec chmod -R 755 {} \; 2>/dev/null || true
-        sudo find . -name "conf.d" -type d -exec chmod -R 755 {} \; 2>/dev/null || true
-        sudo rm -rf nginx/ 2>/dev/null || true
+      with:
+        clean: true
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -57,17 +53,15 @@ jobs:
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main' && (success() || failure())
     steps:
-    - name: Clean workspace
-      run: |
-        rm -rf .git || true
-        rm -rf * || true
-        rm -rf .[!.]* || true
-        git config --global --add safe.directory ${{ github.workspace }}
-    
     - uses: actions/checkout@v4
       with:
         clean: true
         fetch-depth: 1
+    
+    - name: Clean Docker volumes and set permissions
+      run: |
+        git config --global --add safe.directory ${{ github.workspace }}
+        sudo chmod -R 755 . 2>/dev/null || true
     
     - name: Download build artifacts
       uses: actions/download-artifact@v4
@@ -118,7 +112,7 @@ jobs:
       run: |
         cat > .env.production << EOF
         NODE_ENV=production
-        MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
+        MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/clair?authSource=admin
         AI_BACKEND_URL=http://ai-backend:8000
         NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}
         NEXTAUTH_URL=https://dev.meziani.org
@@ -229,7 +223,7 @@ jobs:
         
         echo "🤖 Ensuring ollama is running..."
         # Start ollama if not already running (preserve existing models)
-        if ! docker ps --format "table {{.Names}}" | grep -q "irielle-ollama"; then
+        if ! docker ps --format "table {{.Names}}" | grep -q "clair-ollama"; then
           docker-compose up -d ollama
         fi
         
@@ -241,7 +235,7 @@ jobs:
         # Verify MongoDB is responding with timeout
         timeout=60
         while [ $timeout -gt 0 ]; do
-          if docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+          if docker exec clair-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
             echo "✅ MongoDB is ready"
             break
           fi
@@ -258,7 +252,7 @@ jobs:
         
         # Seed the database with fresh data
         echo "🌱 Seeding database with fresh demo data..."
-        docker exec irielle-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
+        docker exec clair-mongodb mongosh --quiet /docker-entrypoint-initdb.d/02-seed-data.js
         echo "✅ Database seeded successfully with reset credentials"
     
     - name: Configure SSL certificates automatically
@@ -276,11 +270,11 @@ jobs:
         echo "🌐 Starting with HTTP-only configuration for certificate generation"
         
         # Ensure HTTP-only config is active initially
-        if [ -f "nginx/conf.d/irielle-ssl.conf" ]; then
-          mv nginx/conf.d/irielle-ssl.conf nginx/conf.d/irielle-ssl.conf.disabled
+        if [ -f "clair-app/nginx/conf.d/irielle-ssl.conf" ]; then
+          mv clair-app/nginx/conf.d/irielle-ssl.conf clair-app/nginx/conf.d/irielle-ssl.conf.disabled
         fi
-        if [ -f "nginx/conf.d/irielle-http-only.conf.disabled" ]; then
-          mv nginx/conf.d/irielle-http-only.conf.disabled nginx/conf.d/irielle-http-only.conf
+        if [ -f "clair-app/nginx/conf.d/irielle-http-only.conf.disabled" ]; then
+          mv clair-app/nginx/conf.d/irielle-http-only.conf.disabled clair-app/nginx/conf.d/irielle-http-only.conf
         fi
         
         # Check if SSL certificates exist
@@ -300,7 +294,7 @@ jobs:
         
         echo "🚀 Starting application services with pre-built images..."
         # Force remove any existing containers with same names
-        docker rm -f irielle-clair-frontend irielle-ai-backend 2>/dev/null || true
+        docker rm -f clair-frontend clair-ai-backend 2>/dev/null || true
         
         # Start services individually to catch any port conflicts (no rebuild needed)
         echo "Starting CLAIR frontend with cached build..."
@@ -366,13 +360,13 @@ jobs:
           echo "🔄 Switching to SSL configuration..."
           
           # Disable HTTP-only config
-          if [ -f "nginx/conf.d/irielle-http-only.conf" ]; then
-            mv nginx/conf.d/irielle-http-only.conf nginx/conf.d/irielle-http-only.conf.disabled
+          if [ -f "clair-app/nginx/conf.d/irielle-http-only.conf" ]; then
+            mv clair-app/nginx/conf.d/irielle-http-only.conf clair-app/nginx/conf.d/irielle-http-only.conf.disabled
           fi
           
           # Enable SSL config
-          if [ -f "nginx/conf.d/irielle-ssl.conf.disabled" ]; then
-            mv nginx/conf.d/irielle-ssl.conf.disabled nginx/conf.d/irielle-ssl.conf
+          if [ -f "clair-app/nginx/conf.d/irielle-ssl.conf.disabled" ]; then
+            mv clair-app/nginx/conf.d/irielle-ssl.conf.disabled clair-app/nginx/conf.d/irielle-ssl.conf
           fi
           
           # Verify SSL certificate includes subdomain
@@ -417,9 +411,9 @@ jobs:
         echo "🤖 Checking Ollama AI model..."
         sleep 10
         # Check if model already exists, only pull if missing
-        if ! docker exec irielle-ollama ollama list | grep -q "gemma3:4b"; then
+        if ! docker exec clair-ollama ollama list | grep -q "gemma3:4b"; then
           echo "Model not found, pulling gemma3:4b..."
-          docker exec irielle-ollama ollama pull gemma3:4b || echo "Model pull failed, will retry later"
+          docker exec clair-ollama ollama pull gemma3:4b || echo "Model pull failed, will retry later"
         else
           echo "Model gemma3:4b already exists, skipping pull"
         fi
@@ -438,7 +432,7 @@ jobs:
         echo "=== 📋 Service Health Check ==="
         
         # Test MongoDB
-        if docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
+        if docker exec clair-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin --eval "db.adminCommand('ping')" >/dev/null 2>&1; then
           echo "✅ MongoDB: Running"
         else
           echo "❌ MongoDB: Failed"
@@ -465,7 +459,7 @@ jobs:
         
         
         # Check and fix Nginx if needed
-        if ! docker ps | grep irielle-nginx | grep -q "Up"; then
+        if ! docker ps | grep clair-nginx | grep -q "Up"; then
           echo "⚠️  Nginx not running properly, attempting restart..."
           docker-compose restart nginx
           sleep 5
