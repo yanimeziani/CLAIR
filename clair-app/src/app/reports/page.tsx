@@ -3,19 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  FileText, ArrowLeft, Plus, Search, Filter, Calendar, 
-  User, Clock, Edit, Eye, MoreHorizontal, Sun, Moon, Sunset, Download
+  FileText, ArrowLeft, Plus, Search, Calendar, 
+  User, Clock, Edit, Save, X, Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { SHIFTS } from '@/lib/constants/shifts';
-import { HtmlContent } from '@/components/ui/html-content';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 
 interface Patient {
   _id: string;
@@ -35,45 +34,45 @@ interface ReportTemplate {
   isActive: boolean;
 }
 
-interface DailyReport {
-  _id: string;
+interface PatientReport {
   patientId: string;
-  authorId: string;
-  shift: 'day' | 'evening' | 'night';
-  reportDate: string;
   summary: string;
   customFields: Record<string, any>;
+  authorId?: string;
+}
+
+interface DailyReport {
+  _id: string;
+  shift: 'day' | 'evening' | 'night';
+  reportDate: string;
+  shiftSummary: string;
+  patientReports: PatientReport[];
   createdAt: string;
-  patient?: Patient;
-  authorName?: string;
+  updatedAt: string;
+}
+
+interface PatientReportData {
+  patientId: string;
+  summary: string;
+  customFields: Record<string, any>;
+  isEditing: boolean;
+  hasChanges: boolean;
 }
 
 
 export default function ReportsPage() {
-  const [reports, setReports] = useState<DailyReport[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [templates, setTemplates] = useState<ReportTemplate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<DailyReport | null>(null);
+  const [saving, setSaving] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isViewMode, setIsViewMode] = useState(false);
 
-  // Filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [patientFilter, setPatientFilter] = useState<string>('all');
-  const [shiftFilter, setShiftFilter] = useState<string>('all');
-  const [dateFilter, setDateFilter] = useState<string>('all');
+  // Current shift and date
+  const [currentShift, setCurrentShift] = useState<'day' | 'evening' | 'night'>('night');
+  const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Form state
-  const [formData, setFormData] = useState({
-    patientId: '',
-    shift: 'night' as 'day' | 'evening' | 'night',
-    reportDate: new Date().toISOString().split('T')[0],
-    summary: '',
-    customFields: {} as Record<string, any>
-  });
+  // Patient reports data
+  const [patientReports, setPatientReports] = useState<Record<string, PatientReportData>>({});
 
   const router = useRouter();
 
@@ -85,39 +84,10 @@ export default function ReportsPage() {
     initReports();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleExport = async (format: 'csv' = 'csv') => {
-    try {
-      const params = new URLSearchParams();
-      params.append('format', format);
-      
-      if (patientFilter !== 'all') {
-        params.append('patientId', patientFilter);
-      }
-      if (shiftFilter !== 'all') {
-        params.append('shift', shiftFilter);
-      }
-      
-      const response = await fetch(`/api/export/reports?${params.toString()}`);
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `rapports-quotidiens-${new Date().toISOString().split('T')[0]}.${format}`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        toast.success('Export réussi!');
-      } else {
-        toast.error('Erreur lors de l\'export');
-      }
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Erreur lors de l\'export');
-    }
-  };
+  useEffect(() => {
+    // Load existing reports when shift or date changes
+    loadExistingReports();
+  }, [currentShift, currentDate, patients]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const checkSession = async () => {
     try {
@@ -137,16 +107,10 @@ export default function ReportsPage() {
 
   const fetchData = async () => {
     try {
-      const [reportsRes, patientsRes, templatesRes] = await Promise.all([
-        fetch('/api/reports'),
+      const [patientsRes, templatesRes] = await Promise.all([
         fetch('/api/patients'),
         fetch('/api/admin/templates')
       ]);
-
-      if (reportsRes.ok) {
-        const reportsData = await reportsRes.json();
-        setReports(reportsData.reports || []);
-      }
 
       if (patientsRes.ok) {
         const patientsData = await patientsRes.json();
@@ -165,116 +129,150 @@ export default function ReportsPage() {
     }
   };
 
-  const filteredReports = reports.filter(report => {
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Search filter
-    const matchesSearch = searchTerm === '' || 
-      report.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (report.patient && 
-        `${report.patient.firstName} ${report.patient.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    // Patient filter
-    const matchesPatient = patientFilter === 'all' || report.patientId === patientFilter;
-    
-    // Shift filter
-    const matchesShift = shiftFilter === 'all' || report.shift === shiftFilter;
-    
-    // Date filter
-    let matchesDate = true;
-    if (dateFilter === 'today') {
-      matchesDate = report.reportDate.startsWith(today);
-    } else if (dateFilter === 'week') {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      matchesDate = new Date(report.reportDate) >= weekAgo;
+  const loadExistingReports = async () => {
+    if (patients.length === 0) return;
+
+    try {
+      // Get existing daily report for current shift and date
+      const response = await fetch(`/api/reports?shift=${currentShift}&date=${currentDate}`);
+      const data = await response.json();
+      
+      const newPatientReports: Record<string, PatientReportData> = {};
+      
+      // Initialize all patients with empty reports
+      patients.forEach(patient => {
+        newPatientReports[patient._id] = {
+          patientId: patient._id,
+          summary: '',
+          customFields: {},
+          isEditing: false,
+          hasChanges: false
+        };
+      });
+
+      // If we have existing reports, populate them
+      if (data.success && data.reports && data.reports.length > 0) {
+        const dailyReport = data.reports[0]; // Should be only one for this shift/date
+        if (dailyReport.patientReports) {
+          dailyReport.patientReports.forEach((report: PatientReport) => {
+            if (newPatientReports[report.patientId]) {
+              newPatientReports[report.patientId] = {
+                patientId: report.patientId,
+                summary: report.summary,
+                customFields: report.customFields || {},
+                isEditing: false,
+                hasChanges: false
+              };
+            }
+          });
+        }
+      }
+
+      setPatientReports(newPatientReports);
+    } catch (error) {
+      console.error('Error loading existing reports:', error);
+      // Initialize empty reports for all patients
+      const emptyReports: Record<string, PatientReportData> = {};
+      patients.forEach(patient => {
+        emptyReports[patient._id] = {
+          patientId: patient._id,
+          summary: '',
+          customFields: {},
+          isEditing: false,
+          hasChanges: false
+        };
+      });
+      setPatientReports(emptyReports);
     }
-    
-    return matchesSearch && matchesPatient && matchesShift && matchesDate;
-  });
-
-  const openCreateDialog = () => {
-    setSelectedReport(null);
-    setIsEditMode(false);
-    setIsViewMode(false);
-    setFormData({
-      patientId: '',
-      shift: 'night',
-      reportDate: new Date().toISOString().split('T')[0],
-      summary: '',
-      customFields: {}
-    });
-    setIsDialogOpen(true);
   };
 
-  const openEditDialog = (report: DailyReport) => {
-    setSelectedReport(report);
-    setIsEditMode(true);
-    setIsViewMode(false);
-    setFormData({
-      patientId: report.patientId,
-      shift: report.shift,
-      reportDate: report.reportDate,
-      summary: report.summary,
-      customFields: report.customFields || {}
-    });
-    setIsDialogOpen(true);
+  const toggleEdit = (patientId: string) => {
+    setPatientReports(prev => ({
+      ...prev,
+      [patientId]: {
+        ...prev[patientId],
+        isEditing: !prev[patientId].isEditing
+      }
+    }));
   };
 
-  const openViewDialog = (report: DailyReport) => {
-    setSelectedReport(report);
-    setIsEditMode(false);
-    setIsViewMode(true);
-    setIsDialogOpen(true);
+  const updatePatientReport = (patientId: string, field: string, value: any) => {
+    setPatientReports(prev => ({
+      ...prev,
+      [patientId]: {
+        ...prev[patientId],
+        [field]: value,
+        hasChanges: true
+      }
+    }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.patientId || !formData.summary.trim()) {
-      toast.error('Usager et résumé sont requis');
+  const updateCustomField = (patientId: string, fieldName: string, value: any) => {
+    setPatientReports(prev => ({
+      ...prev,
+      [patientId]: {
+        ...prev[patientId],
+        customFields: {
+          ...prev[patientId].customFields,
+          [fieldName]: value
+        },
+        hasChanges: true
+      }
+    }));
+  };
+
+  const savePatientReport = async (patientId: string) => {
+    const reportData = patientReports[patientId];
+    if (!reportData.summary.trim()) {
+      toast.error('Le résumé est requis');
       return;
     }
 
+    setSaving(patientId);
+    
     try {
-      const method = isEditMode ? 'PUT' : 'POST';
-      const payload = isEditMode 
-        ? { ...formData, reportId: selectedReport!._id }
-        : formData;
-
       const response = await fetch('/api/reports', {
-        method,
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          patientId,
+          shift: currentShift,
+          reportDate: currentDate,
+          summary: reportData.summary,
+          customFields: reportData.customFields
+        })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        toast.success(isEditMode ? 'Rapport modifié avec succès' : 'Rapport créé avec succès');
-        setIsDialogOpen(false);
-        setSelectedReport(null);
-        setIsEditMode(false);
-        setIsViewMode(false);
-        fetchData();
+        toast.success('Rapport sauvegardé avec succès');
+        setPatientReports(prev => ({
+          ...prev,
+          [patientId]: {
+            ...prev[patientId],
+            isEditing: false,
+            hasChanges: false
+          }
+        }));
       } else {
-        toast.error(data.error || `Erreur lors de ${isEditMode ? 'la modification' : 'la création'} du rapport`);
+        toast.error(data.error || 'Erreur lors de la sauvegarde du rapport');
       }
     } catch (error) {
-      console.error('Error saving report:', error);
-      toast.error(`Erreur lors de ${isEditMode ? 'la modification' : 'la création'} du rapport`);
+      console.error('Error saving patient report:', error);
+      toast.error('Erreur lors de la sauvegarde du rapport');
+    } finally {
+      setSaving(null);
     }
-  };
-
-  const getShiftInfo = (shift: string) => {
-    return SHIFTS.find(s => s.value === shift);
   };
 
   const getCurrentTemplate = () => {
     return templates.find(t => t.isActive) || null;
   };
 
-  const renderCustomField = (field: any, value: any, onChange: (value: any) => void) => {
+  const renderCustomField = (patientId: string, field: any, value: any) => {
+    const onChange = (newValue: any) => updateCustomField(patientId, field.fieldName, newValue);
+    
     switch (field.fieldType) {
       case 'text':
         return (
@@ -282,6 +280,18 @@ export default function ReportsPage() {
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
             placeholder={`Entrez ${field.fieldName.toLowerCase()}`}
+            disabled={!patientReports[patientId]?.isEditing}
+          />
+        );
+      
+      case 'number':
+        return (
+          <Input
+            type="number"
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={`Entrez ${field.fieldName.toLowerCase()}`}
+            disabled={!patientReports[patientId]?.isEditing}
           />
         );
       
@@ -291,18 +301,23 @@ export default function ReportsPage() {
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
             placeholder={`Entrez ${field.fieldName.toLowerCase()}`}
-            className="w-full p-3 border border-border rounded-md bg-background text-foreground min-h-[80px] resize-vertical"
+            className="w-full p-3 border border-border rounded-md bg-background text-foreground min-h-[80px] resize-vertical disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!patientReports[patientId]?.isEditing}
           />
         );
       
       case 'dropdown':
         return (
-          <Select value={value || ''} onValueChange={onChange}>
+          <Select 
+            value={value || ''} 
+            onValueChange={onChange}
+            disabled={!patientReports[patientId]?.isEditing}
+          >
             <SelectTrigger>
               <SelectValue placeholder={`Sélectionner ${field.fieldName.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
-              {field.options.map((option: string) => (
+              {field.options.filter((option: string) => option && option.trim()).map((option: string) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
@@ -318,7 +333,8 @@ export default function ReportsPage() {
               type="checkbox"
               checked={value || false}
               onChange={(e) => onChange(e.target.checked)}
-              className="rounded"
+              className="rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!patientReports[patientId]?.isEditing}
             />
             <Label className="text-sm">Oui</Label>
           </div>
@@ -340,6 +356,8 @@ export default function ReportsPage() {
     );
   }
 
+  const currentShiftInfo = SHIFTS.find(s => s.value === currentShift);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -353,217 +371,26 @@ export default function ReportsPage() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Rapports Quotidiens</h1>
-                <p className="text-muted-foreground">Suivi des équipes par usager</p>
+                <p className="text-muted-foreground">Tous les usagers - Vue d'ensemble</p>
               </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              {currentUser?.role === 'admin' && (
-                <Button variant="outline" onClick={() => handleExport('csv')}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Exporter CSV
-                </Button>
-              )}
-              <Button onClick={openCreateDialog}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nouveau Rapport
-              </Button>
             </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        {/* Filters */}
+        {/* Shift and Date Controls */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher dans les rapports..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <Select value={patientFilter} onValueChange={setPatientFilter}>
-                <SelectTrigger>
-                  <User className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous les usagers</SelectItem>
-                  {patients.map(patient => (
-                    <SelectItem key={patient._id} value={patient._id}>
-                      {patient.firstName} {patient.lastName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={shiftFilter} onValueChange={setShiftFilter}>
-                <SelectTrigger>
-                  <Clock className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Toutes les équipes</SelectItem>
-                  {SHIFTS.map(shift => (
-                    <SelectItem key={shift.value} value={shift.value}>
-                      {shift.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={dateFilter} onValueChange={setDateFilter}>
-                <SelectTrigger>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="today">Aujourd'hui</SelectItem>
-                  <SelectItem value="week">Cette semaine</SelectItem>
-                  <SelectItem value="all">Toutes les dates</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Configuration du rapport</h2>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Reports List */}
-        <div className="space-y-4">
-          {filteredReports.map((report) => {
-            const shiftInfo = getShiftInfo(report.shift);
-            const ShiftIcon = shiftInfo?.icon || Clock;
-            
-            return (
-              <Card key={report._id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-3">
-                        <div className="flex items-center space-x-2">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">
-                            {report.patient ? 
-                              `${report.patient.firstName} ${report.patient.lastName}` : 
-                              'Usager inconnu'
-                            }
-                          </span>
-                        </div>
-                        
-                        <div className={`flex items-center space-x-2 ${shiftInfo?.color}`}>
-                          <ShiftIcon className="h-4 w-4" />
-                          <span className="text-sm font-medium">{shiftInfo?.label}</span>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2 text-muted-foreground">
-                          <Calendar className="h-4 w-4" />
-                          <span className="text-sm">
-                            {new Date(report.reportDate).toLocaleDateString('fr-FR')}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <HtmlContent 
-                        content={report.summary}
-                        className="text-foreground mb-3 line-clamp-2"
-                      />
-                      
-                      <div className="text-sm text-muted-foreground">
-                        <span>Par {report.authorName || 'Auteur inconnu'}</span>
-                        <span className="mx-2">•</span>
-                        <span>{new Date(report.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-                    </div>
-                    
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => openViewDialog(report)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          Voir détails
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openEditDialog(report)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Modifier
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {filteredReports.length === 0 && (
-          <Card className="border-0 bg-white/70 backdrop-blur-xl shadow-xl shadow-blue-100/50 text-center py-12">
-            <CardContent>
-              <FileText className="h-16 w-16 text-blue-400 mx-auto mb-6" />
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Aucun rapport trouvé</h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                {searchTerm || patientFilter !== 'all' || shiftFilter !== 'all' || dateFilter !== 'today' 
-                  ? 'Essayez de modifier vos critères de recherche pour voir plus de rapports'
-                  : 'Aucun rapport disponible pour la période sélectionnée'
-                }
-              </p>
-              <Button 
-                onClick={openCreateDialog}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Créer le premier rapport
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {/* Create/Edit Report Dialog */}
-      <Dialog open={isDialogOpen && !isViewMode} onOpenChange={(open) => {
-        if (!isViewMode) {
-          setIsDialogOpen(open);
-          if (!open) {
-            setSelectedReport(null);
-            setIsEditMode(false);
-            setIsViewMode(false);
-          }
-        }
-      }}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl">
-          <DialogHeader>
-            <DialogTitle>{isEditMode ? 'Modifier le Rapport' : 'Nouveau Rapport Quotidien'}</DialogTitle>
-          </DialogHeader>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Usager *</Label>
-                <Select value={formData.patientId} onValueChange={(value) => setFormData({ ...formData, patientId: value })}>
+                <Label>Équipe</Label>
+                <Select value={currentShift} onValueChange={(value: any) => setCurrentShift(value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un usager" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {patients.map(patient => (
-                      <SelectItem key={patient._id} value={patient._id}>
-                        {patient.firstName} {patient.lastName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Équipe *</Label>
-                <Select value={formData.shift} onValueChange={(value: any) => setFormData({ ...formData, shift: value })}>
-                  <SelectTrigger>
+                    <Clock className="h-4 w-4 mr-2" />
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -575,139 +402,157 @@ export default function ReportsPage() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Date du rapport</Label>
-              <Input
-                type="date"
-                value={formData.reportDate}
-                onChange={(e) => setFormData({ ...formData, reportDate: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Résumé de l'équipe *</Label>
-              <textarea
-                value={formData.summary}
-                onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                placeholder="Résumé général de l'équipe pour cet usager..."
-                className="w-full p-3 border border-border rounded-md bg-background text-foreground min-h-[100px] resize-vertical"
-                required
-              />
-            </div>
-
-            {/* Custom Fields */}
-            {getCurrentTemplate() && getCurrentTemplate()!.fields.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Champs personnalisés</h3>
-                {getCurrentTemplate()!.fields.map((field, index) => (
-                  <div key={index} className="space-y-2">
-                    <Label>{field.fieldName}</Label>
-                    {renderCustomField(
-                      field,
-                      formData.customFields[field.fieldName],
-                      (value) => setFormData({
-                        ...formData,
-                        customFields: {
-                          ...formData.customFields,
-                          [field.fieldName]: value
-                        }
-                      })
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="flex space-x-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => {
-                setIsDialogOpen(false);
-                setSelectedReport(null);
-                setIsEditMode(false);
-                setIsViewMode(false);
-              }} className="flex-1">
-                Annuler
-              </Button>
-              <Button type="submit" className="flex-1">
-                {isEditMode ? 'Modifier le rapport' : 'Créer le rapport'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* View Report Dialog */}
-      <Dialog open={isDialogOpen && isViewMode} onOpenChange={(open) => {
-        if (isViewMode) {
-          setIsDialogOpen(open);
-          if (!open) {
-            setSelectedReport(null);
-            setIsEditMode(false);
-            setIsViewMode(false);
-          }
-        }
-      }}>
-        <DialogContent className="max-w-2xl">
-          {selectedReport && (
-            <>
-              <DialogHeader>
-                <DialogTitle>Détails du Rapport</DialogTitle>
-              </DialogHeader>
               
-              <div className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-muted-foreground">Usager</Label>
-                    <p className="font-medium">
-                      {selectedReport.patient ? 
-                        `${selectedReport.patient.firstName} ${selectedReport.patient.lastName}` : 
-                        'Usager inconnu'
-                      }
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground">Équipe</Label>
-                    <p className="font-medium">{getShiftInfo(selectedReport.shift)?.label}</p>
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <Label>Date du rapport</Label>
+                <Input
+                  type="date"
+                  value={currentDate}
+                  onChange={(e) => setCurrentDate(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-muted-foreground">Date</Label>
-                    <p className="font-medium">{new Date(selectedReport.reportDate).toLocaleDateString('fr-FR')}</p>
-                  </div>
-                  <div>
-                    <Label className="text-muted-foreground">Auteur</Label>
-                    <p className="font-medium">{selectedReport.authorName || 'Auteur inconnu'}</p>
-                  </div>
-                </div>
+        {/* All Patients Reports */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">
+              Rapports - {currentShiftInfo?.label} du {new Date(currentDate).toLocaleDateString('fr-FR')}
+            </h2>
+            <div className="text-sm text-muted-foreground">
+              {patients.length} usager{patients.length > 1 ? 's' : ''}
+            </div>
+          </div>
 
-                <div>
-                  <Label className="text-muted-foreground">Résumé de l'équipe</Label>
-                  <div className="mt-1 bg-muted/50 p-3 rounded-lg">
-                    <HtmlContent content={selectedReport.summary} />
-                  </div>
-                </div>
+          {patients.map((patient) => {
+            const reportData = patientReports[patient._id];
+            if (!reportData) return null;
 
-                {selectedReport.customFields && Object.keys(selectedReport.customFields).length > 0 && (
-                  <div>
-                    <Label className="text-muted-foreground">Champs personnalisés</Label>
-                    <div className="space-y-2 mt-1">
-                      {Object.entries(selectedReport.customFields).map(([key, value]) => (
-                        <div key={key} className="flex justify-between items-center p-2 bg-muted/50 rounded">
-                          <span className="font-medium">{key}:</span>
-                          <span>{typeof value === 'boolean' ? (value ? 'Oui' : 'Non') : value}</span>
-                        </div>
-                      ))}
+            const isEditing = reportData.isEditing;
+            const isSaving = saving === patient._id;
+            const hasChanges = reportData.hasChanges;
+            const currentTemplate = getCurrentTemplate();
+
+            return (
+              <Card key={patient._id} className="border-l-4 border-l-blue-500">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <User className="h-5 w-5 text-blue-600" />
+                      <CardTitle className="text-lg">
+                        {patient.firstName} {patient.lastName}
+                      </CardTitle>
+                      {hasChanges && !isEditing && (
+                        <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
+                          Modifications non sauvegardées
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {!isEditing ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleEdit(patient._id)}
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Modifier
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => toggleEdit(patient._id)}
+                            disabled={isSaving}
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Annuler
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => savePatientReport(patient._id)}
+                            disabled={isSaving || !reportData.summary.trim()}
+                          >
+                            <Save className="h-4 w-4 mr-2" />
+                            {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
-                )}
-              </div>
-            </>
+                </CardHeader>
+                
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* Summary */}
+                    <div className="space-y-2">
+                      <Label className="text-base font-medium">Résumé de l'équipe *</Label>
+                      {isEditing ? (
+                        <RichTextEditor
+                          content={reportData.summary}
+                          onChange={(content) => updatePatientReport(patient._id, 'summary', content)}
+                          placeholder={`Décrivez l'état général de ${patient.firstName}, les observations importantes, les interventions effectuées...`}
+                          className="min-h-[200px]"
+                          showAIToolbar={true}
+                        />
+                      ) : (
+                        <div className="min-h-[100px] p-4 border border-border rounded-md bg-muted/20">
+                          {reportData.summary ? (
+                            <div 
+                              className="prose prose-sm max-w-none"
+                              dangerouslySetInnerHTML={{ __html: reportData.summary }}
+                            />
+                          ) : (
+                            <p className="text-muted-foreground italic">Aucun résumé saisi</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Custom Fields */}
+                    {currentTemplate && currentTemplate.fields.length > 0 && (
+                      <>
+                        <Separator />
+                        <div className="space-y-4">
+                          <h3 className="text-base font-medium">Champs personnalisés</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {currentTemplate.fields.map((field, index) => (
+                              <div key={index} className="space-y-2">
+                                <Label className="text-sm font-medium">{field.fieldName}</Label>
+                                {renderCustomField(
+                                  patient._id,
+                                  field,
+                                  reportData.customFields[field.fieldName]
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+
+          {patients.length === 0 && (
+            <Card className="text-center py-12">
+              <CardContent>
+                <User className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
+                <h3 className="text-xl font-semibold mb-3">Aucun usager actif</h3>
+                <p className="text-muted-foreground">
+                  Aucun usager actif n'est disponible pour créer des rapports.
+                </p>
+              </CardContent>
+            </Card>
           )}
-        </DialogContent>
-      </Dialog>
+        </div>
+      </div>
     </div>
   );
 }

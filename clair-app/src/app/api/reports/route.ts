@@ -24,7 +24,7 @@ async function checkAuth() {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const auth = await checkAuth();
     if (!auth.authenticated) {
@@ -36,12 +36,26 @@ export async function GET() {
 
     await connectDB();
     
-    // Get all shift reports
-    const reports = await DailyReport.find({})
+    // Get query parameters
+    const { searchParams } = new URL(request.url);
+    const shift = searchParams.get('shift');
+    const date = searchParams.get('date');
+    
+    // Build query
+    let query: any = {};
+    if (shift) {
+      query.shift = shift;
+    }
+    if (date) {
+      query.reportDate = date;
+    }
+    
+    // Get shift reports based on filters
+    const reports = await DailyReport.find(query)
       .sort({ reportDate: -1, createdAt: -1 })
       .limit(100);
 
-    console.log('Found reports:', reports.length);
+    console.log('Found reports:', reports.length, 'for query:', query);
 
     // Populate supervisor and patient information
     const populatedReports = await Promise.all(reports.map(async (report) => {
@@ -106,11 +120,99 @@ export async function POST(request: NextRequest) {
     const requestBody = await request.json();
     console.log('Received request body:', requestBody);
     
+    // Handle both individual patient reports and full shift reports
     const { 
-      shift, reportDate, shiftSummary, incidents, 
-      regularEmployees, replacementEmployees, patientReports
+      patientId, shift, reportDate, summary, customFields,
+      shiftSummary, incidents, regularEmployees, replacementEmployees, patientReports
     } = requestBody;
     
+    // Individual patient report creation
+    if (patientId && summary && !shiftSummary) {
+      if (!shift) {
+        return NextResponse.json(
+          { success: false, error: 'Équipe requise' },
+          { status: 400 }
+        );
+      }
+
+      if (!['day', 'evening', 'night'].includes(shift)) {
+        return NextResponse.json(
+          { success: false, error: 'Équipe invalide' },
+          { status: 400 }
+        );
+      }
+
+      await connectDB();
+      
+      // Validate patient exists
+      const patient = await Patient.findById(patientId);
+      if (!patient) {
+        return NextResponse.json(
+          { success: false, error: 'Usager introuvable' },
+          { status: 404 }
+        );
+      }
+
+      const reportDateStr = reportDate || new Date().toISOString().split('T')[0];
+      
+      // Check if a shift report already exists for this date and shift
+      let existingShiftReport = await DailyReport.findOne({
+        shift,
+        reportDate: reportDateStr
+      });
+
+      const patientReport = {
+        patientId,
+        summary: summary.trim(),
+        customFields: customFields || {},
+        authorId: auth.user.userId
+      };
+
+      if (existingShiftReport) {
+        // Add patient report to existing shift report
+        const existingPatientReportIndex = existingShiftReport.patientReports.findIndex(
+          (report: any) => report.patientId === patientId
+        );
+
+        if (existingPatientReportIndex >= 0) {
+          // Update existing patient report
+          existingShiftReport.patientReports[existingPatientReportIndex] = patientReport;
+        } else {
+          // Add new patient report
+          existingShiftReport.patientReports.push(patientReport);
+        }
+
+        await existingShiftReport.save();
+        
+        return NextResponse.json({ 
+          success: true, 
+          report: existingShiftReport,
+          message: 'Rapport d\'usager ajouté au rapport de quart existant'
+        });
+      } else {
+        // Create new shift report with this patient report
+        const newShiftReport = new DailyReport({
+          shift,
+          reportDate: reportDateStr,
+          shiftSupervisor: auth.user.userId,
+          regularEmployees: [],
+          replacementEmployees: [],
+          patientReports: [patientReport],
+          shiftSummary: `Rapport créé automatiquement pour l'usager ${patient.firstName} ${patient.lastName}`,
+          incidents: []
+        });
+        
+        await newShiftReport.save();
+        
+        return NextResponse.json({ 
+          success: true, 
+          report: newShiftReport,
+          message: 'Nouveau rapport de quart créé avec le rapport d\'usager'
+        });
+      }
+    }
+    
+    // Full shift report creation (existing logic)
     if (!shift || !shiftSummary?.trim() || !patientReports?.length) {
       return NextResponse.json(
         { success: false, error: 'Quart de travail, résumé général et rapports d\'usagers sont requis' },
