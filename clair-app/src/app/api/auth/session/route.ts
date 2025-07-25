@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('irielle-session');
+    const sessionCookie = cookieStore.get('clair-session');
     
     if (!sessionCookie) {
       return NextResponse.json({ authenticated: false });

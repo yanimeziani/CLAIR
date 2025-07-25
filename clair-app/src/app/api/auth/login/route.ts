@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       };
       
       const cookieStore = await cookies();
-      cookieStore.set('irielle-session', JSON.stringify(sessionData), {
+      cookieStore.set('clair-session', JSON.stringify(sessionData), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 8 * 60 * 60, // 8 hours
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     };
     
     const cookieStore = await cookies();
-    cookieStore.set('irielle-session', JSON.stringify(sessionData), {
+    cookieStore.set('clair-session', JSON.stringify(sessionData), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 8 * 60 * 60, // 8 hours

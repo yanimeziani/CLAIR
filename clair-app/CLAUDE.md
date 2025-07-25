@@ -105,7 +105,7 @@ The platform is fully mobile-optimized with:
 
 ### Development Environment Variables
 ```bash
-MONGODB_URI=mongodb://admin:securepassword@localhost:27017/irielle?authSource=admin
+MONGODB_URI=mongodb://admin:securepassword@localhost:27017/clair?authSource=admin
 AI_BACKEND_URL=http://localhost:8001
 ```
 

@@ -13,10 +13,10 @@ class Database:
     async def connect(self):
         """Connect to MongoDB."""
         try:
-            mongodb_url = os.getenv("MONGODB_URL", "mongodb://admin:securepassword@localhost:27017/irielle?authSource=admin")
+            mongodb_url = os.getenv("MONGODB_URL", "mongodb://admin:securepassword@localhost:27017/clair?authSource=admin")
             
             self.client = AsyncIOMotorClient(mongodb_url)
-            self.database = self.client.irielle
+            self.database = self.client.clair
             
             # Test connection
             await self.client.admin.command('ping')

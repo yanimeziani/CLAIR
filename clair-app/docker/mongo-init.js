@@ -1,5 +1,5 @@
 // MongoDB initialization script
-db = db.getSiblingDB('irielle');
+db = db.getSiblingDB('clair');
 
 // Create collections
 db.createCollection('users');

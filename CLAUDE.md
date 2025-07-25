@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-IRIELLE is a comprehensive healthcare management system for DI-TSA (Intellectual Disability - Autism Spectrum Disorder) residences in Quebec. The platform is a unified Next.js application running in a containerized microservices architecture with local AI processing for healthcare compliance.
+CLAIR is a comprehensive healthcare management system for DI-TSA (Intellectual Disability - Autism Spectrum Disorder) residences in Quebec. The platform is a unified Next.js application running in a containerized microservices architecture with local AI processing for healthcare compliance.
 
 **Production Environment:** https://dev.meziani.org
 **System Components:** CLAIR (unified healthcare management with integrated analytics)
@@ -151,11 +151,11 @@ MongoDB is automatically seeded with comprehensive test data:
 ### Environment Configuration
 ```bash
 # Development
-MONGODB_URI=mongodb://admin:securepassword@localhost:27017/irielle?authSource=admin
+MONGODB_URI=mongodb://admin:securepassword@localhost:27017/clair?authSource=admin
 AI_BACKEND_URL=http://localhost:8001
 
 # Production
-MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/irielle?authSource=admin
+MONGODB_URI=mongodb://admin:securepassword@mongodb:27017/clair?authSource=admin
 AI_BACKEND_URL=http://ai-backend:8000
 NEXTAUTH_SECRET=[generated-secret]
 NEXTAUTH_URL=https://dev.meziani.org

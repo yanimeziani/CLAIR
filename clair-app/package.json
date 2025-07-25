@@ -1,5 +1,5 @@
 {
-  "name": "irielle-platform",
+  "name": "clair",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "deploy:dev": "./deploy-dev.sh",
-    "db:reset": "docker exec irielle-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin /docker-entrypoint-initdb.d/02-seed-data.js",
+    "db:reset": "docker exec clair-mongodb mongosh --quiet -u admin -p securepassword --authenticationDatabase admin /docker-entrypoint-initdb.d/02-seed-data.js",
     "test:deployment": "./test-deployment.sh"
   },
   "dependencies": {

@@ -4,7 +4,7 @@ To complete the CI/CD deployment, you need to add the following secrets to your 
 
 ## Required Secrets
 
-Go to your GitHub repository: `https://github.com/yanimeziani/irielle`
+Go to your GitHub repository: `https://github.com/yanimeziani/CLAIR`
 
 1. Navigate to **Settings** > **Secrets and variables** > **Actions**
 2. Click **"New repository secret"** and add the following:
@@ -12,8 +12,8 @@ Go to your GitHub repository: `https://github.com/yanimeziani/irielle`
 ### MONGODB_URI
 - **Name:** `MONGODB_URI`
 - **Value:** Your MongoDB connection string
-- **Example:** `mongodb://localhost:27017/irielle-production`
-- **For MongoDB Atlas:** `mongodb+srv://username:password@cluster.mongodb.net/irielle?retryWrites=true&w=majority`
+- **Example:** `mongodb://localhost:27017/clair-production`
+- **For MongoDB Atlas:** `mongodb+srv://username:password@cluster.mongodb.net/clair?retryWrites=true&w=majority`
 
 ### NEXTAUTH_SECRET
 - **Name:** `NEXTAUTH_SECRET`
@@ -33,7 +33,7 @@ If you have GitHub CLI installed:
 
 ```bash
 # Set MONGODB_URI (replace with your actual connection string)
-gh secret set MONGODB_URI --body "mongodb://localhost:27017/irielle-production"
+gh secret set MONGODB_URI --body "mongodb://localhost:27017/clair-production"
 
 # Generate and set NEXTAUTH_SECRET
 gh secret set NEXTAUTH_SECRET --body "$(openssl rand -base64 32)"
@@ -62,7 +62,7 @@ sudo systemctl start mongodb
 sudo systemctl enable mongodb
 
 # Connection string would be:
-# mongodb://localhost:27017/irielle-production
+# mongodb://localhost:27017/clair-production
 ```
 
 ### Option 3: MongoDB Docker Container
@@ -76,7 +76,7 @@ docker run -d \
   mongo:latest
 
 # Connection string would be:
-# mongodb://localhost:27017/irielle-production
+# mongodb://localhost:27017/clair-production
 ```
 
 ## Verification

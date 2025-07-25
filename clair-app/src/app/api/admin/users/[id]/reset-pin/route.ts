@@ -6,7 +6,7 @@ import { hashPin } from '@/lib/auth/auth';
 
 async function checkAdminAuth() {
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('irielle-session');
+  const sessionCookie = cookieStore.get('clair-session');
   
   if (!sessionCookie) {
     return { authenticated: false };

@@ -40,3 +40,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Docker and nginx generated files
+nginx/conf.d/*.conf
+!nginx/conf.d/.gitkeep
+.nginx/
+docker-volumes/
+certbot_data/
+certbot_www/

@@ -1,10 +1,10 @@
-// Comprehensive database seeding script for Irielle Platform
+// Comprehensive database seeding script for CLAIR Platform
 // Authenticate as admin user first
 db = db.getSiblingDB('admin');
 db.auth('admin', 'securepassword');
 
-// Switch to irielle database
-db = db.getSiblingDB('irielle');
+// Switch to clair database
+db = db.getSiblingDB('clair');
 
 // Clear existing data
 db.users.deleteMany({});

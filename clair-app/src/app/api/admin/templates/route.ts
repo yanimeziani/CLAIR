@@ -5,7 +5,7 @@ import ReportTemplate from '@/lib/models/ReportTemplate';
 
 async function checkAdminAuth() {
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('irielle-session');
+  const sessionCookie = cookieStore.get('clair-session');
   
   if (!sessionCookie) {
     return { authenticated: false };
@@ -24,7 +24,7 @@ async function checkAdminAuth() {
 
 async function checkAuth() {
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('irielle-session');
+  const sessionCookie = cookieStore.get('clair-session');
   
   if (!sessionCookie) {
     return { authenticated: false };
