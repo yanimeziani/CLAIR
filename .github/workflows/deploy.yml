@@ -228,25 +228,42 @@ jobs:
         
         echo "🚀 Starting application services with pre-built images..."
         # Force remove any existing containers with same names
-        docker rm -f clair-frontend clair-ai-backend 2>/dev/null || true
+        docker rm -f clair-frontend clair-ai-backend clair-nginx 2>/dev/null || true
         
         # Start services individually to catch any port conflicts (no rebuild needed)
         echo "Starting CLAIR frontend with fresh build..."
         docker-compose up -d clair-frontend
-        sleep 10
+        sleep 15
         
         echo "Starting AI backend..."
         docker-compose up -d ai-backend
-        sleep 10
+        sleep 15
         
         echo "⏳ Waiting for application services to be ready..."
-        sleep 20
         
-        # Restart nginx to pick up new services (preserves SSL)
-        echo "🌐 Restarting Nginx to connect to new services..."
-        docker-compose restart nginx
+        # Wait for frontend to be responsive
+        timeout=60
+        while [ $timeout -gt 0 ]; do
+          if curl -f http://localhost:3000 >/dev/null 2>&1; then
+            echo "✅ CLAIR Frontend is ready"
+            break
+          fi
+          echo "⏳ Waiting for frontend... ($timeout seconds remaining)"
+          sleep 5
+          timeout=$((timeout-5))
+        done
         
-        echo "⏳ Waiting for final services..."
+        if [ $timeout -le 0 ]; then
+          echo "❌ Frontend failed to start"
+          docker-compose logs clair-frontend
+          exit 1
+        fi
+        
+        # Now start nginx since frontend is ready
+        echo "🌐 Starting Nginx now that services are ready..."
+        docker-compose up -d nginx
+        
+        echo "⏳ Waiting for nginx to start..."
         sleep 10
         
     - name: Generate SSL certificates and configure HTTPS
