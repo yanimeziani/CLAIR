@@ -1,62 +1,208 @@
-# CLAIR Healthcare System with LUCIDE Analytics
+# CLAIR - Centre Logiciel d'Aide aux Interventions Résidentielles
 
-Complete healthcare management platform with integrated analytics for DI-TSA residences in Quebec.
+![CLAIR Logo](https://img.shields.io/badge/CLAIR-Système_de_Gestion_de_Santé-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-1.0.0-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Production-success?style=for-the-badge)
 
-## 🏗️ System Architecture
+**CLAIR** est une plateforme complète de gestion des soins de santé spécialement conçue pour les résidences DI-TSA (Déficience Intellectuelle - Trouble du Spectre de l'Autisme) au Québec. Le système offre une interface unifiée en français avec assistance IA intégrée, authentification PIN et outils complets de gestion des résidents.
 
-This system consists of two main applications deployed together:
+## 🌐 Accès Production
 
-### 📱 CLAIR (Centre Logiciel d'Aide aux Interventions Résidentielles)
-- **Location**: `./clair-app/`
-- **Purpose**: Main healthcare management platform
-- **Tech Stack**: Next.js 15, TypeScript, MongoDB, TailwindCSS
-- **Features**: PIN-based authentication, resident management, AI-powered text assistance, Bristol Scale tracking
+- **URL Principale**: https://dev.meziani.org
+- **Accès Direct**: http://89.116.170.202:3000
+- **Développement Local**: http://localhost:3000
 
-### 📊 LUCIDE Analytics
-- **Location**: `./lucide-analytics/`
-- **Purpose**: Web analytics with heatmap and live visitor intelligence
-- **Tech Stack**: Next.js 14, TypeScript, Socket.io, Recharts
-- **Features**: Real-time visitor tracking, heatmap visualization, analytics dashboard
+## 🔑 Identifiants de Démonstration
 
-## 🚀 Quick Start
+| Rôle | PIN | Permissions |
+|------|-----|-------------|
+| **Administrateur** | `1234` | Accès complet, gestion utilisateurs, configuration système |
+| **Personnel Standard** | `5678` | Gestion complète des soins, rapports, communications |
+| **Visualiseur** | `0000` | Accès en lecture seule aux rapports et communications |
 
-### Prerequisites
-- Docker and Docker Compose
-- Node.js 18+ (for development)
+## ✨ Fonctionnalités Principales
 
-### Deployment
-```bash
-# Deploy the complete system
-./deploy.sh
+### 🏥 Gestion des Usagers
+- **Profils Complets**: Informations médicales, allergies, contacts d'urgence
+- **Suivi Médical**: Notes d'observation avec catégorisation
+- **Gestion des Statuts**: Activation/désactivation des profils
+- **Photos de Profil**: Support d'images pour identification visuelle
 
-# Or manually with docker-compose
-docker-compose up -d
+### 📋 Rapports Quotidiens
+- **Rapports de Quart**: Documentation détaillée par équipe (jour/soir/nuit)
+- **Rapports d'Usagers**: Suivi individuel avec champs personnalisables
+- **Équipe Présente**: Suivi du personnel régulier et de remplacement
+- **Incidents**: Documentation des événements particuliers
+- **Templates Configurables**: Modèles personnalisables par l'administration
+
+### 🩺 Échelle de Bristol
+- **Suivi Spécialisé**: Enregistrement des types Bristol (1-7)
+- **Calendrier Visuel**: Interface intuitive pour consultation
+- **Historique Complet**: Suivi longitudinal par usager
+- **Analyse Temporelle**: Visualisation des tendances
+
+### 💬 Communications d'Équipe
+- **Messages Prioritaires**: Système d'urgence avec code couleur
+- **Suivi de Lecture**: Indication des messages lus/non lus
+- **Communications Persistantes**: Historique complet des échanges
+- **Notifications Visuelles**: Alertes pour messages urgents
+
+### 🤖 Assistance IA Intégrée
+- **Correction Automatique**: Grammaire et terminologie médicale française
+- **Génération de Résumés**: Synthèse automatique des rapports
+- **Suggestions Contextuelles**: Aide à la rédaction médicale
+- **Traitement Local**: IA sur site (Ollama + Gemma3:4b) pour confidentialité
+
+### 👥 Gestion Utilisateurs (Admin)
+- **Gestion des Rôles**: Admin, Standard, Visualiseur
+- **Authentification PIN**: Sécurité adaptée aux environnements médicaux
+- **Audit Complet**: Journal détaillé de toutes les actions
+- **Numéros d'Employés**: Gestion des identifiants du personnel
+
+### 📊 Exports et Rapports
+- **Formats CSV**: Export des données avec métadonnées complètes
+- **Filtres Avancés**: Par date, quart, usager, etc.
+- **Données Complètes**: Tous les champs disponibles pour analyse
+
+## 🏗️ Architecture Technique
+
+### Stack Technologique
+- **Frontend**: Next.js 15 (App Router), TypeScript, TailwindCSS
+- **Backend**: API Routes Next.js, FastAPI (Python)
+- **Base de Données**: MongoDB avec index optimisés
+- **IA**: Ollama (Gemma3:4b) + ChromaDB
+- **UI**: Radix UI + composants shadcn/ui
+- **Éditeur**: TipTap avec assistance IA intégrée
+
+### Architecture Microservices
+```
+┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐
+│   CLAIR Next.js │────│    MongoDB   │    │   FastAPI IA    │
+│   Port: 3000    │    │  Port: 27017 │    │   Port: 8001    │
+└─────────────────┘    └──────────────┘    └─────────────────┘
+         │                       │                    │
+         └───────────────────────┼────────────────────┘
+                                 │
+         ┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐
+         │     Ollama      │────│   ChromaDB   │    │     Nginx       │
+         │  Port: 11434    │    │  Port: 8000  │    │  Ports: 80/443  │
+         └─────────────────┘    └──────────────┘    └─────────────────┘
 ```
 
-### Development
+### Sécurité et Conformité
+- **Authentification PIN**: Système à 4 chiffres avec hachage bcrypt
+- **Sessions Sécurisées**: Gestion des sessions navigateur
+- **Audit Complet**: Traçabilité de toutes les actions
+- **IA Locale**: Aucune donnée envoyée vers des services externes
+- **Conformité HIPAA**: Pratiques de protection des données de santé
+
+## 🚀 Installation et Déploiement
+
+### Prérequis
+- **Node.js**: Version 18 ou supérieure
+- **Docker & Docker Compose**: Pour l'environnement complet
+- **Git**: Pour le clonage du repository
+
+### Installation Rapide
+
 ```bash
-# CLAIR development
+# Cloner le repository
+git clone https://github.com/yanimeziani/CLAIR.git
+cd CLAIR
+
+# Démarrer l'environnement complet
+docker-compose up -d
+
+# Accéder à l'application
+# http://localhost:3000
+```
+
+### Développement Local
+
+```bash
+# Installation des dépendances
 cd clair-app
 npm install
+
+# Démarrer MongoDB et les services IA
+docker-compose up -d mongodb ai-backend ollama chromadb
+
+# Démarrer le serveur de développement
 npm run dev
 
-# LUCIDE development (in another terminal)
-cd lucide-analytics
-npm install
-npm run dev
+# L'application sera disponible sur http://localhost:3000
 ```
 
-## 🌐 Access URLs
+### Variables d'Environnement
 
-### Production
-- **CLAIR Main App**: `http://89.116.170.202:3000` or `https://dev.meziani.org`
-- **LUCIDE Analytics**: `http://89.116.170.202:3000/analytics` or `https://dev.meziani.org/analytics`
+```bash
+# Base de données
+MONGODB_URI=mongodb://admin:securepassword@localhost:27017/clair?authSource=admin
 
-### Development
-- **CLAIR (direct)**: `http://localhost:3000`
-- **LUCIDE (direct)**: `http://localhost:3001`
-- **Nginx Proxy**: `http://localhost`
-- **LUCIDE via Proxy**: `http://localhost/analytics`
+# Services IA
+AI_BACKEND_URL=http://localhost:8001
+
+# Authentification (production)
+NEXTAUTH_SECRET=your-secret-key
+NEXTAUTH_URL=https://dev.meziani.org
+```
+
+### Commandes de Développement
+
+```bash
+# Démarrage avec Turbopack (recommandé)
+npm run dev
+
+# Build de production
+npm run build
+
+# Serveur production
+npm start
+
+# Linting et vérification types
+npm run lint
+npm run typecheck
+
+# Reset de la base de données avec données de test
+npm run db:reset
+```
+
+## 📁 Structure du Projet
+
+```
+CLAIR/
+├── clair-app/                    # Application Next.js principale
+│   ├── src/
+│   │   ├── app/                  # App Router Next.js 15
+│   │   │   ├── api/              # Routes API
+│   │   │   │   ├── auth/         # Authentification
+│   │   │   │   ├── patients/     # Gestion usagers
+│   │   │   │   ├── reports/      # Rapports quotidiens
+│   │   │   │   ├── communications/ # Messages équipe
+│   │   │   │   ├── bristol/      # Échelle Bristol
+│   │   │   │   ├── ai/           # Services IA
+│   │   │   │   └── admin/        # Administration
+│   │   │   ├── dashboard/        # Tableaux de bord par rôle
+│   │   │   ├── patients/         # Pages usagers
+│   │   │   └── auth/            # Pages authentification
+│   │   ├── components/           # Composants réutilisables
+│   │   │   ├── ui/              # Composants shadcn/ui
+│   │   │   ├── forms/           # Formulaires
+│   │   │   └── charts/          # Graphiques
+│   │   ├── lib/                 # Utilitaires
+│   │   │   ├── models/          # Modèles MongoDB
+│   │   │   ├── utils/           # Fonctions utilitaires
+│   │   │   └── database.ts      # Connexion DB
+│   │   └── middleware.ts        # Middleware de route
+├── ai-backend/                   # Service IA FastAPI
+├── nginx/                       # Configuration proxy
+├── docker-compose.yml           # Orchestration services
+├── docs/                        # Documentation
+│   ├── api/                     # Documentation API
+│   ├── deployment/              # Guides déploiement
+│   └── user-guide/              # Guide utilisateur
+└── scripts/                     # Scripts utilitaires
+```
 
 ## 🐳 Docker Services
 
@@ -240,16 +386,17 @@ docker-compose restart nginx
 - **Nginx logs**: `docker-compose logs nginx`
 - **SSL logs**: `docker-compose logs certbot`
 
-## 📚 Additional Resources
+## 📄 Licence
 
-- **CLAIR Documentation**: `./clair-app/README.md`
-- **LUCIDE Documentation**: `./lucide-analytics/README.md`
-- **API Documentation**: Available at runtime endpoints
+Ce projet est propriétaire et destiné à un usage spécialisé dans le domaine des soins de santé DI-TSA au Québec.
 
-## 🤝 Support
+## 📞 Contact
 
-For issues and support:
-1. Check service logs: `./deploy.sh logs`
-2. Verify service status: `./deploy.sh status`
-3. Review configuration files
-4. Check firewall and DNS settings for SSL issues
+- **Développement**: yani.meziani@outlook.com
+- **Support**: support@meziani.org
+- **Documentation**: https://dev.meziani.org/docs
+
+---
+
+**CLAIR v1.0.0** - Système de Gestion de Santé pour Résidences DI-TSA  
+Développé avec ❤️ pour améliorer la qualité des soins au Québec

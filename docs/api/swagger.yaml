@@ -1,0 +1,1208 @@
+openapi: 3.0.3
+info:
+  title: CLAIR - API de Gestion des Soins de Santé
+  description: |
+    API RESTful pour CLAIR (Centre Logiciel d'Aide aux Interventions Résidentielles),
+    une plateforme complète de gestion des soins de santé pour les résidences 
+    DI-TSA (Déficience Intellectuelle - Trouble du Spectre de l'Autisme) au Québec.
+    
+    ## Authentification
+    Le système utilise une authentification basée sur PIN avec sessions navigateur.
+    
+    ## Rôles utilisateur
+    - **admin**: Accès complet, gestion des utilisateurs et configuration
+    - **standard**: Accès complet aux fonctionnalités de soins
+    - **viewer**: Accès en lecture seule
+    
+    ## Fonctionnalités principales
+    - Gestion des usagers (patients)
+    - Rapports quotidiens de quarts
+    - Suivi Bristol Scale
+    - Communications d'équipe
+    - Assistance IA pour le texte médical
+    - Journaux d'audit complets
+  version: 1.0.0
+  contact:
+    name: Support Technique CLAIR
+    email: support@meziani.org
+  license:
+    name: Propriétaire
+servers:
+  - url: https://dev.meziani.org/api
+    description: Serveur de production
+  - url: http://localhost:3000/api
+    description: Serveur de développement
+
+tags:
+  - name: Authentification
+    description: Gestion des sessions et connexions PIN
+  - name: Usagers
+    description: Gestion des profils des résidents
+  - name: Utilisateurs
+    description: Gestion du personnel (admin uniquement)
+  - name: Rapports
+    description: Rapports quotidiens de quarts
+  - name: Communications
+    description: Messagerie d'équipe
+  - name: Bristol
+    description: Suivi de l'échelle de Bristol
+  - name: Observations
+    description: Notes d'observation médicale
+  - name: IA
+    description: Services d'assistance IA pour le texte
+  - name: Administration
+    description: Fonctions administratives et audit
+  - name: Export
+    description: Exportation de données
+
+paths:
+  # ========== AUTHENTIFICATION ==========
+  /auth/login:
+    post:
+      tags:
+        - Authentification
+      summary: Connexion avec PIN
+      description: Authentifie un utilisateur avec son PIN à 4 chiffres
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pin
+              properties:
+                pin:
+                  type: string
+                  pattern: '^[0-9]{4}$'
+                  description: PIN à 4 chiffres
+                  example: "1234"
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: PIN invalide ou utilisateur inactif
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentification
+      summary: Déconnexion
+      description: Termine la session utilisateur courante
+      responses:
+        '200':
+          description: Déconnexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+  /auth/session:
+    get:
+      tags:
+        - Authentification
+      summary: Vérifier la session
+      description: Vérifie si l'utilisateur est connecté et retourne ses informations
+      responses:
+        '200':
+          description: Session valide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Session expirée ou invalide
+
+  # ========== USAGERS ==========
+  /patients:
+    get:
+      tags:
+        - Usagers
+      summary: Liste des usagers
+      description: Récupère la liste de tous les usagers actifs
+      parameters:
+        - name: includeInactive
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Inclure les usagers inactifs
+      responses:
+        '200':
+          description: Liste des usagers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+
+    post:
+      tags:
+        - Usagers
+      summary: Créer un usager
+      description: Ajoute un nouvel usager au système (admin/standard)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientInput'
+      responses:
+        '201':
+          description: Usager créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '403':
+          description: Permissions insuffisantes
+
+  /patients/{id}:
+    get:
+      tags:
+        - Usagers
+      summary: Détails d'un usager
+      description: Récupère les détails complets d'un usager
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de l'usager
+      responses:
+        '200':
+          description: Détails de l'usager
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+        '404':
+          description: Usager non trouvé
+
+    put:
+      tags:
+        - Usagers
+      summary: Modifier un usager
+      description: Met à jour les informations d'un usager (admin/standard)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientInput'
+      responses:
+        '200':
+          description: Usager modifié avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+
+  /patients/{id}/status:
+    patch:
+      tags:
+        - Usagers
+      summary: Changer le statut d'un usager
+      description: Active ou désactive un usager (admin uniquement)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - isActive
+              properties:
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: Statut modifié avec succès
+
+  # ========== RAPPORTS ==========
+  /reports:
+    get:
+      tags:
+        - Rapports
+      summary: Liste des rapports
+      description: Récupère les rapports quotidiens avec filtres optionnels
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Date de début (YYYY-MM-DD)
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Date de fin (YYYY-MM-DD)
+        - name: shift
+          in: query
+          schema:
+            type: string
+            enum: [day, evening, night]
+          description: Quart de travail
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Numéro de page
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Nombre d'éléments par page
+      responses:
+        '200':
+          description: Liste des rapports
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DailyReport'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags:
+        - Rapports
+      summary: Créer un rapport
+      description: Crée un nouveau rapport quotidien (admin/standard)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyReportInput'
+      responses:
+        '201':
+          description: Rapport créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyReport'
+
+  # ========== COMMUNICATIONS ==========
+  /communications:
+    get:
+      tags:
+        - Communications
+      summary: Messages d'équipe
+      description: Récupère les communications d'équipe triées par urgence et date
+      parameters:
+        - name: unreadOnly
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Afficher seulement les messages non lus
+      responses:
+        '200':
+          description: Liste des communications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Communication'
+
+    post:
+      tags:
+        - Communications
+      summary: Nouveau message
+      description: Envoie un nouveau message à l'équipe (admin/standard)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommunicationInput'
+      responses:
+        '201':
+          description: Message envoyé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Communication'
+
+  /communications/{id}/read:
+    patch:
+      tags:
+        - Communications
+      summary: Marquer comme lu
+      description: Marque une communication comme lue par l'utilisateur courant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Message marqué comme lu
+
+  # ========== BRISTOL ==========
+  /bristol:
+    get:
+      tags:
+        - Bristol
+      summary: Entrées Bristol Scale
+      description: Récupère les entrées Bristol Scale avec filtres
+      parameters:
+        - name: patientId
+          in: query
+          schema:
+            type: string
+          description: ID de l'usager
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Date de début
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Date de fin
+      responses:
+        '200':
+          description: Entrées Bristol Scale
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BristolEntry'
+
+    post:
+      tags:
+        - Bristol
+      summary: Nouvelle entrée Bristol
+      description: Ajoute une entrée Bristol Scale (admin/standard)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BristolEntryInput'
+      responses:
+        '201':
+          description: Entrée créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BristolEntry'
+
+  # ========== OBSERVATIONS ==========
+  /observations:
+    get:
+      tags:
+        - Observations
+      summary: Notes d'observation
+      description: Récupère les notes d'observation médicale
+      parameters:
+        - name: patientId
+          in: query
+          schema:
+            type: string
+          description: ID de l'usager
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Notes d'observation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ObservationNote'
+
+    post:
+      tags:
+        - Observations
+      summary: Nouvelle observation
+      description: Ajoute une note d'observation (admin/standard)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObservationNoteInput'
+      responses:
+        '201':
+          description: Observation créée avec succès
+
+  # ========== IA ==========
+  /ai/correct-text:
+    post:
+      tags:
+        - IA
+      summary: Correction de texte
+      description: Corrige la grammaire et la terminologie médicale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: Texte à corriger
+                  example: "Le patient a eut des dificulté a manger"
+      responses:
+        '200':
+          description: Texte corrigé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  correctedText:
+                    type: string
+                    example: "Le patient a eu des difficultés à manger"
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+
+  /ai/generate-summary:
+    post:
+      tags:
+        - IA
+      summary: Génération de résumé
+      description: Génère un résumé automatique du contenu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  description: Contenu à résumer
+                maxLength:
+                  type: integer
+                  default: 200
+                  description: Longueur maximale du résumé
+      responses:
+        '200':
+          description: Résumé généré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+
+  # ========== ADMINISTRATION ==========
+  /admin/users:
+    get:
+      tags:
+        - Administration
+      summary: Liste des utilisateurs
+      description: Récupère tous les utilisateurs du système (admin uniquement)
+      responses:
+        '200':
+          description: Liste des utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      tags:
+        - Administration
+      summary: Créer un utilisateur
+      description: Ajoute un nouvel utilisateur (admin uniquement)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+
+  /admin/audit-logs:
+    get:
+      tags:
+        - Administration
+      summary: Journaux d'audit
+      description: Récupère les journaux d'audit système (admin uniquement)
+      parameters:
+        - name: userId
+          in: query
+          schema:
+            type: string
+          description: Filtrer par utilisateur
+        - name: action
+          in: query
+          schema:
+            type: string
+          description: Filtrer par action
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Journaux d'audit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditLog'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  # ========== EXPORT ==========
+  /export/patients:
+    get:
+      tags:
+        - Export
+      summary: Export des usagers
+      description: Exporte les données des usagers en CSV (admin uniquement)
+      parameters:
+        - name: includeInactive
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Fichier CSV des usagers
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /export/reports:
+    get:
+      tags:
+        - Export
+      summary: Export des rapports
+      description: Exporte les rapports en CSV avec filtres (admin uniquement)
+      parameters:
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: shift
+          in: query
+          schema:
+            type: string
+            enum: [day, evening, night]
+      responses:
+        '200':
+          description: Fichier CSV des rapports
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /export/bristol:
+    get:
+      tags:
+        - Export
+      summary: Export Bristol Scale
+      description: Exporte les données Bristol Scale en CSV (admin uniquement)
+      parameters:
+        - name: patientId
+          in: query
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Fichier CSV Bristol Scale
+          content:
+            text/csv:
+              schema:
+                type: string
+
+# ========== COMPOSANTS RÉUTILISABLES ==========
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Identifiant unique
+        firstName:
+          type: string
+          description: Prénom
+        lastName:
+          type: string
+          description: Nom de famille
+        employeeNumber:
+          type: string
+          description: Numéro d'employé (6 chiffres)
+          pattern: '^[0-9]{6}$'
+        role:
+          type: string
+          enum: [admin, standard, viewer]
+          description: Rôle de l'utilisateur
+        isActive:
+          type: boolean
+          description: Statut actif/inactif
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création
+
+    UserInput:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - role
+        - pin
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        employeeNumber:
+          type: string
+          pattern: '^[0-9]{6}$'
+        role:
+          type: string
+          enum: [admin, standard, viewer]
+        pin:
+          type: string
+          pattern: '^[0-9]{4}$'
+          description: PIN à 4 chiffres
+
+    Patient:
+      type: object
+      properties:
+        _id:
+          type: string
+        firstName:
+          type: string
+          description: Prénom de l'usager
+        lastName:
+          type: string
+          description: Nom de l'usager
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date de naissance
+        profileImageURL:
+          type: string
+          description: URL de la photo de profil
+        allergies:
+          type: array
+          items:
+            type: string
+          description: Liste des allergies
+        emergencyContacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmergencyContact'
+        medicalNotes:
+          type: string
+          description: Notes médicales
+        isActive:
+          type: boolean
+          description: Statut actif/inactif
+
+    PatientInput:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - dateOfBirth
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+        dateOfBirth:
+          type: string
+          format: date
+        profileImageURL:
+          type: string
+        allergies:
+          type: array
+          items:
+            type: string
+        emergencyContacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmergencyContactInput'
+        medicalNotes:
+          type: string
+
+    EmergencyContact:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nom du contact
+        relationship:
+          type: string
+          description: Lien de parenté
+        phone:
+          type: string
+          description: Numéro de téléphone
+
+    EmergencyContactInput:
+      type: object
+      required:
+        - name
+        - relationship
+        - phone
+      properties:
+        name:
+          type: string
+          minLength: 1
+        relationship:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+
+    DailyReport:
+      type: object
+      properties:
+        _id:
+          type: string
+        shift:
+          type: string
+          enum: [day, evening, night]
+          description: Quart de travail
+        reportDate:
+          type: string
+          format: date
+          description: Date du rapport
+        shiftSupervisor:
+          type: string
+          description: ID du superviseur de quart
+        regularEmployees:
+          type: array
+          items:
+            type: string
+          description: IDs des employés réguliers
+        replacementEmployees:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReplacementEmployee'
+        patientReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientReport'
+        shiftSummary:
+          type: string
+          description: Résumé général du quart
+        incidents:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    DailyReportInput:
+      type: object
+      required:
+        - shift
+        - reportDate
+        - shiftSupervisor
+        - patientReports
+        - shiftSummary
+      properties:
+        shift:
+          type: string
+          enum: [day, evening, night]
+        reportDate:
+          type: string
+          format: date
+        shiftSupervisor:
+          type: string
+        regularEmployees:
+          type: array
+          items:
+            type: string
+        replacementEmployees:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReplacementEmployeeInput'
+        patientReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientReportInput'
+          minItems: 1
+        shiftSummary:
+          type: string
+          minLength: 1
+        incidents:
+          type: array
+          items:
+            type: string
+
+    PatientReport:
+      type: object
+      properties:
+        patientId:
+          type: string
+        summary:
+          type: string
+          description: Résumé du rapport pour cet usager
+        customFields:
+          type: object
+          additionalProperties: true
+          description: Champs personnalisés configurables
+        authorId:
+          type: string
+          description: Auteur du rapport spécifique
+
+    PatientReportInput:
+      type: object
+      required:
+        - patientId
+        - summary
+      properties:
+        patientId:
+          type: string
+        summary:
+          type: string
+          minLength: 1
+        customFields:
+          type: object
+          additionalProperties: true
+        authorId:
+          type: string
+
+    ReplacementEmployee:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        notes:
+          type: string
+
+    ReplacementEmployeeInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+        role:
+          type: string
+        notes:
+          type: string
+
+    Communication:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+          description: Titre du message
+        content:
+          type: string
+          description: Contenu du message
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+          description: Niveau de priorité
+        authorId:
+          type: string
+          description: ID de l'auteur
+        readBy:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+              readAt:
+                type: string
+                format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    CommunicationInput:
+      type: object
+      required:
+        - title
+        - content
+        - priority
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+
+    BristolEntry:
+      type: object
+      properties:
+        _id:
+          type: string
+        patientId:
+          type: string
+        bristolType:
+          type: integer
+          minimum: 1
+          maximum: 7
+          description: Type Bristol (1-7)
+        entryDate:
+          type: string
+          format: date-time
+        notes:
+          type: string
+        recordedBy:
+          type: string
+          description: ID de l'utilisateur
+
+    BristolEntryInput:
+      type: object
+      required:
+        - patientId
+        - bristolType
+        - entryDate
+      properties:
+        patientId:
+          type: string
+        bristolType:
+          type: integer
+          minimum: 1
+          maximum: 7
+        entryDate:
+          type: string
+          format: date-time
+        notes:
+          type: string
+
+    ObservationNote:
+      type: object
+      properties:
+        _id:
+          type: string
+        patientId:
+          type: string
+        content:
+          type: string
+          description: Contenu de l'observation
+        category:
+          type: string
+          enum: [medical, behavioral, social, other]
+        authorId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ObservationNoteInput:
+      type: object
+      required:
+        - patientId
+        - content
+        - category
+      properties:
+        patientId:
+          type: string
+        content:
+          type: string
+          minLength: 1
+        category:
+          type: string
+          enum: [medical, behavioral, social, other]
+
+    AuditLog:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+          description: ID de l'utilisateur
+        action:
+          type: string
+          description: Action effectuée
+        resource:
+          type: string
+          description: Ressource affectée
+        resourceId:
+          type: string
+          description: ID de la ressource
+        details:
+          type: object
+          additionalProperties: true
+        timestamp:
+          type: string
+          format: date-time
+        ipAddress:
+          type: string
+        userAgent:
+          type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Page courante
+        limit:
+          type: integer
+          description: Éléments par page
+        total:
+          type: integer
+          description: Total des éléments
+        totalPages:
+          type: integer
+          description: Nombre total de pages
+        hasNext:
+          type: boolean
+          description: Page suivante disponible
+        hasPrev:
+          type: boolean
+          description: Page précédente disponible
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Message d'erreur en français
+        code:
+          type: string
+          description: Code d'erreur
+        details:
+          type: object
+          additionalProperties: true
+          description: Détails supplémentaires
+
+  securitySchemes:
+    SessionAuth:
+      type: apiKey
+      in: cookie
+      name: session
+      description: |
+        Authentification basée sur session. L'utilisateur doit d'abord se connecter
+        via /auth/login avec son PIN pour établir une session.
+
+security:
+  - SessionAuth: []
+
+# ========== EXEMPLES DE RÉPONSES ==========
+# Les exemples sont intégrés dans les schémas ci-dessus pour une meilleure lisibilité
