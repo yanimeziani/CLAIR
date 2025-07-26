@@ -63,11 +63,11 @@ jobs:
     - name: Pre-checkout cleanup for self-hosted runner
       run: |
         # Force cleanup of any existing files with Docker-created permissions
-        sudo find ${{ github.workspace }} -type d -exec chmod 755 {} \; 2>/dev/null || true
-        sudo find ${{ github.workspace }} -type f -exec chmod 644 {} \; 2>/dev/null || true
-        sudo rm -rf ${{ github.workspace }} || true
-        sudo mkdir -p ${{ github.workspace }}
-        sudo chown -R $(whoami):$(whoami) ${{ github.workspace }}
+        # Try with user permissions first, fallback to docker if needed
+        find ${{ github.workspace }} -type d -exec chmod 755 {} \; 2>/dev/null || true
+        find ${{ github.workspace }} -type f -exec chmod 644 {} \; 2>/dev/null || true
+        rm -rf ${{ github.workspace }} || docker run --rm -v ${{ github.workspace }}:/workspace alpine rm -rf /workspace/* 2>/dev/null || true
+        mkdir -p ${{ github.workspace }}
         git config --global --add safe.directory ${{ github.workspace }}
     
     - uses: actions/checkout@v4
@@ -144,14 +144,14 @@ jobs:
         docker volume rm clair_chromadb_data 2>/dev/null || true
         
         echo "🧹 Cleaning up any Docker-created files with elevated permissions..."
-        sudo find . -name "nginx" -type d -exec chmod -R 755 {} \; 2>/dev/null || true
-        sudo find . -name "*.conf" -exec chmod 644 {} \; 2>/dev/null || true
+        find . -name "nginx" -type d -exec chmod -R 755 {} \; 2>/dev/null || true
+        find . -name "*.conf" -exec chmod 644 {} \; 2>/dev/null || true
         
         echo "🧹 Force cleanup any containers using ports 3000, 3001, 8001..."
-        # Kill any processes using these ports
-        sudo lsof -ti:3000 | xargs -r sudo kill -9 || true
-        sudo lsof -ti:3001 | xargs -r sudo kill -9 || true
-        sudo lsof -ti:8001 | xargs -r sudo kill -9 || true
+        # Kill any processes using these ports (try without sudo first)
+        lsof -ti:3000 | xargs -r kill -9 2>/dev/null || true
+        lsof -ti:3001 | xargs -r kill -9 2>/dev/null || true
+        lsof -ti:8001 | xargs -r kill -9 2>/dev/null || true
         
         # Remove any containers that might be using these ports
         docker ps -a --filter "expose=3000" --format "{{.ID}}" | xargs -r docker rm -f || true
