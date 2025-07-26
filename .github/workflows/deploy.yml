@@ -14,10 +14,12 @@ jobs:
     steps:
     - name: Pre-checkout cleanup
       run: |
-        # Force cleanup of any existing files with elevated permissions
-        sudo rm -rf ${{ github.workspace }} || true
-        sudo mkdir -p ${{ github.workspace }}
-        sudo chown -R $(whoami) ${{ github.workspace }}
+        # Force cleanup of any existing files with Docker-created permissions
+        find ${{ github.workspace }} -type d -exec chmod 755 {} \; 2>/dev/null || true
+        find ${{ github.workspace }} -type f -exec chmod 644 {} \; 2>/dev/null || true
+        rm -rf ${{ github.workspace }} || docker run --rm -v ${{ github.workspace }}:/workspace alpine rm -rf /workspace/* 2>/dev/null || true
+        mkdir -p ${{ github.workspace }}
+        git config --global --add safe.directory ${{ github.workspace }}
     
     - uses: actions/checkout@v4
       with:
