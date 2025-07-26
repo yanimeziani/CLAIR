@@ -62,15 +62,33 @@ jobs:
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main' && (success() || failure())
     steps:
-    - name: Pre-checkout cleanup for self-hosted runner
+    - name: Setup workspace for self-hosted runner
       run: |
-        # Force cleanup of any existing files with Docker-created permissions
-        # Try with user permissions first, fallback to docker if needed
-        find ${{ github.workspace }} -type d -exec chmod 755 {} \; 2>/dev/null || true
-        find ${{ github.workspace }} -type f -exec chmod 644 {} \; 2>/dev/null || true
-        rm -rf ${{ github.workspace }} || docker run --rm -v ${{ github.workspace }}:/workspace alpine rm -rf /workspace/* 2>/dev/null || true
-        mkdir -p ${{ github.workspace }}
-        git config --global --add safe.directory ${{ github.workspace }}
+        echo "🏗️  Setting up workspace for self-hosted runner..."
+        
+        # Define workspace directory
+        WORKSPACE_DIR="/home/runner/actions-runner/_work/CLAIR/CLAIR"
+        
+        # Create workspace directory structure if it doesn't exist
+        mkdir -p "$(dirname "$WORKSPACE_DIR")"
+        mkdir -p "$WORKSPACE_DIR"
+        
+        # Set proper ownership and permissions
+        sudo chown -R runner:runner /home/runner/actions-runner/_work/ 2>/dev/null || true
+        
+        # Navigate to workspace
+        cd "$WORKSPACE_DIR"
+        
+        # Clean up any existing files
+        rm -rf ./* 2>/dev/null || true
+        rm -rf ./.* 2>/dev/null || true
+        
+        # Configure git for this workspace
+        git config --global --add safe.directory "$WORKSPACE_DIR"
+        git config --global user.email "runner@srv723879.hstgr.cloud"
+        git config --global user.name "GitHub Actions Runner"
+        
+        echo "✅ Workspace setup completed: $WORKSPACE_DIR"
     
     - uses: actions/checkout@v4
       with:
@@ -129,6 +147,30 @@ jobs:
       run: |
         echo "🛑 Gracefully stopping and removing services..."
         
+        # Ensure we're in the right directory
+        cd ${{ github.workspace }}
+        
+        # Check if docker-compose.yml exists
+        if [ ! -f "docker-compose.yml" ]; then
+          echo "❌ docker-compose.yml not found in workspace"
+          exit 1
+        fi
+        
+        # Install Docker if not present
+        if ! command -v docker &> /dev/null; then
+          echo "📦 Installing Docker..."
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+          sudo usermod -aG docker runner
+        fi
+        
+        # Install Docker Compose if not present
+        if ! command -v docker-compose &> /dev/null; then
+          echo "📦 Installing Docker Compose..."
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+        fi
+        
         # Stop and remove application services but keep nginx and ollama
         docker-compose stop clair-frontend ai-backend || true
         docker-compose rm -f clair-frontend ai-backend || true
@@ -145,15 +187,11 @@ jobs:
         docker volume rm clair_mongodb_data 2>/dev/null || true
         docker volume rm clair_chromadb_data 2>/dev/null || true
         
-        echo "🧹 Cleaning up any Docker-created files with elevated permissions..."
-        find . -name "nginx" -type d -exec chmod -R 755 {} \; 2>/dev/null || true
-        find . -name "*.conf" -exec chmod 644 {} \; 2>/dev/null || true
-        
         echo "🧹 Force cleanup any containers using ports 3000, 3001, 8001..."
-        # Kill any processes using these ports (try without sudo first)
-        lsof -ti:3000 | xargs -r kill -9 2>/dev/null || true
-        lsof -ti:3001 | xargs -r kill -9 2>/dev/null || true
-        lsof -ti:8001 | xargs -r kill -9 2>/dev/null || true
+        # Kill any processes using these ports
+        sudo lsof -ti:3000 | xargs -r sudo kill -9 2>/dev/null || true
+        sudo lsof -ti:3001 | xargs -r sudo kill -9 2>/dev/null || true
+        sudo lsof -ti:8001 | xargs -r sudo kill -9 2>/dev/null || true
         
         # Remove any containers that might be using these ports
         docker ps -a --filter "expose=3000" --format "{{.ID}}" | xargs -r docker rm -f || true
