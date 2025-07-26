@@ -12,6 +12,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - name: Pre-checkout cleanup
+      run: |
+        # Force cleanup of any existing files with elevated permissions
+        sudo rm -rf ${{ github.workspace }} || true
+        sudo mkdir -p ${{ github.workspace }}
+        sudo chown -R $(whoami) ${{ github.workspace }}
+    
     - uses: actions/checkout@v4
       with:
         clean: true
@@ -53,15 +60,20 @@ jobs:
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main' && (success() || failure())
     steps:
+    - name: Pre-checkout cleanup for self-hosted runner
+      run: |
+        # Force cleanup of any existing files with Docker-created permissions
+        sudo find ${{ github.workspace }} -type d -exec chmod 755 {} \; 2>/dev/null || true
+        sudo find ${{ github.workspace }} -type f -exec chmod 644 {} \; 2>/dev/null || true
+        sudo rm -rf ${{ github.workspace }} || true
+        sudo mkdir -p ${{ github.workspace }}
+        sudo chown -R $(whoami):$(whoami) ${{ github.workspace }}
+        git config --global --add safe.directory ${{ github.workspace }}
+    
     - uses: actions/checkout@v4
       with:
         clean: true
         fetch-depth: 1
-    
-    - name: Clean Docker volumes and set permissions
-      run: |
-        git config --global --add safe.directory ${{ github.workspace }}
-        sudo chmod -R 755 . 2>/dev/null || true
     
     - name: Download build artifacts
       uses: actions/download-artifact@v4
@@ -88,23 +100,15 @@ jobs:
           fi
         fi
     
-    - name: Check if builds exist, fallback to fresh build
+    - name: Check for build artifacts
       run: |
         echo "Checking for build artifacts..."
         
-        CLAIR_BUILD_EXISTS=false
         if [ -d "clair-app/.next" ] && [ -f "clair-app/.next/BUILD_ID" ]; then
           echo "✅ CLAIR build found ($(du -sh clair-app/.next | cut -f1))"
-          CLAIR_BUILD_EXISTS=true
+          echo "Using cached builds from test phase"
         else
-          echo "❌ CLAIR build not found or incomplete"
-        fi
-        
-        if [ "$CLAIR_BUILD_EXISTS" = true ]; then
-          echo "✅ Pre-built artifacts found and valid"
-          echo "NEED_FRESH_BUILD=false" >> $GITHUB_ENV
-        else
-          echo "⚠️  Pre-built artifacts missing or invalid, will build from source"
+          echo "❌ CLAIR build not found, will build from source"
           echo "NEED_FRESH_BUILD=true" >> $GITHUB_ENV
         fi
     
@@ -139,6 +143,10 @@ jobs:
         docker volume rm clair_mongodb_data 2>/dev/null || true
         docker volume rm clair_chromadb_data 2>/dev/null || true
         
+        echo "🧹 Cleaning up any Docker-created files with elevated permissions..."
+        sudo find . -name "nginx" -type d -exec chmod -R 755 {} \; 2>/dev/null || true
+        sudo find . -name "*.conf" -exec chmod 644 {} \; 2>/dev/null || true
+        
         echo "🧹 Force cleanup any containers using ports 3000, 3001, 8001..."
         # Kill any processes using these ports
         sudo lsof -ti:3000 | xargs -r sudo kill -9 || true
@@ -153,7 +161,7 @@ jobs:
         echo "🧹 Cleaning unused Docker resources..."
         docker system prune -f || true
     
-    - name: Setup Node.js for fresh builds
+    - name: Setup Node.js
       if: env.NEED_FRESH_BUILD == 'true'
       uses: actions/setup-node@v4
       with:
@@ -162,7 +170,7 @@ jobs:
         cache-dependency-path: |
           clair-app/package-lock.json
     
-    - name: Build fresh applications if needed
+    - name: Build applications from source
       if: env.NEED_FRESH_BUILD == 'true'
       run: |
         echo "🔨 Building applications from source..."
@@ -179,7 +187,8 @@ jobs:
     
     - name: Build and start database services
       run: |
-        if [ "$NEED_FRESH_BUILD" == "true" ]; then
+        # Determine build type
+        if [ -n "$NEED_FRESH_BUILD" ]; then
           echo "🔨 Building Docker images with fresh builds..."
           BUILD_TYPE="fresh builds"
         else
@@ -208,7 +217,7 @@ jobs:
         # Show build performance summary
         echo ""
         echo "=== ⚡ Build Performance Summary ==="
-        if [ "$NEED_FRESH_BUILD" == "true" ]; then
+        if [ -n "$NEED_FRESH_BUILD" ]; then
           echo "📊 Built from source due to missing artifacts"
         else
           echo "📊 Next.js builds reused from test phase - significantly faster deployment!"
