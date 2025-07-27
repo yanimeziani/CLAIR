@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { QuickObservationForm } from '@/components/observations/quick-observation-form';
+import { UnifiedObservationForm } from '@/components/observations/unified-observation-form';
 import { RecentObservationsView } from '@/components/observations/recent-observations-view';
 import { toast } from 'sonner';
 
@@ -485,7 +485,8 @@ export default function DashboardPage() {
                 </div>
               </button>
               
-              <QuickObservationForm 
+              <UnifiedObservationForm 
+                mode="quick"
                 trigger={
                   <button className="group relative overflow-hidden bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-2 border-green-200 rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 w-full h-full min-h-[120px] flex">
                     <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>

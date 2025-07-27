@@ -17,7 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from '@/components/ui/separator';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { HtmlContent } from '@/components/ui/html-content';
-import { ObservationNoteForm } from '@/components/observations/observation-note-form';
+import { UnifiedObservationForm } from '@/components/observations/unified-observation-form';
 import { ObservationNotesList } from '@/components/observations/observation-notes-list';
 import { toast } from 'sonner';
 
@@ -650,7 +650,8 @@ export default function PatientsPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <Label className="text-base font-medium">Observations</Label>
-                      <ObservationNoteForm
+                      <UnifiedObservationForm
+                        mode="detailed"
                         patientId={selectedPatient._id}
                         patientName={`${selectedPatient.firstName} ${selectedPatient.lastName}`}
                         onSuccess={() => setObservationRefresh(prev => prev + 1)}

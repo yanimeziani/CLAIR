@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { QuickObservationForm } from '@/components/observations/quick-observation-form';
+import { UnifiedObservationForm } from '@/components/observations/unified-observation-form';
 
 interface Observation {
   _id: string;
@@ -106,7 +106,8 @@ export default function ObservationsPage() {
             <CardTitle>Nouvelle Observation</CardTitle>
           </CardHeader>
           <CardContent>
-            <QuickObservationForm
+            <UnifiedObservationForm
+              mode="quick"
               onSuccess={handleObservationAdded}
             />
             <div className="flex justify-end mt-4">
