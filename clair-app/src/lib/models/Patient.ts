@@ -15,6 +15,7 @@ export interface IPatient extends Document {
   allergies: string[];
   emergencyContacts: IEmergencyContact[];
   medicalNotes?: string;
+  assignedTemplates: string[]; // IDs des templates de rapport assignés
   isActive: boolean;
 }
 
@@ -58,6 +59,10 @@ const PatientSchema: Schema = new Schema({
     type: String,
     default: '',
   },
+  assignedTemplates: [{
+    type: String,
+    ref: 'ReportTemplate',
+  }],
   isActive: {
     type: Boolean,
     default: true,

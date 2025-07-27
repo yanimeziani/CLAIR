@@ -90,13 +90,22 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    // Prevent self-messaging
+    const filteredRecipients = recipientIds.filter((id: string) => id !== auth.user.userId);
+    if (filteredRecipients.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Vous ne pouvez pas vous envoyer un message à vous-même' },
+        { status: 400 }
+      );
+    }
 
     await connectDB();
     
     const newCommunication = new Communication({
       authorId: auth.user.userId,
       authorDisplayName: authorDisplayName || auth.user.name,
-      recipientIds,
+      recipientIds: filteredRecipients,
       content: content.trim(),
       isUrgent: Boolean(isUrgent),
       destinationDates: destinationDates || [new Date().toISOString().split('T')[0]],

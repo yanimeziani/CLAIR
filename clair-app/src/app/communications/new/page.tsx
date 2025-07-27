@@ -210,9 +210,12 @@ export default function NewCommunicationPage() {
 
   const sendMessage = async () => {
     try {
+      // Filter out current user from recipients to prevent self-messaging
+      const availableUsers = users.filter(u => u._id !== currentUser?.userId);
+      
       const payload = {
         content: formData.content,
-        recipientIds: formData.sendToAll ? users.map(u => u._id) : formData.recipientIds,
+        recipientIds: formData.sendToAll ? availableUsers.map(u => u._id) : formData.recipientIds,
         isUrgent: formData.isUrgent,
         destinationDates: formData.destinationDates,
         patientId: formData.patientId === "none" ? null : formData.patientId || null,
@@ -258,7 +261,7 @@ export default function NewCommunicationPage() {
                 <div>
                   <Label className="text-base font-medium">Envoyer à toute l'équipe</Label>
                   <p className="text-sm text-muted-foreground">
-                    Le message sera envoyé à tous les membres actifs ({users.length} personnes)
+                    Le message sera envoyé à tous les membres actifs ({users.filter(u => u._id !== currentUser?.userId).length} personnes)
                   </p>
                 </div>
                 <Switch
@@ -285,7 +288,7 @@ export default function NewCommunicationPage() {
                       </div>
                     ) : (
                       <div className="grid gap-3 max-h-60 sm:max-h-80 overflow-y-auto pr-2">
-                        {users.map(user => (
+                        {users.filter(user => user._id !== currentUser?.userId).map(user => (
                           <div
                             key={user._id}
                             className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
@@ -333,7 +336,7 @@ export default function NewCommunicationPage() {
                 <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                   <p className="text-sm text-blue-600">
                     <Users className="h-4 w-4 inline mr-2" />
-                    Ce message sera envoyé à tous les membres actifs de l'équipe ({users.length} personnes).
+                    Ce message sera envoyé à tous les membres actifs de l'équipe ({users.filter(u => u._id !== currentUser?.userId).length} personnes).
                   </p>
                 </div>
               )}
@@ -451,7 +454,7 @@ export default function NewCommunicationPage() {
                     <Label className="text-sm font-medium text-muted-foreground">Destinataires</Label>
                     <p className="text-sm">
                       {formData.sendToAll 
-                        ? `Toute l'équipe (${users.length} personnes)`
+                        ? `Toute l'équipe (${users.filter(u => u._id !== currentUser?.userId).length} personnes)`
                         : `${formData.recipientIds.length} personne(s) sélectionnée(s)`
                       }
                     </p>

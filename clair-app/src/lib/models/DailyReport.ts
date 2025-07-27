@@ -9,7 +9,8 @@ export interface IReplacementEmployee {
 export interface IPatientReport {
   patientId: string;
   summary: string;
-  customFields: Record<string, any>;
+  customFields: Record<string, any>; // Données des templates assignés à l'usager
+  templateId?: string; // Template utilisé pour ce rapport
   authorId?: string; // Qui a rédigé ce rapport d'usager spécifique
 }
 
@@ -61,6 +62,11 @@ const PatientReportSchema: Schema = new Schema({
   customFields: {
     type: Schema.Types.Mixed,
     default: {},
+  },
+  templateId: {
+    type: String,
+    ref: 'ReportTemplate',
+    required: false,
   },
   authorId: {
     type: String,
