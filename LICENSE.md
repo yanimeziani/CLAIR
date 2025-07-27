@@ -5,7 +5,7 @@
 
 ### 1. DROITS DE PROPRIÉTÉ INTELLECTUELLE
 
-**CLAIR** (Centre Logiciel d'Aide aux Interventions Résidentielles) est la propriété intellectuelle exclusive de **[VOTRE NOM COMPLET]**, ci-après désigné comme "l'Auteur" ou "le Propriétaire".
+**CLAIR** (Centre Logiciel d'Aide aux Interventions Résidentielles) est la propriété intellectuelle exclusive de **Yani Meziani**, ci-après désigné comme "l'Auteur" ou "le Propriétaire".
 
 #### 1.1 Étendue des droits
 - **Code source** : Propriété exclusive de l'Auteur
@@ -36,22 +36,16 @@ L'Auteur se réserve le droit de déposer des brevets sur les innovations suivan
 Pour tout déploiement au-delà de la résidence pilote :
 
 **Structure tarifaire :**
-- **Licence d'installation** : 15 000$ CAD par résidence (50+ lits) ou 8 000$ CAD par résidence (1-49 lits)
-- **Redevances annuelles** : 3 000$ CAD par résidence pour maintenance et mises à jour
+- **Licence d'installation** : 15 000$ CAD par résidence
+- **Redevances annuelles** : 3 000$ CAD par résidence pour mises à jour
 - **Formation initiale** : 2 500$ CAD par site (jusqu'à 20 utilisateurs)
-- **Support technique** : 150$ CAD/heure ou forfait annuel de 5 000$ CAD
+- **Support technique** : 150$ CAD/heure
+- **Personnalisation** : Développements spécifiques inclus jusqu'à 40h
 
 **Licences en volume :**
 - **5-10 résidences** : Remise de 15% sur les licences d'installation
 - **11-25 résidences** : Remise de 25% sur les licences d'installation
 - **25+ résidences** : Remise de 35% + négociation personnalisée
-
-#### 2.3 Licence Enterprise (CIUSSSCN et organismes publics)
-- **Licence provinciale** : 250 000$ CAD pour déploiement dans tout le réseau CIUSSSCN
-- **Redevances réduites** : 1 500$ CAD/résidence/an pour le secteur public
-- **Personnalisation** : Développements spécifiques inclus jusqu'à 40h
-- **SLA garanti** : Support 99,5% de disponibilité
-
 ---
 
 ### 3. DROITS ET RESTRICTIONS
@@ -72,31 +66,13 @@ Pour tout déploiement au-delà de la résidence pilote :
 #### 3.3 Données et conformité
 - **Propriété des données** : Les données clients restent propriété du licencié
 - **Confidentialité** : L'Auteur s'engage à la confidentialité des données traitées
-- **Conformité** : Respect HIPAA/PIPEDA garanti dans l'architecture
-
 ---
 
 ### 4. REVENUS ET EXPANSION COMMERCIALE
 
 #### 4.1 Stratégie de monétisation
 **Marchés cibles :**
-- **Résidences DI-TSA** : Marché primaire au Québec (300+ établissements)
-- **CHSLD et RPA** : Adaptation pour le secteur gériatrique
-- **Centres de réadaptation** : Extension vers la réadaptation physique
-- **Marché international** : Export vers la France, Belgique, Suisse
-
-#### 4.2 Sources de revenus additionnelles
-- **Modules complémentaires** : Facturation/comptabilité (5 000$ CAD/module)
-- **Intégrations tierces** : Connexions aux systèmes existants (10 000$ CAD)
-- **Services professionnels** : Consultation, audit, optimisation (200$ CAD/heure)
-- **Formation avancée** : Programmes de certification (1 500$ CAD/personne)
-
-#### 4.3 Partenariats stratégiques
-**Revenus partagés possibles :**
-- **Revendeurs agréés** : Commission de 20% sur les nouvelles ventes
-- **Consultants santé** : Partenariat pour l'implémentation (30% de marge)
-- **Intégrateurs systèmes** : Certification et commission sur projets complexes
-
+- **Résidences DI-TSA** : Marché primaire au Québec
 ---
 
 ### 5. PROTECTION JURIDIQUE
@@ -127,13 +103,6 @@ L'Auteur conserve le droit exclusif de :
 - Vendre ou céder la propriété intellectuelle
 - Accorder des licences exclusives ou non-exclusives
 - Créer une société dédiée à l'exploitation commerciale
-
-#### 6.2 Évaluation de la propriété intellectuelle
-**Méthodes d'évaluation recommandées :**
-- **Coût de développement** : 400+ heures × 150$ CAD = 60 000$ CAD minimum
-- **Valeur marché** : Potentiel de 2-5M$ CAD selon adoption
-- **Revenus prévisionnels** : 500K-2M$ CAD annuels en régime de croisière
-
 ---
 
 ### 7. TERMES ET CONDITIONS
@@ -160,22 +129,15 @@ En cas de violation :
 
 **Pour toute demande de licence commerciale :**
 
-**[VOTRE NOM COMPLET]**  
+**Yani Meziani**  
 Auteur et Propriétaire de CLAIR  
-📧 [votre.email@domaine.com]  
-📱 [Votre numéro de téléphone]  
-🌐 [Site web portfolio]
+📧 mezianiyani0@gmail.com 
+📱 +1 581-978-3122
+🌐 https://meziani.org
 
 **Agent licensing (si applicable) :**  
-[Nom cabinet juridique spécialisé PI]  
-[Coordonnées avocat spécialisé]
+Cabinet juridique eventuel
 
 ---
 
-**© 2025 [VOTRE NOM COMPLET]. Tous droits réservés.**
-
-*Cette licence est conçue pour maximiser la valeur commerciale tout en protégeant rigoureusement la propriété intellectuelle. Elle permet une exploitation lucrative progressive basée sur l'adoption du marché.*
-
----
-
-**IMPORTANT :** Cette licence doit être révisée par un avocat spécialisé en propriété intellectuelle avant signature de tout contrat commercial.
+**© 2025 Yani Meziani. Tous droits réservés.**
