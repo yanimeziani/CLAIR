@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { SwitchSetting } from '@/components/ui/switch-setting';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
@@ -275,16 +276,12 @@ export default function AdminSettingsPage() {
                 />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Forcer changement mot de passe</Label>
-                  <p className="text-sm text-muted-foreground">Expiration automatique des PINs</p>
-                </div>
-                <Switch
-                  checked={settings.forcePasswordChange}
-                  onCheckedChange={(checked) => setSettings({ ...settings, forcePasswordChange: checked })}
-                />
-              </div>
+              <SwitchSetting
+                label="Forcer changement mot de passe"
+                description="Expiration automatique des PINs"
+                checked={settings.forcePasswordChange}
+                onCheckedChange={(checked) => setSettings({ ...settings, forcePasswordChange: checked })}
+              />
             </CardContent>
           </Card>
 
@@ -347,16 +344,12 @@ export default function AdminSettingsPage() {
                 </p>
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Nettoyage automatique anciennes données</Label>
-                  <p className="text-sm text-muted-foreground">Suppression après période de rétention</p>
-                </div>
-                <Switch
-                  checked={settings.autoCleanupOldData}
-                  onCheckedChange={(checked) => setSettings({ ...settings, autoCleanupOldData: checked })}
-                />
-              </div>
+              <SwitchSetting
+                label="Nettoyage automatique anciennes données"
+                description="Suppression après période de rétention"
+                checked={settings.autoCleanupOldData}
+                onCheckedChange={(checked) => setSettings({ ...settings, autoCleanupOldData: checked })}
+              />
             </CardContent>
           </Card>
 
@@ -413,27 +406,19 @@ export default function AdminSettingsPage() {
                 />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Alertes espace disque</Label>
-                  <p className="text-sm text-muted-foreground">Notifications quand seuil atteint</p>
-                </div>
-                <Switch
-                  checked={settings.diskSpaceAlerts}
-                  onCheckedChange={(checked) => setSettings({ ...settings, diskSpaceAlerts: checked })}
-                />
-              </div>
+              <SwitchSetting
+                label="Alertes espace disque"
+                description="Notifications quand seuil atteint"
+                checked={settings.diskSpaceAlerts}
+                onCheckedChange={(checked) => setSettings({ ...settings, diskSpaceAlerts: checked })}
+              />
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Alertes performance</Label>
-                  <p className="text-sm text-muted-foreground">Notifications lenteur système</p>
-                </div>
-                <Switch
-                  checked={settings.performanceAlerts}
-                  onCheckedChange={(checked) => setSettings({ ...settings, performanceAlerts: checked })}
-                />
-              </div>
+              <SwitchSetting
+                label="Alertes performance"
+                description="Notifications lenteur système"
+                checked={settings.performanceAlerts}
+                onCheckedChange={(checked) => setSettings({ ...settings, performanceAlerts: checked })}
+              />
             </CardContent>
           </Card>
         </div>
@@ -447,16 +432,12 @@ export default function AdminSettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label>Service IA activé</Label>
-                <p className="text-sm text-muted-foreground">Assistant IA pour correction de texte</p>
-              </div>
-              <Switch
-                checked={settings.aiServiceEnabled}
-                onCheckedChange={(checked) => setSettings({ ...settings, aiServiceEnabled: checked })}
-              />
-            </div>
+            <SwitchSetting
+              label="Service IA activé"
+              description="Assistant IA pour correction de texte"
+              checked={settings.aiServiceEnabled}
+              onCheckedChange={(checked) => setSettings({ ...settings, aiServiceEnabled: checked })}
+            />
 
             <div className="space-y-2">
               <Label>Modèle IA</Label>
@@ -483,16 +464,12 @@ export default function AdminSettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label>Activer mode maintenance</Label>
-                <p className="text-sm text-muted-foreground">Empêche l'accès aux utilisateurs normaux</p>
-              </div>
-              <Switch
-                checked={settings.maintenanceMode}
-                onCheckedChange={(checked) => setSettings({ ...settings, maintenanceMode: checked })}
-              />
-            </div>
+            <SwitchSetting
+              label="Activer mode maintenance"
+              description="Empêche l'accès aux utilisateurs normaux"
+              checked={settings.maintenanceMode}
+              onCheckedChange={(checked) => setSettings({ ...settings, maintenanceMode: checked })}
+            />
 
             {settings.maintenanceMode && (
               <div className="space-y-2">
