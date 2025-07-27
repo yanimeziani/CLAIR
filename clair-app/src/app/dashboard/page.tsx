@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Heart, Bell, Users, MessageSquare, FileText, Calendar, 
@@ -59,14 +59,7 @@ export default function DashboardPage() {
     return () => clearInterval(timer);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Fetch dashboard data when user is available
-  useEffect(() => {
-    if (user) {
-      fetchDashboardData();
-    }
-  }, [user]); // Fetch data when user state changes
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       // Ensure we have a user before fetching notifications
       if (!user?.userId) {
@@ -113,7 +106,14 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
-  };
+  }, [user]);
+
+  // Fetch dashboard data when user is available
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user, fetchDashboardData]); // Fetch data when user state changes
 
   const checkSession = async () => {
     try {

@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     const date = searchParams.get('date');
     
     // Build query
-    let query: any = {};
+    const query: any = {};
     if (shift) {
       query.shift = shift;
     }
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
       const reportDateStr = reportDate || new Date().toISOString().split('T')[0];
       
       // Check if a shift report already exists for this date and shift
-      let existingShiftReport = await DailyReport.findOne({
+      const existingShiftReport = await DailyReport.findOne({
         shift,
         reportDate: reportDateStr
       });
