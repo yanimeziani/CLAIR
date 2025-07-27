@@ -167,236 +167,56 @@ npm run typecheck
 npm run db:reset
 ```
 
-## 📁 Structure du Projet
+## 🚀 Installation et déploiement
 
-```
-CLAIR/
-├── clair-app/                    # Application Next.js principale
-│   ├── src/
-│   │   ├── app/                  # App Router Next.js 15
-│   │   │   ├── api/              # Routes API
-│   │   │   │   ├── auth/         # Authentification
-│   │   │   │   ├── patients/     # Gestion usagers
-│   │   │   │   ├── reports/      # Rapports quotidiens
-│   │   │   │   ├── communications/ # Messages équipe
-│   │   │   │   ├── bristol/      # Échelle Bristol
-│   │   │   │   ├── ai/           # Services IA
-│   │   │   │   └── admin/        # Administration
-│   │   │   ├── dashboard/        # Tableaux de bord par rôle
-│   │   │   ├── patients/         # Pages usagers
-│   │   │   └── auth/            # Pages authentification
-│   │   ├── components/           # Composants réutilisables
-│   │   │   ├── ui/              # Composants shadcn/ui
-│   │   │   ├── forms/           # Formulaires
-│   │   │   └── charts/          # Graphiques
-│   │   ├── lib/                 # Utilitaires
-│   │   │   ├── models/          # Modèles MongoDB
-│   │   │   ├── utils/           # Fonctions utilitaires
-│   │   │   └── database.ts      # Connexion DB
-│   │   └── middleware.ts        # Middleware de route
-├── ai-backend/                   # Service IA FastAPI
-├── nginx/                       # Configuration proxy
-├── docker-compose.yml           # Orchestration services
-├── docs/                        # Documentation
-│   ├── api/                     # Documentation API
-│   ├── deployment/              # Guides déploiement
-│   └── user-guide/              # Guide utilisateur
-└── scripts/                     # Scripts utilitaires
-```
-
-## 🐳 Docker Services
-
-| Service | Port | Purpose |
-|---------|------|---------|
-| `clair-frontend` | 3000 | CLAIR Next.js application |
-| `lucide-analytics` | 3001 | LUCIDE Analytics application |
-| `ai-backend` | 8001 | Python FastAPI for AI features |
-| `mongodb` | 27017 | Primary database |
-| `chromadb` | 8000 | Vector database for AI |
-| `ollama` | 11434 | Local AI model service |
-| `nginx` | 80/443 | Reverse proxy with SSL |
-
-## 🔧 Deployment Commands
-
+### Installation rapide
 ```bash
-# Deploy everything
-./deploy.sh
-
-# Check service status
-./deploy.sh status
-
-# View logs
-./deploy.sh logs [service-name]
-
-# Restart services
-./deploy.sh restart
-
-# Stop everything
-./deploy.sh stop
-
-# Clean up
-./deploy.sh cleanup
-
-# Set up SSL certificates
-./deploy.sh ssl
+git clone https://github.com/yanimeziani/CLAIR.git
+cd CLAIR
+docker-compose up -d
 ```
 
-## 📁 Directory Structure
+Application disponible sur http://localhost:3000
 
-```
-CLAIR/
-├── clair-app/              # Main CLAIR application
-│   ├── src/               # Next.js source code
-│   ├── public/            # Static assets
-│   ├── ai-backend/        # Python AI service
-│   ├── docker/            # Docker configurations
-│   ├── nginx/             # Nginx configurations (moved to root)
-│   ├── scripts/           # Deployment scripts
-│   └── package.json       # CLAIR dependencies
-├── lucide-analytics/       # LUCIDE Analytics application
-│   ├── app/               # Next.js app directory
-│   ├── components/        # React components
-│   ├── lib/               # Analytics utilities
-│   ├── types/             # TypeScript definitions
-│   └── package.json       # LUCIDE dependencies
-├── nginx/                 # Nginx configuration (root level)
-│   ├── nginx.conf         # Main nginx config
-│   └── conf.d/            # Site configurations
-├── docker-compose.yml     # Complete system orchestration
-├── deploy.sh              # Deployment script
-└── README.md              # This file
-```
-
-## 🔐 SSL Configuration
-
-The system supports SSL certificates via Let's Encrypt:
-
+### Déploiement production
 ```bash
-# Set up SSL certificates
-./deploy.sh ssl
-
-# Manual SSL setup
-cd clair-app/scripts
-./ssl-setup.sh
+./deploy.sh           # Déploiement complet
+./deploy.sh status     # Vérification services
+./deploy.sh ssl        # Configuration SSL
 ```
 
-## 🛠️ Configuration
+## 📊 Services Docker
 
-### Environment Variables
-- Copy `.env.production.example` to `.env.production`
-- Update database URLs and API endpoints as needed
+| Service | Port | Description |
+|---------|------|-------------|
+| CLAIR App | 3000 | Application principale Next.js |
+| MongoDB | 27017 | Base de données |
+| IA Service | 8001 | FastAPI + Ollama (Gemma3:4b) |
+| Nginx | 80/443 | Proxy inverse avec SSL |
 
-### Nginx Configuration
-- **SSL Config**: `nginx/conf.d/irielle-ssl.conf`
-- **HTTP Config**: `nginx/conf.d/irielle-http-only.conf`
-- Routes:
-  - `/` → CLAIR Frontend
-  - `/analytics` → LUCIDE Analytics
-  - `/api/ai/` → AI Backend
+## 📚 Documentation
 
-## 📊 Monitoring
-
-### Service Health Checks
-```bash
-# Check all services
-./deploy.sh status
-
-# Individual service logs
-docker-compose logs clair-frontend
-docker-compose logs lucide-analytics
-docker-compose logs ai-backend
-```
-
-### Database Access
-```bash
-# MongoDB shell
-docker-compose exec mongodb mongosh -u admin -p securepassword
-
-# ChromaDB API
-curl http://localhost:8000/api/v1/heartbeat
-```
-
-## 🔄 Updates and Maintenance
-
-### Application Updates
-```bash
-# Update CLAIR
-cd clair-app
-git pull
-npm install
-docker-compose build clair-frontend
-docker-compose restart clair-frontend
-
-# Update LUCIDE
-cd lucide-analytics
-git pull
-npm install
-docker-compose build lucide-analytics
-docker-compose restart lucide-analytics
-```
-
-### Certificate Renewal
-```bash
-# Manual renewal
-docker-compose run --rm certbot renew
-docker-compose restart nginx
-
-# Auto-renewal (add to crontab)
-0 12 * * * /path/to/project/deploy.sh ssl
-```
-
-## 📝 Default Credentials
-
-### CLAIR System
-- **Admin PIN**: 1234
-- **Staff PIN**: 5678
-
-### Database
-- **MongoDB**: admin/securepassword
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-1. **Services won't start**
-   ```bash
-   ./deploy.sh cleanup
-   ./deploy.sh
-   ```
-
-2. **SSL certificate issues**
-   ```bash
-   ./deploy.sh ssl
-   ```
-
-3. **Database connection errors**
-   ```bash
-   docker-compose logs mongodb
-   docker-compose restart mongodb
-   ```
-
-4. **Analytics not loading**
-   ```bash
-   docker-compose logs lucide-analytics
-   curl http://localhost/analytics
-   ```
-
-### Log Locations
-- **Application logs**: `docker-compose logs [service]`
-- **Nginx logs**: `docker-compose logs nginx`
-- **SSL logs**: `docker-compose logs certbot`
+- **[Guide développement](./docs/guide-developpement.md)** - Documentation technique
+- **[Diagrammes architecture](./docs/README.md)** - Diagrammes Mermaid complets
+- **[CLAUDE.md](./CLAUDE.md)** - Instructions pour développement
 
 ## 📄 Licence
 
-Ce projet est propriétaire et destiné à un usage spécialisé dans le domaine des soins de santé DI-TSA au Québec.
+**Licence commerciale propriétaire** - Voir [LICENSE.md](./LICENSE.md) pour les détails complets.
+
+### Modèle de licensing
+- **Pilote** : Licence gratuite 12 mois pour résidence test
+- **Commercial** : 15 000$ CAD par résidence + 3 000$ CAD/an maintenance
+- **Support** : Formation incluse + support technique
 
 ## 📞 Contact
 
-- **Développement**: yani.meziani@outlook.com
-- **Support**: support@meziani.org
-- **Documentation**: https://dev.meziani.org/docs
+**Yani Meziani** - Auteur et Propriétaire  
+📧 mezianiyani0@gmail.com  
+📱 +1 581-978-3122  
+🌐 https://meziani.org
 
 ---
 
-**CLAIR v1.0.0** - Système de Gestion de Santé pour Résidences DI-TSA  
-Développé avec ❤️ pour améliorer la qualité des soins au Québec
+**© 2025 Yani Meziani. Tous droits réservés.**  
+**CLAIR v1.0.0** - Solution de gestion spécialisée pour résidences DI-TSA
