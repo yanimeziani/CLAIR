@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, Settings, Shield, Database, Bell, 
-  Globe, Users, Lock, Zap, AlertTriangle, Save
+  ArrowLeft, Settings, Shield, Database, Clock, 
+  Globe, Lock, AlertTriangle, Save, Server, HardDrive
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,35 +12,48 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [settings, setSettings] = useState({
-    // System Settings
-    systemName: 'Plateforme Irielle',
-    timezone: 'America/Montreal',
-    language: 'fr-CA',
-    dateFormat: 'dd/MM/yyyy',
+    // Critical System Settings
+    systemName: 'CLAIR',
+    organizationName: 'Résidence DI-TSA',
+    adminEmail: 'admin@residence.ca',
+    emergencyContact: '+1-418-xxx-xxxx',
     
-    // Security Settings
-    sessionTimeout: 480, // 8 hours in minutes
-    passwordPolicy: 'medium',
-    twoFactorRequired: false,
-    auditLogging: true,
-    
-    // Notification Settings
-    emailNotifications: true,
-    urgentAlerts: true,
-    systemMaintenance: true,
-    backupNotifications: true,
-    
-    // Data Settings
-    dataRetention: 2555, // 7 years in days
-    automaticBackup: true,
+    // Database & Backup
+    backupRetention: 90, // days to keep backups
     backupFrequency: 'daily',
-    exportFormat: 'csv'
+    maxBackupSize: 5, // GB
+    autoCleanupOldData: false,
+    dataRetentionYears: 7,
+    
+    // Security & Sessions
+    sessionTimeout: 480, // 8 hours in minutes
+    maxFailedLogins: 5,
+    auditLogRetention: 365, // days
+    forcePasswordChange: false,
+    
+    // System Maintenance
+    maintenanceMode: false,
+    maintenanceMessage: '',
+    maxDiskUsage: 85, // percentage before alerts
+    maxMemoryUsage: 80, // percentage before alerts
+    
+    // Integration Settings
+    aiServiceEnabled: true,
+    aiModelName: 'gemma3:4b',
+    maxConcurrentUsers: 50,
+    
+    // Alerts & Monitoring
+    healthCheckInterval: 300, // seconds
+    alertEmail: '',
+    diskSpaceAlerts: true,
+    performanceAlerts: true
   });
 
   const router = useRouter();
@@ -69,8 +82,19 @@ export default function AdminSettingsPage() {
 
   const handleSaveSettings = async () => {
     try {
-      // In a real implementation, this would save to database
-      toast.success('Paramètres sauvegardés avec succès!');
+      const response = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('Paramètres sauvegardés avec succès!');
+      } else {
+        toast.error(data.error || 'Erreur lors de la sauvegarde');
+      }
     } catch (error) {
       toast.error('Erreur lors de la sauvegarde');
     }
@@ -78,22 +102,30 @@ export default function AdminSettingsPage() {
 
   const handleResetDefaults = () => {
     setSettings({
-      systemName: 'Plateforme Irielle',
-      timezone: 'America/Montreal',
-      language: 'fr-CA',
-      dateFormat: 'dd/MM/yyyy',
-      sessionTimeout: 480,
-      passwordPolicy: 'medium',
-      twoFactorRequired: false,
-      auditLogging: true,
-      emailNotifications: true,
-      urgentAlerts: true,
-      systemMaintenance: true,
-      backupNotifications: true,
-      dataRetention: 2555,
-      automaticBackup: true,
+      systemName: 'CLAIR',
+      organizationName: 'Résidence DI-TSA',
+      adminEmail: 'admin@residence.ca',
+      emergencyContact: '+1-418-xxx-xxxx',
+      backupRetention: 90,
       backupFrequency: 'daily',
-      exportFormat: 'csv'
+      maxBackupSize: 5,
+      autoCleanupOldData: false,
+      dataRetentionYears: 7,
+      sessionTimeout: 480,
+      maxFailedLogins: 5,
+      auditLogRetention: 365,
+      forcePasswordChange: false,
+      maintenanceMode: false,
+      maintenanceMessage: '',
+      maxDiskUsage: 85,
+      maxMemoryUsage: 80,
+      aiServiceEnabled: true,
+      aiModelName: 'gemma3:4b',
+      maxConcurrentUsers: 50,
+      healthCheckInterval: 300,
+      alertEmail: '',
+      diskSpaceAlerts: true,
+      performanceAlerts: true
     });
     toast.info('Paramètres remis aux valeurs par défaut');
   };
@@ -140,12 +172,12 @@ export default function AdminSettingsPage() {
 
       <div className="container mx-auto px-6 py-8">
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* System Configuration */}
+          {/* Organization Settings */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Globe className="h-5 w-5 mr-2" />
-                Configuration Système
+                Configuration Résidence
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -154,48 +186,46 @@ export default function AdminSettingsPage() {
                 <Input
                   value={settings.systemName}
                   onChange={(e) => setSettings({ ...settings, systemName: e.target.value })}
+                  placeholder="CLAIR"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>Fuseau horaire</Label>
-                <Select value={settings.timezone} onValueChange={(value) => setSettings({ ...settings, timezone: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="America/Montreal">Montréal (UTC-5/-4)</SelectItem>
-                    <SelectItem value="America/Toronto">Toronto (UTC-5/-4)</SelectItem>
-                    <SelectItem value="America/Vancouver">Vancouver (UTC-8/-7)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Nom de l'organisation</Label>
+                <Input
+                  value={settings.organizationName}
+                  onChange={(e) => setSettings({ ...settings, organizationName: e.target.value })}
+                  placeholder="Résidence DI-TSA"
+                />
               </div>
               
               <div className="space-y-2">
-                <Label>Langue</Label>
-                <Select value={settings.language} onValueChange={(value) => setSettings({ ...settings, language: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fr-CA">Français (Canada)</SelectItem>
-                    <SelectItem value="en-CA">English (Canada)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Email administrateur principal</Label>
+                <Input
+                  type="email"
+                  value={settings.adminEmail}
+                  onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
+                  placeholder="admin@residence.ca"
+                />
               </div>
               
               <div className="space-y-2">
-                <Label>Format de date</Label>
-                <Select value={settings.dateFormat} onValueChange={(value) => setSettings({ ...settings, dateFormat: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dd/MM/yyyy">JJ/MM/AAAA</SelectItem>
-                    <SelectItem value="MM/dd/yyyy">MM/JJ/AAAA</SelectItem>
-                    <SelectItem value="yyyy-MM-dd">AAAA-MM-JJ</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Contact d'urgence système</Label>
+                <Input
+                  value={settings.emergencyContact}
+                  onChange={(e) => setSettings({ ...settings, emergencyContact: e.target.value })}
+                  placeholder="+1-418-xxx-xxxx"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Email pour alertes système</Label>
+                <Input
+                  type="email"
+                  value={settings.alertEmail}
+                  onChange={(e) => setSettings({ ...settings, alertEmail: e.target.value })}
+                  placeholder="support@residence.ca"
+                />
               </div>
             </CardContent>
           </Card>
@@ -205,7 +235,7 @@ export default function AdminSettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Shield className="h-5 w-5 mr-2" />
-                Paramètres de Sécurité
+                Sécurité & Sessions
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -215,134 +245,58 @@ export default function AdminSettingsPage() {
                   type="number"
                   value={settings.sessionTimeout}
                   onChange={(e) => setSettings({ ...settings, sessionTimeout: parseInt(e.target.value) || 480 })}
+                  min="30"
+                  max="1440"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Recommandé: 480 minutes (8h) pour les environnements de soins
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Tentatives de connexion max</Label>
+                <Input
+                  type="number"
+                  value={settings.maxFailedLogins}
+                  onChange={(e) => setSettings({ ...settings, maxFailedLogins: parseInt(e.target.value) || 5 })}
+                  min="3"
+                  max="10"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label>Politique de mot de passe</Label>
-                <Select value={settings.passwordPolicy} onValueChange={(value) => setSettings({ ...settings, passwordPolicy: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Faible (4 caractères min)</SelectItem>
-                    <SelectItem value="medium">Moyenne (6 caractères, PIN)</SelectItem>
-                    <SelectItem value="high">Élevée (8+ caractères, complexe)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Authentification à deux facteurs</Label>
-                  <p className="text-sm text-muted-foreground">Exiger une vérification supplémentaire</p>
-                </div>
-                <Switch
-                  checked={settings.twoFactorRequired}
-                  onCheckedChange={(checked) => setSettings({ ...settings, twoFactorRequired: checked })}
+                <Label>Rétention logs d'audit (jours)</Label>
+                <Input
+                  type="number"
+                  value={settings.auditLogRetention}
+                  onChange={(e) => setSettings({ ...settings, auditLogRetention: parseInt(e.target.value) || 365 })}
+                  min="90"
+                  max="2555"
                 />
               </div>
               
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <Label>Journalisation d'audit</Label>
-                  <p className="text-sm text-muted-foreground">Enregistrer toutes les actions</p>
+                  <Label>Forcer changement mot de passe</Label>
+                  <p className="text-sm text-muted-foreground">Expiration automatique des PINs</p>
                 </div>
                 <Switch
-                  checked={settings.auditLogging}
-                  onCheckedChange={(checked) => setSettings({ ...settings, auditLogging: checked })}
+                  checked={settings.forcePasswordChange}
+                  onCheckedChange={(checked) => setSettings({ ...settings, forcePasswordChange: checked })}
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Notification Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Bell className="h-5 w-5 mr-2" />
-                Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Notifications par email</Label>
-                  <p className="text-sm text-muted-foreground">Alertes système par email</p>
-                </div>
-                <Switch
-                  checked={settings.emailNotifications}
-                  onCheckedChange={(checked) => setSettings({ ...settings, emailNotifications: checked })}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Alertes urgentes</Label>
-                  <p className="text-sm text-muted-foreground">Notifications critiques immédiates</p>
-                </div>
-                <Switch
-                  checked={settings.urgentAlerts}
-                  onCheckedChange={(checked) => setSettings({ ...settings, urgentAlerts: checked })}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Maintenance système</Label>
-                  <p className="text-sm text-muted-foreground">Notifications de maintenance</p>
-                </div>
-                <Switch
-                  checked={settings.systemMaintenance}
-                  onCheckedChange={(checked) => setSettings({ ...settings, systemMaintenance: checked })}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Sauvegardes</Label>
-                  <p className="text-sm text-muted-foreground">État des sauvegardes automatiques</p>
-                </div>
-                <Switch
-                  checked={settings.backupNotifications}
-                  onCheckedChange={(checked) => setSettings({ ...settings, backupNotifications: checked })}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Data Management */}
+          {/* Backup & Data Management */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Database className="h-5 w-5 mr-2" />
-                Gestion des Données
+                Sauvegardes & Données
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>Rétention des données (jours)</Label>
-                <Input
-                  type="number"
-                  value={settings.dataRetention}
-                  onChange={(e) => setSettings({ ...settings, dataRetention: parseInt(e.target.value) || 2555 })}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Actuellement: {Math.round(settings.dataRetention / 365 * 10) / 10} années
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Sauvegarde automatique</Label>
-                  <p className="text-sm text-muted-foreground">Sauvegardes planifiées</p>
-                </div>
-                <Switch
-                  checked={settings.automaticBackup}
-                  onCheckedChange={(checked) => setSettings({ ...settings, automaticBackup: checked })}
-                />
-              </div>
-              
               <div className="space-y-2">
                 <Label>Fréquence des sauvegardes</Label>
                 <Select value={settings.backupFrequency} onValueChange={(value) => setSettings({ ...settings, backupFrequency: value })}>
@@ -350,50 +304,241 @@ export default function AdminSettingsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="hourly">Toutes les heures</SelectItem>
-                    <SelectItem value="daily">Quotidienne</SelectItem>
+                    <SelectItem value="daily">Quotidienne (recommandé)</SelectItem>
                     <SelectItem value="weekly">Hebdomadaire</SelectItem>
+                    <SelectItem value="monthly">Mensuelle</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="space-y-2">
-                <Label>Format d'export par défaut</Label>
-                <Select value={settings.exportFormat} onValueChange={(value) => setSettings({ ...settings, exportFormat: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="csv">CSV (Excel compatible)</SelectItem>
-                    <SelectItem value="json">JSON</SelectItem>
-                    <SelectItem value="pdf">PDF</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Rétention sauvegardes (jours)</Label>
+                <Input
+                  type="number"
+                  value={settings.backupRetention}
+                  onChange={(e) => setSettings({ ...settings, backupRetention: parseInt(e.target.value) || 90 })}
+                  min="30"
+                  max="365"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Taille max sauvegarde (GB)</Label>
+                <Input
+                  type="number"
+                  value={settings.maxBackupSize}
+                  onChange={(e) => setSettings({ ...settings, maxBackupSize: parseInt(e.target.value) || 5 })}
+                  min="1"
+                  max="50"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Rétention données (années)</Label>
+                <Input
+                  type="number"
+                  value={settings.dataRetentionYears}
+                  onChange={(e) => setSettings({ ...settings, dataRetentionYears: parseInt(e.target.value) || 7 })}
+                  min="3"
+                  max="20"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Réglementations DI-TSA: minimum 7 ans
+                </p>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label>Nettoyage automatique anciennes données</Label>
+                  <p className="text-sm text-muted-foreground">Suppression après période de rétention</p>
+                </div>
+                <Switch
+                  checked={settings.autoCleanupOldData}
+                  onCheckedChange={(checked) => setSettings({ ...settings, autoCleanupOldData: checked })}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* System Performance */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Server className="h-5 w-5 mr-2" />
+                Performance Système
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label>Seuil d'alerte disque (%)</Label>
+                <Input
+                  type="number"
+                  value={settings.maxDiskUsage}
+                  onChange={(e) => setSettings({ ...settings, maxDiskUsage: parseInt(e.target.value) || 85 })}
+                  min="50"
+                  max="95"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Seuil d'alerte mémoire (%)</Label>
+                <Input
+                  type="number"
+                  value={settings.maxMemoryUsage}
+                  onChange={(e) => setSettings({ ...settings, maxMemoryUsage: parseInt(e.target.value) || 80 })}
+                  min="50"
+                  max="95"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Utilisateurs simultanés max</Label>
+                <Input
+                  type="number"
+                  value={settings.maxConcurrentUsers}
+                  onChange={(e) => setSettings({ ...settings, maxConcurrentUsers: parseInt(e.target.value) || 50 })}
+                  min="10"
+                  max="200"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Intervalle health check (secondes)</Label>
+                <Input
+                  type="number"
+                  value={settings.healthCheckInterval}
+                  onChange={(e) => setSettings({ ...settings, healthCheckInterval: parseInt(e.target.value) || 300 })}
+                  min="60"
+                  max="3600"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label>Alertes espace disque</Label>
+                  <p className="text-sm text-muted-foreground">Notifications quand seuil atteint</p>
+                </div>
+                <Switch
+                  checked={settings.diskSpaceAlerts}
+                  onCheckedChange={(checked) => setSettings({ ...settings, diskSpaceAlerts: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label>Alertes performance</Label>
+                  <p className="text-sm text-muted-foreground">Notifications lenteur système</p>
+                </div>
+                <Switch
+                  checked={settings.performanceAlerts}
+                  onCheckedChange={(checked) => setSettings({ ...settings, performanceAlerts: checked })}
+                />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* System Information */}
-        <Card className="mt-8 border-amber-500/20 bg-amber-500/5">
+        {/* AI & Integration Settings */}
+        <Card className="mt-8">
           <CardHeader>
-            <CardTitle className="flex items-center text-amber-600">
+            <CardTitle className="flex items-center">
+              <Lock className="h-5 w-5 mr-2" />
+              Intelligence Artificielle & Intégrations
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label>Service IA activé</Label>
+                <p className="text-sm text-muted-foreground">Assistant IA pour correction de texte</p>
+              </div>
+              <Switch
+                checked={settings.aiServiceEnabled}
+                onCheckedChange={(checked) => setSettings({ ...settings, aiServiceEnabled: checked })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Modèle IA</Label>
+              <Select value={settings.aiModelName} onValueChange={(value) => setSettings({ ...settings, aiModelName: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="gemma3:4b">Gemma3 4B (recommandé)</SelectItem>
+                  <SelectItem value="llama3:8b">Llama3 8B (plus puissant)</SelectItem>
+                  <SelectItem value="mistral:7b">Mistral 7B (alternatif)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Maintenance Mode */}
+        <Card className="mt-8 border-orange-500/20 bg-orange-500/5">
+          <CardHeader>
+            <CardTitle className="flex items-center text-orange-600">
               <AlertTriangle className="h-5 w-5 mr-2" />
+              Mode Maintenance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label>Activer mode maintenance</Label>
+                <p className="text-sm text-muted-foreground">Empêche l'accès aux utilisateurs normaux</p>
+              </div>
+              <Switch
+                checked={settings.maintenanceMode}
+                onCheckedChange={(checked) => setSettings({ ...settings, maintenanceMode: checked })}
+              />
+            </div>
+
+            {settings.maintenanceMode && (
+              <div className="space-y-2">
+                <Label>Message de maintenance</Label>
+                <Textarea
+                  value={settings.maintenanceMessage}
+                  onChange={(e) => setSettings({ ...settings, maintenanceMessage: e.target.value })}
+                  placeholder="Le système est temporairement indisponible pour maintenance..."
+                  rows={3}
+                />
+              </div>
+            )}
+
+            <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-lg">
+              <p className="text-sm text-orange-700 dark:text-orange-300">
+                <strong>Important:</strong> En mode maintenance, seuls les administrateurs peuvent accéder au système. 
+                Utilisez cette fonction avec précaution.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Information */}
+        <Card className="mt-8 border-blue-500/20 bg-blue-500/5">
+          <CardHeader>
+            <CardTitle className="flex items-center text-blue-600">
+              <Database className="h-5 w-5 mr-2" />
               Informations Système
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid md:grid-cols-3 gap-4 text-sm">
+            <div className="grid md:grid-cols-4 gap-4 text-sm">
               <div>
-                <h4 className="font-semibold mb-1">Version de la plateforme</h4>
-                <p className="text-muted-foreground">Irielle v1.0.0</p>
+                <h4 className="font-semibold mb-1">Version CLAIR</h4>
+                <p className="text-muted-foreground">v1.2.0</p>
               </div>
               <div>
                 <h4 className="font-semibold mb-1">Base de données</h4>
                 <p className="text-muted-foreground">MongoDB 7.0</p>
               </div>
               <div>
-                <h4 className="font-semibold mb-1">Dernière sauvegarde</h4>
+                <h4 className="font-semibold mb-1">Runtime</h4>
+                <p className="text-muted-foreground">Node.js 20 LTS</p>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-1">Dernière modification</h4>
                 <p className="text-muted-foreground">{new Date().toLocaleString('fr-CA')}</p>
               </div>
             </div>
